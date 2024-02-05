@@ -1,4 +1,6 @@
-﻿namespace MyCompiler
+﻿using MyCompiler.CodeAnalysis;
+
+namespace MyCompiler
 {
     internal class Program
     {

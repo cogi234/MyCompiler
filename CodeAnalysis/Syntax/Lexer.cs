@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyCompiler
+namespace MyCompiler.CodeAnalysis
 {
     internal sealed class Lexer
     {
@@ -14,7 +14,8 @@ namespace MyCompiler
 
         public IEnumerable<string> Diagnostics => diagnostics;
 
-        public Lexer(string text) {
+        public Lexer(string text)
+        {
             this.text = text;
         }
 

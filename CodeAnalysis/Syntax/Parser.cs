@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyCompiler
+namespace MyCompiler.CodeAnalysis
 {
     internal sealed class Parser
     {
@@ -50,7 +50,8 @@ namespace MyCompiler
                 Token operatorToken = NextToken();
                 ExpressionNode expression = ParseExpression(unaryOperatorPrecedence);
                 left = new UnaryExpressionNode(operatorToken, expression);
-            } else
+            }
+            else
             {
                 left = ParsePrimaryExpression();
             }
