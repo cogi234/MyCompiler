@@ -39,37 +39,22 @@ namespace MyCompiler
             return new SyntaxTree(diagnostics, expression);
         }
 
-        private ExpressionNode ParseExpression()
-        {
-            return ParseTerm();
-        }
-
-        private ExpressionNode ParseTerm()
-        {
-            ExpressionNode left = ParseFactor();
-
-            while (Current.Type == TokenType.Plus ||
-                Current.Type == TokenType.Minus)
-            {
-                Token operatorToken = NextToken();
-                ExpressionNode right = ParseFactor();
-                left = new BinaryExpressionNode(left, operatorToken, right);
-            }
-
-            return left;
-        }
-
-        private ExpressionNode ParseFactor()
+        private ExpressionNode ParseExpression(int parentPrecedence = 0)
         {
             ExpressionNode left = ParsePrimaryExpression();
 
-            while (Current.Type == TokenType.Star ||
-                Current.Type == TokenType.ForwardSlash)
+            while (true)
             {
+                int precedence = GetBinaryOperatorPrecedence(Current.Type);
+                if (precedence == 0 || precedence <= parentPrecedence)
+                    break;
+
                 Token operatorToken = NextToken();
-                ExpressionNode right = ParsePrimaryExpression();
+                ExpressionNode right = ParseExpression(precedence);
                 left = new BinaryExpressionNode(left, operatorToken, right);
             }
+
+
 
             return left;
         }
@@ -93,6 +78,23 @@ namespace MyCompiler
 
             Token numberToken = MatchToken(TokenType.Number);
             return new LiteralExpressionNode(numberToken);
+        }
+
+        private static int GetBinaryOperatorPrecedence(TokenType type)
+        {
+            switch (type)
+            {
+                case TokenType.Plus:
+                case TokenType.Minus:
+                    return 1;
+
+                case TokenType.Star:
+                case TokenType.ForwardSlash:
+                    return 2;
+
+                default:
+                    return 0;
+            }
         }
 
         private Token Peek(int offset)
