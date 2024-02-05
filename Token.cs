@@ -17,7 +17,8 @@ namespace MyCompiler
         Star,
         ForwardSlash,
         OpenParenthesis,
-        CloseParenthesis
+        CloseParenthesis,
+        ExclamationMark
     }
     class Token
     {

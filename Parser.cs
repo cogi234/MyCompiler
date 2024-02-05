@@ -84,6 +84,13 @@ namespace MyCompiler
                 return new ParenthesizedExpressionNode(left, expression, right);
             }
 
+            if (Current.Type == TokenType.Minus)
+            {
+                Token operatorToken = NextToken();
+                ExpressionNode expression = ParseExpression();
+                return new UnaryExpressionNode(operatorToken, expression);
+            }
+
             Token numberToken = Match(TokenType.Number);
             return new NumberNode(numberToken);
         }

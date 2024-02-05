@@ -10,7 +10,8 @@ namespace MyCompiler
     {
         Number,
         BinaryExpression,
-        ParenthesizedExpression
+        ParenthesizedExpression,
+        UnaryExpression
     }
 
     abstract class SyntaxNode
@@ -42,6 +43,25 @@ namespace MyCompiler
         {
             yield return Left;
             yield return Right;
+        }
+    }
+
+    sealed class UnaryExpressionNode : ExpressionNode
+    {
+        public UnaryExpressionNode(Token operatorToken, ExpressionNode expression)
+        {
+            OperatorToken = operatorToken;
+            Expression = expression;
+        }
+
+        public override NodeType Type => NodeType.UnaryExpression;
+        public Token OperatorToken { get; }
+        public ExpressionNode Expression { get; }
+
+
+        public override IEnumerable<SyntaxNode> GetChildren()
+        {
+            yield return Expression;
         }
     }
 

@@ -68,6 +68,8 @@ namespace MyCompiler
                 return new Token(TokenType.OpenParenthesis, position++, "(", null);
             if (Current == ')')
                 return new Token(TokenType.CloseParenthesis, position++, ")", null);
+            if (Current == '!')
+                return new Token(TokenType.ExclamationMark, position++, "!", null);
 
             diagnostics.Add($"ERROR ({position}): bad character input: '{Current}'");
             return new Token(TokenType.BadToken, position++, text.Substring(position - 1, 1), null);
