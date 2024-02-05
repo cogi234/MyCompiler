@@ -45,9 +45,15 @@ namespace MyCompiler
                     {
                         UnaryExpressionNode unaryExpression = (UnaryExpressionNode)expression;
                         int right = EvaluateExpression(unaryExpression.Expression);
-                        if (unaryExpression.OperatorToken.Type == TokenType.Minus)
-                            return -right;
-                        throw new Exception($"Unexpected unary operator {unaryExpression.OperatorToken.Type}");
+                        switch (unaryExpression.OperatorToken.Type)
+                        {
+                            case TokenType.Plus:
+                                return right;
+                            case TokenType.Minus:
+                                return -right;
+                            default:
+                                throw new Exception($"Unexpected unary operator {unaryExpression.OperatorToken.Type}");
+                        }
                     }
                 case NodeType.ParenthesizedExpression:
                     return EvaluateExpression(((ParenthesizedExpressionNode)expression).Expression);

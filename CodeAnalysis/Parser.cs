@@ -41,11 +41,24 @@ namespace MyCompiler
 
         private ExpressionNode ParseExpression(int parentPrecedence = 0)
         {
-            ExpressionNode left = ParsePrimaryExpression();
+            ExpressionNode left;
 
+            //Unary expressions
+            int unaryOperatorPrecedence = Current.Type.GetUnaryOperatorPrecedence();
+            if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence)
+            {
+                Token operatorToken = NextToken();
+                ExpressionNode expression = ParseExpression(unaryOperatorPrecedence);
+                left = new UnaryExpressionNode(operatorToken, expression);
+            } else
+            {
+                left = ParsePrimaryExpression();
+            }
+
+            //Binary expressions
             while (true)
             {
-                int precedence = GetBinaryOperatorPrecedence(Current.Type);
+                int precedence = Current.Type.GetBinaryOperatorPrecedence();
                 if (precedence == 0 || precedence <= parentPrecedence)
                     break;
 
@@ -53,8 +66,6 @@ namespace MyCompiler
                 ExpressionNode right = ParseExpression(precedence);
                 left = new BinaryExpressionNode(left, operatorToken, right);
             }
-
-
 
             return left;
         }
@@ -69,32 +80,8 @@ namespace MyCompiler
                 return new ParenthesizedExpressionNode(left, expression, right);
             }
 
-            if (Current.Type == TokenType.Minus)
-            {
-                Token operatorToken = NextToken();
-                ExpressionNode expression = ParseExpression();
-                return new UnaryExpressionNode(operatorToken, expression);
-            }
-
             Token numberToken = MatchToken(TokenType.Number);
             return new LiteralExpressionNode(numberToken);
-        }
-
-        private static int GetBinaryOperatorPrecedence(TokenType type)
-        {
-            switch (type)
-            {
-                case TokenType.Plus:
-                case TokenType.Minus:
-                    return 1;
-
-                case TokenType.Star:
-                case TokenType.ForwardSlash:
-                    return 2;
-
-                default:
-                    return 0;
-            }
         }
 
         private Token Peek(int offset)

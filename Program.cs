@@ -99,10 +99,13 @@
             switch (node.Type)
             {
                 case NodeType.LiteralExpression:
-                    Console.Write($" {(node as LiteralExpressionNode).LiteralToken.Value}");
+                    Console.Write($" {((LiteralExpressionNode)node).LiteralToken.Value}");
                     break;
                 case NodeType.BinaryExpression:
-                    Console.Write($" {(node as BinaryExpressionNode).OperatorToken.Text}");
+                    Console.Write($" {((BinaryExpressionNode)node).OperatorToken.Text}");
+                    break;
+                case NodeType.UnaryExpression:
+                    Console.Write($" {((UnaryExpressionNode)node).OperatorToken.Text}");
                     break;
             }
 
