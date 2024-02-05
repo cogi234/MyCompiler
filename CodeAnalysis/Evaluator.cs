@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyCompiler
 {
-    class Evaluator
+    internal sealed class Evaluator
     {
         ExpressionNode root;
         public Evaluator(ExpressionNode root)
@@ -24,8 +24,8 @@ namespace MyCompiler
         {
             switch (expression.Type)
             {
-                case NodeType.Number:
-                    return (int)((NumberNode)expression).NumberToken.Value;
+                case NodeType.LiteralExpression:
+                    return (int)((LiteralExpressionNode)expression).LiteralToken.Value;
                 case NodeType.BinaryExpression:
                     {
                         BinaryExpressionNode binaryExpression = (BinaryExpressionNode)expression;

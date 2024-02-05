@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyCompiler
 {
-    class SyntaxTree
+    internal sealed class SyntaxTree
     {
         public SyntaxTree(IEnumerable<string> diagnostics, ExpressionNode root)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyCompiler
 {
-    class Parser
+    internal sealed class Parser
     {
         private readonly Token[] tokens;
         private int position;
@@ -35,7 +35,7 @@ namespace MyCompiler
         public SyntaxTree Parse()
         {
             ExpressionNode expression = ParseExpression();
-            Match(TokenType.EndOfFile);
+            MatchToken(TokenType.EndOfFile);
             return new SyntaxTree(diagnostics, expression);
         }
 
@@ -80,7 +80,7 @@ namespace MyCompiler
             {
                 Token left = NextToken();
                 ExpressionNode expression = ParseExpression();
-                Token right = Match(TokenType.CloseParenthesis);
+                Token right = MatchToken(TokenType.CloseParenthesis);
                 return new ParenthesizedExpressionNode(left, expression, right);
             }
 
@@ -91,8 +91,8 @@ namespace MyCompiler
                 return new UnaryExpressionNode(operatorToken, expression);
             }
 
-            Token numberToken = Match(TokenType.Number);
-            return new NumberNode(numberToken);
+            Token numberToken = MatchToken(TokenType.Number);
+            return new LiteralExpressionNode(numberToken);
         }
 
         private Token Peek(int offset)
@@ -108,7 +108,7 @@ namespace MyCompiler
             position++;
             return Peek(-1);
         }
-        private Token Match(TokenType type)
+        private Token MatchToken(TokenType type)
         {
             if (Current.Type == type)
                 return NextToken();

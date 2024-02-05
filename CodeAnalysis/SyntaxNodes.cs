@@ -6,26 +6,26 @@ using System.Threading.Tasks;
 
 namespace MyCompiler
 {
-    enum NodeType
+    public enum NodeType
     {
-        Number,
+        LiteralExpression,
         BinaryExpression,
         ParenthesizedExpression,
         UnaryExpression
     }
 
-    abstract class SyntaxNode
+    public abstract class SyntaxNode
     {
         public abstract NodeType Type { get; }
 
         public abstract IEnumerable<SyntaxNode> GetChildren();
     }
 
-    abstract class ExpressionNode : SyntaxNode
+    public abstract class ExpressionNode : SyntaxNode
     {
     }
 
-    sealed class BinaryExpressionNode : ExpressionNode
+    public sealed class BinaryExpressionNode : ExpressionNode
     {
         public BinaryExpressionNode(ExpressionNode left, Token operatorToken, ExpressionNode right)
         {
@@ -46,7 +46,7 @@ namespace MyCompiler
         }
     }
 
-    sealed class UnaryExpressionNode : ExpressionNode
+    public sealed class UnaryExpressionNode : ExpressionNode
     {
         public UnaryExpressionNode(Token operatorToken, ExpressionNode expression)
         {
@@ -65,7 +65,7 @@ namespace MyCompiler
         }
     }
 
-    sealed class ParenthesizedExpressionNode : ExpressionNode
+    public sealed class ParenthesizedExpressionNode : ExpressionNode
     {
         public ParenthesizedExpressionNode(Token openParenthesis, ExpressionNode expression, Token closeParenthesis)
         {
@@ -86,15 +86,15 @@ namespace MyCompiler
         }
     }
 
-    sealed class NumberNode : ExpressionNode
+    public sealed class LiteralExpressionNode : ExpressionNode
     {
-        public NumberNode(Token numberToken)
+        public LiteralExpressionNode(Token literalToken)
         {
-            NumberToken = numberToken;
+            LiteralToken = literalToken;
         }
 
-        public override NodeType Type => NodeType.Number;
-        public Token NumberToken { get; }
+        public override NodeType Type => NodeType.LiteralExpression;
+        public Token LiteralToken { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {

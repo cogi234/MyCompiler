@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyCompiler
 {
-    enum TokenType
+    public enum TokenType
     {
         BadToken,
         WhiteSpace,
@@ -20,7 +20,7 @@ namespace MyCompiler
         CloseParenthesis,
         ExclamationMark
     }
-    class Token
+    public sealed class Token
     {
         public Token(TokenType type, int position, string? text, object? value)
         {

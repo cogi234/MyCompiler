@@ -1,6 +1,6 @@
 ﻿namespace MyCompiler
 {
-    class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
@@ -59,12 +59,11 @@
                 SyntaxTree syntaxTree = SyntaxTree.Parse(line);
                 if (treeOutput)
                 {
-                    ConsoleColor color = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.DarkGray;
 
                     PrettyPrintSyntaxNode(syntaxTree.Root);
 
-                    Console.ForegroundColor = color;
+                    Console.ResetColor();
                 }
 
                 if (!syntaxTree.Diagnostics.Any())
@@ -75,7 +74,6 @@
                 }
                 else
                 {
-                    ConsoleColor color = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.DarkRed;
 
                     foreach (string error in syntaxTree.Diagnostics)
@@ -83,7 +81,7 @@
                         Console.WriteLine(error);
                     }
 
-                    Console.ForegroundColor = color;
+                    Console.ResetColor();
                 }
             }
         }
@@ -92,7 +90,7 @@
         {
             // ├ ─ └ │
 
-            string marker = isLast ? "└─" : "├─";
+            string marker = isLast ? "└──" : "├──";
 
             Console.Write(indent);
             Console.Write(marker);
@@ -100,8 +98,8 @@
 
             switch (node.Type)
             {
-                case NodeType.Number:
-                    Console.Write($" {(node as NumberNode).NumberToken.Value}");
+                case NodeType.LiteralExpression:
+                    Console.Write($" {(node as LiteralExpressionNode).LiteralToken.Value}");
                     break;
                 case NodeType.BinaryExpression:
                     Console.Write($" {(node as BinaryExpressionNode).OperatorToken.Text}");
@@ -110,7 +108,7 @@
 
             Console.WriteLine();
 
-            indent += isLast ? "  " : "│ ";
+            indent += isLast ? "   " : "│  ";
 
             SyntaxNode lastChild = node.GetChildren().LastOrDefault();
             foreach (SyntaxNode child in node.GetChildren())
