@@ -56,20 +56,23 @@ namespace MyCompiler
             }
 
             //Single character tokens
-            if (Current == '+')
-                return new Token(TokenType.Plus, position++, "+", null);
-            if (Current == '-')
-                return new Token(TokenType.Minus, position++, "-", null);
-            if (Current == '*')
-                return new Token(TokenType.Star, position++, "*", null);
-            if (Current == '/')
-                return new Token(TokenType.ForwardSlash, position++, "/", null);
-            if (Current == '(')
-                return new Token(TokenType.OpenParenthesis, position++, "(", null);
-            if (Current == ')')
-                return new Token(TokenType.CloseParenthesis, position++, ")", null);
-            if (Current == '!')
-                return new Token(TokenType.ExclamationMark, position++, "!", null);
+            switch (Current)
+            {
+                case '+':
+                    return new Token(TokenType.Plus, position++, "+", null);
+                case '-':
+                    return new Token(TokenType.Minus, position++, "-", null);
+                case '*':
+                    return new Token(TokenType.Star, position++, "*", null);
+                case '/':
+                    return new Token(TokenType.ForwardSlash, position++, "/", null);
+                case '(':
+                    return new Token(TokenType.OpenParenthesis, position++, "(", null);
+                case ')':
+                    return new Token(TokenType.CloseParenthesis, position++, ")", null);
+                case '!':
+                    return new Token(TokenType.ExclamationMark, position++, "!", null);
+            }
 
             diagnostics.Add($"ERROR ({position}): bad character input: '{Current}'");
             return new Token(TokenType.BadToken, position++, text.Substring(position - 1, 1), null);
