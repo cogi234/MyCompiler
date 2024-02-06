@@ -86,26 +86,39 @@ namespace MyCompiler.CodeAnalysis.Syntax
                     return new Token(TokenType.CloseParenthesis, position++, ")", null);
                 case '!':
                     return new Token(TokenType.ExclamationMark, position++, "!", null);
+                case '&':
+                    if (Peek(1) == '&')
+                    {
+                        position += 2;
+                        return new Token(TokenType.DoubleAmpersand, position - 2, "&&", null);
+                    }
+                    break;
+                case '|':
+                    if (Peek(1) == '|')
+                    {
+                        position += 2;
+                        return new Token(TokenType.DoublePipe, position - 2, "||", null);
+                    }
+                    break;
             }
 
             diagnostics.Add($"ERROR ({position}): bad character input: '{Current}'");
             return new Token(TokenType.BadToken, position++, text.Substring(position - 1, 1), null);
         }
 
-        private char Current
+        private char Current => Peek(0);
+
+        private char Peek(int offset)
         {
-            get
-            {
-                if (position >= text.Length)
-                    return '\0';
-                return text[position];
-            }
+            int index = position + offset;
+
+            if (index >= text.Length)
+                return '\0';
+            return text[index];
         }
         private void Next()
         {
             position++;
         }
-
-
     }
 }

@@ -31,13 +31,15 @@ namespace MyCompiler.CodeAnalysis
                 case BoundNodeType.UnaryExpression:
                     {
                         BoundUnaryExpression unaryExpression = (BoundUnaryExpression)expression;
-                        int operand = (int)EvaluateExpression(unaryExpression.Operand);
+                        object operand = EvaluateExpression(unaryExpression.Operand);
                         switch (unaryExpression.OperationType)
                         {
                             case BoundUnaryOperationType.Identity:
-                                return operand;
+                                return (int)operand;
                             case BoundUnaryOperationType.Negation:
-                                return -operand;
+                                return -(int)operand;
+                            case BoundUnaryOperationType.LogicalNegation:
+                                return !(bool)operand;
                             default:
                                 throw new Exception($"Unhandled unary operation {unaryExpression.OperationType}");
                         }
@@ -45,18 +47,22 @@ namespace MyCompiler.CodeAnalysis
                 case BoundNodeType.BinaryExpression:
                     {
                         BoundBinaryExpression binaryExpression = (BoundBinaryExpression)expression;
-                        int left = (int)EvaluateExpression(binaryExpression.Left);
-                        int right = (int)EvaluateExpression(binaryExpression.Right);
+                        object left = EvaluateExpression(binaryExpression.Left);
+                        object right = EvaluateExpression(binaryExpression.Right);
                         switch (binaryExpression.OperationType)
                         {
                             case BoundBinaryOperationType.Addition:
-                                return left + right;
+                                return (int)left + (int)right;
                             case BoundBinaryOperationType.Subtraction:
-                                return left - right;
+                                return (int)left - (int)right;
                             case BoundBinaryOperationType.Multiplication:
-                                return left * right;
+                                return (int)left * (int)right;
                             case BoundBinaryOperationType.Division:
-                                return left / right;
+                                return (int)left / (int)right;
+                            case BoundBinaryOperationType.LogicalAnd:
+                                return (bool)left && (bool)right;
+                            case BoundBinaryOperationType.LogicalOr:
+                                return (bool)left || (bool)right;
                             default:
                                 throw new Exception($"Unhandled binary operation {binaryExpression.OperationType}");
                         }

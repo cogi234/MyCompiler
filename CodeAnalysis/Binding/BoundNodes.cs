@@ -16,14 +16,17 @@ namespace MyCompiler.CodeAnalysis.Binding
     internal enum BoundUnaryOperationType
     {
         Identity,
-        Negation
+        Negation,
+        LogicalNegation
     }
     internal enum BoundBinaryOperationType
     {
         Addition,
         Subtraction,
         Multiplication,
-        Division
+        Division,
+        LogicalAnd,
+        LogicalOr
     }
 
     internal abstract class BoundNode

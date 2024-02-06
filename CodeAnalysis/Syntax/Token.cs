@@ -23,10 +23,12 @@ namespace MyCompiler.CodeAnalysis.Syntax
         OpenParenthesis,
         CloseParenthesis,
         ExclamationMark,
+        DoubleAmpersand,
+        DoublePipe,
 
         //Keywords
         FalseKeyword,
-        TrueKeyword
+        TrueKeyword,
     }
     public sealed class Token
     {

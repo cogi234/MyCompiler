@@ -81,37 +81,57 @@ namespace MyCompiler.CodeAnalysis.Binding
 
         private BoundUnaryOperationType? BindUnaryOperator(TokenType tokenType, Type operandType)
         {
-            if (operandType != typeof(int))
-                return null;
-
-            switch (tokenType)
+            if (operandType == typeof(int))
             {
-                case TokenType.Plus:
-                    return BoundUnaryOperationType.Identity;
-                case TokenType.Minus:
-                    return BoundUnaryOperationType.Negation;
-                default:
-                    throw new Exception($"Unexpected unary operator {tokenType}");
+                switch (tokenType)
+                {
+                    case TokenType.Plus:
+                        return BoundUnaryOperationType.Identity;
+                    case TokenType.Minus:
+                        return BoundUnaryOperationType.Negation;
+                }
             }
+            if (operandType == typeof(bool))
+            {
+                switch (tokenType)
+                {
+                    case TokenType.ExclamationMark:
+                        return BoundUnaryOperationType.LogicalNegation;
+                }
+            }
+
+            return null;
         }
         private BoundBinaryOperationType? BindBinaryOperator(TokenType tokenType, Type leftType, Type rightType)
         {
-            if (leftType != typeof(int) || rightType != typeof(int))
-                return null;
-
-            switch (tokenType)
+            if (leftType == typeof(int) && rightType == typeof(int))
             {
-                case TokenType.Plus:
-                    return BoundBinaryOperationType.Addition;
-                case TokenType.Minus:
-                    return BoundBinaryOperationType.Subtraction;
-                case TokenType.Star:
-                    return BoundBinaryOperationType.Multiplication;
-                case TokenType.ForwardSlash:
-                    return BoundBinaryOperationType.Division;
-                default:
-                    throw new Exception($"Unexpected binary operator {tokenType}");
+                switch (tokenType)
+                {
+                    case TokenType.Plus:
+                        return BoundBinaryOperationType.Addition;
+                    case TokenType.Minus:
+                        return BoundBinaryOperationType.Subtraction;
+                    case TokenType.Star:
+                        return BoundBinaryOperationType.Multiplication;
+                    case TokenType.ForwardSlash:
+                        return BoundBinaryOperationType.Division;
+                    default:
+                        throw new Exception($"Unexpected binary operator {tokenType}");
+                }
             }
+            if (leftType == typeof(bool) && rightType == typeof(bool))
+            {
+                switch (tokenType)
+                {
+                    case TokenType.DoubleAmpersand:
+                        return BoundBinaryOperationType.LogicalAnd;
+                    case TokenType.DoublePipe:
+                        return BoundBinaryOperationType.LogicalOr;
+                }
+            }
+
+            return null;
         }
     }
 }

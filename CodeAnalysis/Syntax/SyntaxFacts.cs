@@ -8,30 +8,36 @@ namespace MyCompiler.CodeAnalysis.Syntax
 {
     internal static class SyntaxFacts
     {
-        public static int GetBinaryOperatorPrecedence(this TokenType type)
-        {
-            switch (type)
-            {
-                case TokenType.Plus:
-                case TokenType.Minus:
-                    return 1;
-
-                case TokenType.Star:
-                case TokenType.ForwardSlash:
-                    return 2;
-
-                default:
-                    return 0;
-            }
-        }
-
         public static int GetUnaryOperatorPrecedence(this TokenType type)
         {
             switch (type)
             {
                 case TokenType.Plus:
                 case TokenType.Minus:
+                    return 5;
+                case TokenType.ExclamationMark:
+                    return 5;
+                default:
+                    return 0;
+            }
+        }
+
+        public static int GetBinaryOperatorPrecedence(this TokenType type)
+        {
+            switch (type)
+            {
+                case TokenType.Star:
+                case TokenType.ForwardSlash:
+                    return 4;
+
+                case TokenType.Plus:
+                case TokenType.Minus:
                     return 3;
+
+                case TokenType.DoubleAmpersand:
+                    return 2;
+                case TokenType.DoublePipe:
+                    return 1;
 
                 default:
                     return 0;
