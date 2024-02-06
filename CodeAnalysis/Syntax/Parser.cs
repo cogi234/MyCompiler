@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyCompiler.CodeAnalysis
+namespace MyCompiler.CodeAnalysis.Syntax
 {
     internal sealed class Parser
     {
         private readonly Token[] tokens;
         private int position;
         private List<string> diagnostics = new List<string>();
+        public IEnumerable<string> Diagnostics => diagnostics;
 
         public Parser(string line)
         {

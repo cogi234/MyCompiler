@@ -4,20 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyCompiler.CodeAnalysis
+namespace MyCompiler.CodeAnalysis.Syntax
 {
     public enum NodeType
     {
         LiteralExpression,
+        UnaryExpression,
         BinaryExpression,
-        ParenthesizedExpression,
-        UnaryExpression
+        ParenthesizedExpression
     }
 
     public abstract class SyntaxNode
     {
         public abstract NodeType Type { get; }
-
         public abstract IEnumerable<SyntaxNode> GetChildren();
     }
 
@@ -48,20 +47,20 @@ namespace MyCompiler.CodeAnalysis
 
     public sealed class UnaryExpressionNode : ExpressionNode
     {
-        public UnaryExpressionNode(Token operatorToken, ExpressionNode expression)
+        public UnaryExpressionNode(Token operatorToken, ExpressionNode operand)
         {
             OperatorToken = operatorToken;
-            Expression = expression;
+            Operand = operand;
         }
 
         public override NodeType Type => NodeType.UnaryExpression;
         public Token OperatorToken { get; }
-        public ExpressionNode Expression { get; }
+        public ExpressionNode Operand { get; }
 
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
-            yield return Expression;
+            yield return Operand;
         }
     }
 

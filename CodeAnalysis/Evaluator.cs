@@ -4,13 +4,15 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using MyCompiler.CodeAnalysis.Binding;
+using MyCompiler.CodeAnalysis.Syntax;
 
 namespace MyCompiler.CodeAnalysis
 {
     internal sealed class Evaluator
     {
-        ExpressionNode root;
-        public Evaluator(ExpressionNode root)
+        BoundExpression root;
+        public Evaluator(BoundExpression root)
         {
             this.root = root;
         }
@@ -20,45 +22,47 @@ namespace MyCompiler.CodeAnalysis
             return EvaluateExpression(root);
         }
 
-        private int EvaluateExpression(ExpressionNode expression)
+        private int EvaluateExpression(BoundExpression expression)
         {
-            switch (expression.Type)
+            switch (expression.BoundNodeType)
             {
-                case NodeType.LiteralExpression:
-                    return (int)((LiteralExpressionNode)expression).LiteralToken.Value;
-                case NodeType.BinaryExpression:
+                case BoundNodeType.LiteralExpression:
+                    return (int)((BoundLiteralExpression)expression).Value;
+                case BoundNodeType.UnaryExpression:
                     {
-                        BinaryExpressionNode binaryExpression = (BinaryExpressionNode)expression;
-                        int left = EvaluateExpression(binaryExpression.Left);
-                        int right = EvaluateExpression(binaryExpression.Right);
-                        if (binaryExpression.OperatorToken.Type == TokenType.Plus)
-                            return left + right;
-                        if (binaryExpression.OperatorToken.Type == TokenType.Minus)
-                            return left - right;
-                        if (binaryExpression.OperatorToken.Type == TokenType.Star)
-                            return left * right;
-                        if (binaryExpression.OperatorToken.Type == TokenType.ForwardSlash)
-                            return left / right;
-                        throw new Exception($"Unexpected binary operator {binaryExpression.OperatorToken.Type}");
-                    }
-                case NodeType.UnaryExpression:
-                    {
-                        UnaryExpressionNode unaryExpression = (UnaryExpressionNode)expression;
-                        int right = EvaluateExpression(unaryExpression.Expression);
-                        switch (unaryExpression.OperatorToken.Type)
+                        BoundUnaryExpression unaryExpression = (BoundUnaryExpression)expression;
+                        int operand = EvaluateExpression(unaryExpression.Operand);
+                        switch (unaryExpression.OperationType)
                         {
-                            case TokenType.Plus:
-                                return right;
-                            case TokenType.Minus:
-                                return -right;
+                            case BoundUnaryOperationType.Identity:
+                                return operand;
+                            case BoundUnaryOperationType.Negation:
+                                return -operand;
                             default:
-                                throw new Exception($"Unexpected unary operator {unaryExpression.OperatorToken.Type}");
+                                throw new Exception($"Unhandled unary operation {unaryExpression.OperationType}");
                         }
                     }
-                case NodeType.ParenthesizedExpression:
-                    return EvaluateExpression(((ParenthesizedExpressionNode)expression).Expression);
+                case BoundNodeType.BinaryExpression:
+                    {
+                        BoundBinaryExpression binaryExpression = (BoundBinaryExpression)expression;
+                        int left = EvaluateExpression(binaryExpression.Left);
+                        int right = EvaluateExpression(binaryExpression.Right);
+                        switch (binaryExpression.OperationType)
+                        {
+                            case BoundBinaryOperationType.Addition:
+                                return left + right;
+                            case BoundBinaryOperationType.Subtraction:
+                                return left - right;
+                            case BoundBinaryOperationType.Multiplication:
+                                return left * right;
+                            case BoundBinaryOperationType.Division:
+                                return left / right;
+                            default:
+                                throw new Exception($"Unhandled binary operation {binaryExpression.OperationType}");
+                        }
+                    }
                 default:
-                    throw new Exception($"Unexpected node {expression.Type}");
+                    throw new Exception($"Unexpected node {expression.BoundNodeType}");
             }
         }
     }

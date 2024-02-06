@@ -1,4 +1,6 @@
 ﻿using MyCompiler.CodeAnalysis;
+using MyCompiler.CodeAnalysis.Binding;
+using MyCompiler.CodeAnalysis.Syntax;
 
 namespace MyCompiler
 {
@@ -7,8 +9,10 @@ namespace MyCompiler
         static void Main(string[] args)
         {
             bool tokenOutput = false;
-            bool treeOutput = false;
-            Console.WriteLine("#help: view this message\n#clear: clear the screen\n#token: toggle token display\n#tree: toggle syntax tree\n#exit: exit");
+            bool syntaxTreeOutput = false;
+            bool boundTreeOutput = false;
+
+            PrintHelp();
             while (true)
             {
                 Console.Write("> ");
@@ -29,15 +33,21 @@ namespace MyCompiler
                     Console.WriteLine(tokenOutput ? "Toggled tokens on" : "Toggled tokens off");
                     continue;
                 }
-                else if (line.ToLower() == "#tree")
+                else if (line.ToLower() == "#syntax")
                 {
-                    treeOutput = !treeOutput;
-                    Console.WriteLine(treeOutput ? "Toggled tree on" : "Toggled tree off");
+                    syntaxTreeOutput = !syntaxTreeOutput;
+                    Console.WriteLine(syntaxTreeOutput ? "Toggled syntax tree on" : "Toggled syntax tree off");
+                    continue;
+                }
+                else if (line.ToLower() == "#bound")
+                {
+                    boundTreeOutput = !boundTreeOutput;
+                    Console.WriteLine(boundTreeOutput ? "Toggled bound tree on" : "Toggled bound tree off");
                     continue;
                 }
                 else if (line.ToLower() == "#help")
                 {
-                    Console.WriteLine("#help: view this\n#clear: clear the screen\n#token: toggle token display\n#tree: toggle syntax tree");
+                    PrintHelp();
                     continue;
                 }
 
@@ -59,7 +69,11 @@ namespace MyCompiler
                 }
 
                 SyntaxTree syntaxTree = SyntaxTree.Parse(line);
-                if (treeOutput)
+                BoundTree boundTree = BoundTree.Bind(syntaxTree);
+
+                string[] diagnostics = boundTree.Diagnostics.ToArray();
+
+                if (syntaxTreeOutput)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
 
@@ -68,9 +82,9 @@ namespace MyCompiler
                     Console.ResetColor();
                 }
 
-                if (!syntaxTree.Diagnostics.Any())
+                if (!diagnostics.Any())
                 {
-                    Evaluator evaluator = new Evaluator(syntaxTree.Root);
+                    Evaluator evaluator = new Evaluator(boundTree.Root);
                     int result = evaluator.Evaluate();
                     Console.WriteLine(result);
                 }
@@ -86,6 +100,16 @@ namespace MyCompiler
                     Console.ResetColor();
                 }
             }
+        }
+
+        static void PrintHelp()
+        {
+            Console.WriteLine("#exit: exit the program");
+            Console.WriteLine("#help: view this");
+            Console.WriteLine("#clear: clear the screen");
+            Console.WriteLine("#token: toggle token display");
+            Console.WriteLine("#syntax: toggle syntax tree");
+            Console.WriteLine("#bound: toggle bound syntax tree");
         }
 
         static void PrettyPrintSyntaxNode(SyntaxNode node, string indent = "", bool isLast = true)
