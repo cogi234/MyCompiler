@@ -1,4 +1,5 @@
-﻿using MyCompiler.CodeAnalysis.Syntax;
+﻿using MyCompiler.CodeAnalysis.Binding.BoundNodes;
+using MyCompiler.CodeAnalysis.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;

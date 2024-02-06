@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using MyCompiler.CodeAnalysis.Binding;
+using MyCompiler.CodeAnalysis.Binding.BoundNodes;
 using MyCompiler.CodeAnalysis.Syntax;
 
 namespace MyCompiler.CodeAnalysis

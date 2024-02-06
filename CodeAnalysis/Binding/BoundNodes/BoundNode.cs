@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyCompiler.CodeAnalysis.Binding
+namespace MyCompiler.CodeAnalysis.Binding.BoundNodes
 {
     enum BoundNodeType
     {

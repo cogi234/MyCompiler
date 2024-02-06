@@ -1,4 +1,4 @@
-﻿namespace MyCompiler.CodeAnalysis.Binding
+﻿namespace MyCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal enum BoundBinaryOperationType
     {

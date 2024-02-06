@@ -1,6 +1,6 @@
 ﻿using MyCompiler.CodeAnalysis.Syntax;
 
-namespace MyCompiler.CodeAnalysis.Binding
+namespace MyCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundUnaryOperator
     {
@@ -12,7 +12,7 @@ namespace MyCompiler.CodeAnalysis.Binding
             ResultType = resultType;
         }
 
-        private BoundUnaryOperator(BoundUnaryOperationType operationType, TokenType tokenType, Type operandType) 
+        private BoundUnaryOperator(BoundUnaryOperationType operationType, TokenType tokenType, Type operandType)
             : this(operationType, tokenType, operandType, operandType)
         {
         }

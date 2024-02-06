@@ -1,6 +1,6 @@
 ﻿using MyCompiler.CodeAnalysis.Syntax;
 
-namespace MyCompiler.CodeAnalysis.Binding
+namespace MyCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundBinaryOperator
     {

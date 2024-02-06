@@ -1,6 +1,7 @@
 ﻿using MyCompiler.CodeAnalysis;
 using MyCompiler.CodeAnalysis.Binding;
 using MyCompiler.CodeAnalysis.Syntax;
+using MyCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 
 namespace MyCompiler
 {
@@ -16,7 +17,7 @@ namespace MyCompiler
             while (true)
             {
                 Console.Write("> ");
-                string line = Console.ReadLine();
+                string line = Console.ReadLine() ?? "";
 
                 if (string.IsNullOrEmpty(line))
                     continue;
