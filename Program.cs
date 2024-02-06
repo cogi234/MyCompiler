@@ -85,14 +85,14 @@ namespace MyCompiler
                 if (!diagnostics.Any())
                 {
                     Evaluator evaluator = new Evaluator(boundTree.Root);
-                    int result = evaluator.Evaluate();
+                    object result = evaluator.Evaluate();
                     Console.WriteLine(result);
                 }
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.DarkRed;
 
-                    foreach (string error in syntaxTree.Diagnostics)
+                    foreach (string error in diagnostics)
                     {
                         Console.WriteLine(error);
                     }
@@ -125,7 +125,7 @@ namespace MyCompiler
             switch (node.Type)
             {
                 case NodeType.LiteralExpression:
-                    Console.Write($" {((LiteralExpressionNode)node).LiteralToken.Value}");
+                    Console.Write($" {((LiteralExpressionNode)node).Value}");
                     break;
                 case NodeType.BinaryExpression:
                     Console.Write($" {((BinaryExpressionNode)node).OperatorToken.Text}");

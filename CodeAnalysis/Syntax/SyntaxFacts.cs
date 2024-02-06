@@ -37,5 +37,18 @@ namespace MyCompiler.CodeAnalysis.Syntax
                     return 0;
             }
         }
+
+        internal static TokenType GetKeywordType(string text)
+        {
+            switch (text)
+            {
+                case "false":
+                    return TokenType.FalseKeyword;
+                case "true":
+                    return TokenType.TrueKeyword;
+                default:
+                    return TokenType.Identifier;
+            }
+        }
     }
 }

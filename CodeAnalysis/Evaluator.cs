@@ -17,21 +17,21 @@ namespace MyCompiler.CodeAnalysis
             this.root = root;
         }
 
-        public int Evaluate()
+        public object Evaluate()
         {
             return EvaluateExpression(root);
         }
 
-        private int EvaluateExpression(BoundExpression expression)
+        private object EvaluateExpression(BoundExpression expression)
         {
             switch (expression.BoundNodeType)
             {
                 case BoundNodeType.LiteralExpression:
-                    return (int)((BoundLiteralExpression)expression).Value;
+                    return ((BoundLiteralExpression)expression).Value;
                 case BoundNodeType.UnaryExpression:
                     {
                         BoundUnaryExpression unaryExpression = (BoundUnaryExpression)expression;
-                        int operand = EvaluateExpression(unaryExpression.Operand);
+                        int operand = (int)EvaluateExpression(unaryExpression.Operand);
                         switch (unaryExpression.OperationType)
                         {
                             case BoundUnaryOperationType.Identity:
@@ -45,8 +45,8 @@ namespace MyCompiler.CodeAnalysis
                 case BoundNodeType.BinaryExpression:
                     {
                         BoundBinaryExpression binaryExpression = (BoundBinaryExpression)expression;
-                        int left = EvaluateExpression(binaryExpression.Left);
-                        int right = EvaluateExpression(binaryExpression.Right);
+                        int left = (int)EvaluateExpression(binaryExpression.Left);
+                        int right = (int)EvaluateExpression(binaryExpression.Right);
                         switch (binaryExpression.OperationType)
                         {
                             case BoundBinaryOperationType.Addition:

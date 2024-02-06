@@ -39,7 +39,7 @@ namespace MyCompiler.CodeAnalysis.Syntax
                 string text = this.text.Substring(start, length);
                 if (!int.TryParse(text, out int value))
                 {
-                    diagnostics.Add($"ERROR ({position}): The number {text} cannot be represented by an Int32");
+                    diagnostics.Add($"ERROR ({start}): The number {text} cannot be represented by an Int32");
                 }
                 return new Token(TokenType.Number, start, text, value);
             }
@@ -54,6 +54,19 @@ namespace MyCompiler.CodeAnalysis.Syntax
                 int length = position - start;
                 string text = this.text.Substring(start, length);
                 return new Token(TokenType.WhiteSpace, start, text, null);
+            }
+
+            if (char.IsLetter(Current))
+            {
+                int start = position;
+
+                while (char.IsLetterOrDigit(Current))
+                    Next();
+
+                int length = position - start;
+                string text = this.text.Substring(start, length);
+                TokenType type = SyntaxFacts.GetKeywordType(text);
+                return new Token(type, start, text, null);
             }
 
             //Single character tokens

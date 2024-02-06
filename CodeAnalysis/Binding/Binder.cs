@@ -46,7 +46,7 @@ namespace MyCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindLiteralExpression(LiteralExpressionNode node)
         {
-            object value = node.LiteralToken.Value as int? ?? 0;
+            object value = node.Value ?? 0;
             return new BoundLiteralExpression(value);
         }
 

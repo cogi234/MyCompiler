@@ -74,16 +74,20 @@ namespace MyCompiler.CodeAnalysis.Syntax
 
         private ExpressionNode ParsePrimaryExpression()
         {
-            if (Current.Type == TokenType.OpenParenthesis)
+            switch (Current.Type)
             {
-                Token left = NextToken();
-                ExpressionNode expression = ParseExpression();
-                Token right = MatchToken(TokenType.CloseParenthesis);
-                return new ParenthesizedExpressionNode(left, expression, right);
+                case TokenType.OpenParenthesis:
+                    return new ParenthesizedExpressionNode(NextToken(), ParseExpression(), MatchToken(TokenType.CloseParenthesis));
+                case TokenType.TrueKeyword:
+                    return new LiteralExpressionNode(NextToken(), true);
+                case TokenType.FalseKeyword:
+                    return new LiteralExpressionNode(NextToken(), false);
+                default:
+                    {
+                        Token numberToken = MatchToken(TokenType.Number);
+                        return new LiteralExpressionNode(numberToken, numberToken.Value);
+                    }
             }
-
-            Token numberToken = MatchToken(TokenType.Number);
-            return new LiteralExpressionNode(numberToken);
         }
 
         private Token Peek(int offset)

@@ -8,17 +8,25 @@ namespace MyCompiler.CodeAnalysis.Syntax
 {
     public enum TokenType
     {
+        //Technical tokens
         BadToken,
         WhiteSpace,
         EndOfFile,
+
+        //Tokens
         Number,
+        Identifier,
         Plus,
         Minus,
         Star,
         ForwardSlash,
         OpenParenthesis,
         CloseParenthesis,
-        ExclamationMark
+        ExclamationMark,
+
+        //Keywords
+        FalseKeyword,
+        TrueKeyword
     }
     public sealed class Token
     {
