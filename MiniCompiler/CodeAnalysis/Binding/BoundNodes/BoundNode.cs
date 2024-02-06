@@ -9,8 +9,10 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
     enum BoundNodeType
     {
         LiteralExpression,
+        VariableExpression,
+        AssignmentExpression,
         UnaryExpression,
-        BinaryExpression
+        BinaryExpression,
     }
 
     internal abstract class BoundNode

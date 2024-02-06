@@ -14,6 +14,8 @@ namespace MyCompiler
             bool tokenOutput = false;
             bool syntaxTreeOutput = false;
 
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
             PrintHelp();
             while (true)
             {
@@ -71,7 +73,7 @@ namespace MyCompiler
                 }
 
                 Compilation compilation = new Compilation(syntaxTree);
-                EvaluationResult result = compilation.Evaluate();
+                EvaluationResult result = compilation.Evaluate(variables);
 
                 PrintDiagnostics(result.Diagnostics, line);
 

@@ -12,9 +12,9 @@ namespace MiniCompiler.CodeAnalysis
 
         public SyntaxTree SyntaxTree { get; }
 
-        public EvaluationResult Evaluate()
+        public EvaluationResult Evaluate(Dictionary<string, object> variables)
         {
-            BoundTree boundTree = BoundTree.Bind(SyntaxTree);
+            BoundTree boundTree = BoundTree.Bind(SyntaxTree, variables);
 
             Diagnostic[] diagnostics = boundTree.Diagnostics.ToArray();
 
@@ -24,7 +24,7 @@ namespace MiniCompiler.CodeAnalysis
             }
             else
             {
-                Evaluator evaluator = new Evaluator(boundTree.Root);
+                Evaluator evaluator = new Evaluator(boundTree.Root, variables);
                 object value = evaluator.Evaluate();
 
                 return new EvaluationResult(diagnostics, value);

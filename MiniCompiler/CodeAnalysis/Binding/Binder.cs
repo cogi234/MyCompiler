@@ -12,13 +12,18 @@ namespace MiniCompiler.CodeAnalysis.Binding
 {
     internal sealed class Binder
     {
-        private DiagnosticBag diagnostics = new DiagnosticBag();
+        private readonly DiagnosticBag diagnostics = new DiagnosticBag();
+        private readonly Dictionary<string, object> variables;
+
         public DiagnosticBag Diagnostics => diagnostics;
+        public Dictionary<string, object> Variables => variables;
         public SyntaxTree SyntaxTree { get; }
 
-        public Binder(SyntaxTree syntaxTree)
+
+        public Binder(SyntaxTree syntaxTree, Dictionary<string, object> variables)
         {
             SyntaxTree = syntaxTree;
+            this.variables = variables;
             diagnostics.AddRange(syntaxTree.Diagnostics);
         }
 
@@ -57,12 +62,21 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindNameExpression(NameExpressionNode node)
         {
-
+            string name = node.IdentifierToken.Text;
+            if (!variables.TryGetValue(name, out object? value))
+            {
+                diagnostics.ReportUndefinedName(node.IdentifierToken.Span, name);
+                return new BoundLiteralExpression(0);
+            }
+            var type = value?.GetType() ?? typeof(object);
+            return new BoundVariableExpression(name, type);
         }
 
         private BoundExpression BindAssignmentExpression(AssignmentExpressionNode node)
         {
-
+            string name = node.IdentifierToken.Text;
+            BoundExpression boundExpression = BindExpression(node.Expression);
+            return new BoundAssignmentExpression(name, boundExpression);
         }
 
         private BoundExpression BindUnaryExpression(UnaryExpressionNode node)

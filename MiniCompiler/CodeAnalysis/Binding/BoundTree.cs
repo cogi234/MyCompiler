@@ -16,9 +16,9 @@ namespace MiniCompiler.CodeAnalysis.Binding
             Root = root;
         }
 
-        public static BoundTree Bind(SyntaxTree syntaxTree)
+        public static BoundTree Bind(SyntaxTree syntaxTree, Dictionary<string, object> variables)
         {
-            Binder binder = new Binder(syntaxTree);
+            Binder binder = new Binder(syntaxTree, variables);
             return binder.Bind();
         }
 

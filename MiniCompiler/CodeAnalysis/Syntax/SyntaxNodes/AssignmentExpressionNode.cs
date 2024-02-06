@@ -2,22 +2,22 @@
 {
     public sealed class AssignmentExpressionNode : ExpressionNode
     {
-        public AssignmentExpressionNode(NameExpressionNode left, Token equalsToken, ExpressionNode right)
+        public AssignmentExpressionNode(Token identifierToken, Token equalsToken, ExpressionNode expression)
         {
-            Left = left;
+            IdentifierToken = identifierToken;
             EqualsToken = equalsToken;
-            Right = right;
+            Expression = expression;
         }
 
         public override NodeType Type => NodeType.AssignmentExpression;
-        public NameExpressionNode Left { get; }
+
+        public Token IdentifierToken { get; }
         public Token EqualsToken { get; }
-        public ExpressionNode Right { get; }
+        public ExpressionNode Expression { get; }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
-            yield return Left;
-            yield return Right;
+            yield return Expression;
         }
     }
 }

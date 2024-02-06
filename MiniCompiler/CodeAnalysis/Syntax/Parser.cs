@@ -48,10 +48,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 Peek(1).Type == TokenType.Equal)
             {
                 Token identifierToken = NextToken();
-                NameExpressionNode nameExpression = new NameExpressionNode(identifierToken);
                 Token operatorToken = NextToken();
                 ExpressionNode right = ParseAssignment();
-                return new AssignmentExpressionNode(nameExpression, operatorToken, right);
+                return new AssignmentExpressionNode(identifierToken, operatorToken, right);
             }
 
             return ParseExpression();
