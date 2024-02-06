@@ -12,24 +12,6 @@ namespace MyCompiler.CodeAnalysis.Binding
         UnaryExpression,
         BinaryExpression
     }
-    internal enum BoundUnaryOperationType
-    {
-        Identity,
-        Negation,
-        LogicalNegation
-    }
-    internal enum BoundBinaryOperationType
-    {
-        Addition,
-        Subtraction,
-        Multiplication,
-        Division,
-
-        LogicalAnd,
-        LogicalOr,
-        Equality,
-        Unequality
-    }
 
     internal abstract class BoundNode
     {
