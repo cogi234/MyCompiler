@@ -21,7 +21,7 @@
             Right = right;
         }
 
-        public override Type Type => Right.Type;
+        public override Type Type => BinaryOperator.ResultType;
 
         public override BoundNodeType BoundNodeType => BoundNodeType.BinaryExpression;
 

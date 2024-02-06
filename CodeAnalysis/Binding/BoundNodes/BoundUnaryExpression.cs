@@ -14,7 +14,7 @@
             Operand = operand;
         }
 
-        public override Type Type => Operand.Type;
+        public override Type Type => UnaryOperator.ResultType;
 
         public override BoundNodeType BoundNodeType => BoundNodeType.UnaryExpression;
 
