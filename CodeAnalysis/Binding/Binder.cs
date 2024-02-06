@@ -124,9 +124,9 @@ namespace MyCompiler.CodeAnalysis.Binding
             {
                 switch (tokenType)
                 {
-                    case TokenType.DoubleAmpersand:
+                    case TokenType.AmpersandAmpersand:
                         return BoundBinaryOperationType.LogicalAnd;
-                    case TokenType.DoublePipe:
+                    case TokenType.PipePipe:
                         return BoundBinaryOperationType.LogicalOr;
                 }
             }

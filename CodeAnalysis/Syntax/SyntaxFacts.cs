@@ -34,9 +34,9 @@ namespace MyCompiler.CodeAnalysis.Syntax
                 case TokenType.Minus:
                     return 3;
 
-                case TokenType.DoubleAmpersand:
+                case TokenType.AmpersandAmpersand:
                     return 2;
-                case TokenType.DoublePipe:
+                case TokenType.PipePipe:
                     return 1;
 
                 default:

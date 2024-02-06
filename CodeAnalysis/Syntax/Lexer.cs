@@ -90,14 +90,14 @@ namespace MyCompiler.CodeAnalysis.Syntax
                     if (Peek(1) == '&')
                     {
                         position += 2;
-                        return new Token(TokenType.DoubleAmpersand, position - 2, "&&", null);
+                        return new Token(TokenType.AmpersandAmpersand, position - 2, "&&", null);
                     }
                     break;
                 case '|':
                     if (Peek(1) == '|')
                     {
                         position += 2;
-                        return new Token(TokenType.DoublePipe, position - 2, "||", null);
+                        return new Token(TokenType.PipePipe, position - 2, "||", null);
                     }
                     break;
             }

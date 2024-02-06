@@ -23,8 +23,8 @@ namespace MyCompiler.CodeAnalysis.Syntax
         OpenParenthesis,
         CloseParenthesis,
         ExclamationMark,
-        DoubleAmpersand,
-        DoublePipe,
+        AmpersandAmpersand,
+        PipePipe,
 
         //Keywords
         FalseKeyword,
