@@ -9,9 +9,11 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
     public enum NodeType
     {
         LiteralExpression,
+        NameExpression,
         UnaryExpression,
         BinaryExpression,
-        ParenthesizedExpression
+        ParenthesizedExpression,
+        AssignmentExpression,
     }
 
     public abstract class SyntaxNode

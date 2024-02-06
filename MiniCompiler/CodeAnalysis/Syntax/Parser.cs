@@ -37,9 +37,24 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public SyntaxTree Parse()
         {
-            ExpressionNode expression = ParseExpression();
-            MatchToken(TokenType.EndOfFile);
+            ExpressionNode expression = ParseAssignment();
+            ExpectToken(TokenType.EndOfFile);
             return new SyntaxTree(diagnostics, expression, tokens);
+        }
+
+        private ExpressionNode ParseAssignment()
+        {
+            if (Current.Type == TokenType.Identifier &&
+                Peek(1).Type == TokenType.Equal)
+            {
+                Token identifierToken = NextToken();
+                NameExpressionNode nameExpression = new NameExpressionNode(identifierToken);
+                Token operatorToken = NextToken();
+                ExpressionNode right = ParseAssignment();
+                return new AssignmentExpressionNode(nameExpression, operatorToken, right);
+            }
+
+            return ParseExpression();
         }
 
         private ExpressionNode ParseExpression(int parentPrecedence = 0)
@@ -79,14 +94,16 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             switch (Current.Type)
             {
                 case TokenType.OpenParenthesis:
-                    return new ParenthesizedExpressionNode(NextToken(), ParseExpression(), MatchToken(TokenType.CloseParenthesis));
+                    return new ParenthesizedExpressionNode(NextToken(), ParseExpression(), ExpectToken(TokenType.CloseParenthesis));
                 case TokenType.TrueKeyword:
                     return new LiteralExpressionNode(NextToken(), true);
                 case TokenType.FalseKeyword:
                     return new LiteralExpressionNode(NextToken(), false);
+                case TokenType.Identifier:
+                    return new NameExpressionNode(NextToken());
                 default:
                     {
-                        Token numberToken = MatchToken(TokenType.Number);
+                        Token numberToken = ExpectToken(TokenType.Number);
                         return new LiteralExpressionNode(numberToken, numberToken.Value);
                     }
             }
@@ -105,13 +122,13 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             position++;
             return Peek(-1);
         }
-        private Token MatchToken(TokenType type)
+        private Token ExpectToken(TokenType expectedType)
         {
-            if (Current.Type == type)
+            if (Current.Type == expectedType)
                 return NextToken();
 
-            diagnostics.ReportUnexpectedToken(Current.Span, type, Current.Type);
-            return new Token(type, new TextSpan(Current.Span.Start, 0), null, null);
+            diagnostics.ReportUnexpectedToken(Current.Span, expectedType, Current.Type);
+            return new Token(expectedType, new TextSpan(Current.Span.Start, 0), null, null);
         }
     }
 }

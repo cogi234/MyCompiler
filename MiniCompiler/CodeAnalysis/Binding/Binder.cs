@@ -32,14 +32,18 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             switch (node.Type)
             {
+                case NodeType.ParenthesizedExpression:
+                    return BindExpression(((ParenthesizedExpressionNode)node).Expression);
                 case NodeType.LiteralExpression:
                     return BindLiteralExpression((LiteralExpressionNode)node);
+                case NodeType.NameExpression:
+                    return BindNameExpression((NameExpressionNode)node);
+                case NodeType.AssignmentExpression:
+                    return BindAssignmentExpression((AssignmentExpressionNode)node);
                 case NodeType.UnaryExpression:
                     return BindUnaryExpression((UnaryExpressionNode)node);
                 case NodeType.BinaryExpression:
                     return BindBinaryExpression((BinaryExpressionNode)node);
-                case NodeType.ParenthesizedExpression:
-                    return BindExpression(((ParenthesizedExpressionNode)node).Expression);
                 default:
                     throw new Exception($"Unexpected syntax node {node.Type}");
             }
@@ -49,6 +53,16 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             object value = node.Value ?? 0;
             return new BoundLiteralExpression(value);
+        }
+
+        private BoundExpression BindNameExpression(NameExpressionNode node)
+        {
+
+        }
+
+        private BoundExpression BindAssignmentExpression(AssignmentExpressionNode node)
+        {
+
         }
 
         private BoundExpression BindUnaryExpression(UnaryExpressionNode node)
