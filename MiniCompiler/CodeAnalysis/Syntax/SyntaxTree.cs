@@ -9,9 +9,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 {
     public sealed class SyntaxTree
     {
-        public SyntaxTree(DiagnosticBag diagnostics, ExpressionNode root, Token[] tokens)
+        public SyntaxTree(IEnumerable<Diagnostic> diagnostics, ExpressionNode root, Token[] tokens)
         {
-            Diagnostics = diagnostics;
+            Diagnostics = diagnostics.ToArray();
             Root = root;
             Tokens = tokens;
         }
@@ -22,7 +22,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             return parser.Parse();
         }
 
-        public DiagnosticBag Diagnostics { get; }
+
+        public IReadOnlyList<Diagnostic> Diagnostics { get; }
         public ExpressionNode Root { get; }
         public IReadOnlyList<Token> Tokens { get; }
     }

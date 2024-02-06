@@ -2,6 +2,8 @@
 using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.CompilerServices;
 
 namespace MyCompiler
 {
@@ -71,16 +73,7 @@ namespace MyCompiler
                 Compilation compilation = new Compilation(syntaxTree);
                 EvaluationResult result = compilation.Evaluate();
 
-                IReadOnlyList<Diagnostic> diagnostics = result.Diagnostics;
-
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-
-                foreach (Diagnostic error in diagnostics)
-                {
-                    Console.WriteLine(error);
-                }
-
-                Console.ResetColor();
+                PrintDiagnostics(result.Diagnostics, line);
 
                 if (result.Value != null)
                     Console.WriteLine(result.Value);
@@ -94,6 +87,32 @@ namespace MyCompiler
             Console.WriteLine("#clear: clear the screen");
             Console.WriteLine("#token: toggle token display");
             Console.WriteLine("#syntax: toggle syntax tree");
+        }
+
+        static void PrintDiagnostics(IReadOnlyList<Diagnostic> diagnostics, string line)
+        {
+            foreach (Diagnostic diag in diagnostics)
+            {
+                Console.WriteLine();
+
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(diag);
+                Console.ResetColor();
+
+                string prefix = line.Substring(0, diag.Span.Start);
+                string error = line.Substring(diag.Span.Start, diag.Span.Length);
+                string suffix = line.Substring(diag.Span.End);
+
+                Console.Write("  ");
+                Console.Write(prefix);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(error);
+                Console.ResetColor();
+                Console.WriteLine(suffix);
+            }
+
+            if (diagnostics.Any())
+                Console.WriteLine();
         }
 
         static void PrettyPrintSyntaxNode(SyntaxNode node, string indent = "", bool isLast = true)

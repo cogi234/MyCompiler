@@ -20,10 +20,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public Token NextToken()
         {
-            // <number>
-            // + - * / ( )
-            // <whitespace>
-
             if (position >= text.Length)
                 return new Token(TokenType.EndOfFile, new TextSpan(position, 1), "\0", null);
 

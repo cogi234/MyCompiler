@@ -10,9 +10,9 @@ namespace MiniCompiler.CodeAnalysis.Binding
 {
     internal sealed class BoundTree
     {
-        public BoundTree(DiagnosticBag diagnostics, BoundExpression root)
+        public BoundTree(IEnumerable<Diagnostic> diagnostics, BoundExpression root)
         {
-            Diagnostics = diagnostics;
+            Diagnostics = diagnostics.ToArray();
             Root = root;
         }
 
@@ -22,7 +22,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             return binder.Bind();
         }
 
-        public DiagnosticBag Diagnostics { get; }
+        public IReadOnlyList<Diagnostic> Diagnostics { get; }
         public BoundExpression Root { get; }
 
     }
