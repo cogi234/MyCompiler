@@ -65,9 +65,9 @@ namespace MyCompiler.CodeAnalysis
                             case BoundBinaryOperationType.LogicalOr:
                                 return (bool)left || (bool)right;
                             case BoundBinaryOperationType.Equality:
-                                return (int)left == (int)right;
+                                return Equals(left, right);
                             case BoundBinaryOperationType.Unequality:
-                                return (int)left != (int)right;
+                                return !Equals(left, right);
                             default:
                                 throw new Exception($"Unhandled binary operation {binaryExpression.BinaryOperator.OperationType}");
                         }
