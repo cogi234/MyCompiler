@@ -59,10 +59,15 @@ namespace MyCompiler.CodeAnalysis
                                 return (int)left * (int)right;
                             case BoundBinaryOperationType.Division:
                                 return (int)left / (int)right;
+
                             case BoundBinaryOperationType.LogicalAnd:
                                 return (bool)left && (bool)right;
                             case BoundBinaryOperationType.LogicalOr:
                                 return (bool)left || (bool)right;
+                            case BoundBinaryOperationType.Equality:
+                                return (int)left == (int)right;
+                            case BoundBinaryOperationType.Unequality:
+                                return (int)left != (int)right;
                             default:
                                 throw new Exception($"Unhandled binary operation {binaryExpression.BinaryOperator.OperationType}");
                         }

@@ -22,7 +22,10 @@ namespace MyCompiler.CodeAnalysis.Syntax
         ForwardSlash,
         OpenParenthesis,
         CloseParenthesis,
-        ExclamationMark,
+        Bang,
+        BangEqual,
+        Equal,
+        EqualEqual,
         AmpersandAmpersand,
         PipePipe,
 

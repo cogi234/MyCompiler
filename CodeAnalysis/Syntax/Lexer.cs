@@ -85,7 +85,12 @@ namespace MyCompiler.CodeAnalysis.Syntax
                 case ')':
                     return new Token(TokenType.CloseParenthesis, position++, ")", null);
                 case '!':
-                    return new Token(TokenType.ExclamationMark, position++, "!", null);
+                    if (Peek(1) == '=')
+                    {
+                        position += 2;
+                        return new Token(TokenType.BangEqual, position - 2, "!=", null);
+                    }
+                    return new Token(TokenType.Bang, position++, "!", null);
                 case '&':
                     if (Peek(1) == '&')
                     {
@@ -100,6 +105,13 @@ namespace MyCompiler.CodeAnalysis.Syntax
                         return new Token(TokenType.PipePipe, position - 2, "||", null);
                     }
                     break;
+                case '=':
+                    if (Peek(1) == '=')
+                    {
+                        position += 2;
+                        return new Token(TokenType.EqualEqual, position - 2, "==", null);
+                    }
+                    return new Token(TokenType.Equal, position++, "=", null);
             }
 
             diagnostics.Add($"ERROR ({position}): bad character input: '{Current}'");

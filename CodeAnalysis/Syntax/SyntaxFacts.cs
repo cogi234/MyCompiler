@@ -15,7 +15,7 @@ namespace MyCompiler.CodeAnalysis.Syntax
                 case TokenType.Plus:
                 case TokenType.Minus:
                     return 5;
-                case TokenType.ExclamationMark:
+                case TokenType.Bang:
                     return 5;
                 default:
                     return 0;
@@ -26,6 +26,10 @@ namespace MyCompiler.CodeAnalysis.Syntax
         {
             switch (type)
             {
+                case TokenType.EqualEqual:
+                case TokenType.BangEqual:
+                    return 6;
+
                 case TokenType.Star:
                 case TokenType.ForwardSlash:
                     return 4;

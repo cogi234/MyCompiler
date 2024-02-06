@@ -95,7 +95,7 @@ namespace MyCompiler.CodeAnalysis.Binding
             {
                 switch (tokenType)
                 {
-                    case TokenType.ExclamationMark:
+                    case TokenType.Bang:
                         return BoundUnaryOperationType.LogicalNegation;
                 }
             }

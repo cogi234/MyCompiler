@@ -25,8 +25,11 @@ namespace MyCompiler.CodeAnalysis.Binding
         Subtraction,
         Multiplication,
         Division,
+
         LogicalAnd,
-        LogicalOr
+        LogicalOr,
+        Equality,
+        Unequality
     }
 
     internal abstract class BoundNode
@@ -81,7 +84,7 @@ namespace MyCompiler.CodeAnalysis.Binding
 
         private static BoundUnaryOperator[] operators =
         {
-            new BoundUnaryOperator(BoundUnaryOperationType.LogicalNegation, TokenType.ExclamationMark, typeof(bool)),
+            new BoundUnaryOperator(BoundUnaryOperationType.LogicalNegation, TokenType.Bang, typeof(bool)),
 
             new BoundUnaryOperator(BoundUnaryOperationType.Identity, TokenType.Plus, typeof(int)),
             new BoundUnaryOperator(BoundUnaryOperationType.Negation, TokenType.Minus, typeof(int)),
@@ -139,6 +142,8 @@ namespace MyCompiler.CodeAnalysis.Binding
         {
             new BoundBinaryOperator(BoundBinaryOperationType.LogicalAnd, TokenType.AmpersandAmpersand, typeof(bool), typeof(bool), typeof(bool)),
             new BoundBinaryOperator(BoundBinaryOperationType.LogicalOr, TokenType.PipePipe, typeof(bool), typeof(bool), typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.Equality, TokenType.EqualEqual, typeof(int), typeof(int), typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.Unequality, TokenType.BangEqual, typeof(int), typeof(int), typeof(bool)),
 
             new BoundBinaryOperator(BoundBinaryOperationType.Addition, TokenType.Plus, typeof(int), typeof(int), typeof(int)),
             new BoundBinaryOperator(BoundBinaryOperationType.Subtraction, TokenType.Minus, typeof(int), typeof(int), typeof(int)),
