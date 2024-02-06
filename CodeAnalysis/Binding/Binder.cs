@@ -53,30 +53,30 @@ namespace MyCompiler.CodeAnalysis.Binding
         private BoundExpression BindUnaryExpression(UnaryExpressionNode node)
         {
             BoundExpression boundOperand = BindExpression(node.Operand);
-            BoundUnaryOperationType? boundOperatorType = BindUnaryOperator(node.OperatorToken.Type, boundOperand.Type);
+            BoundUnaryOperator? boundOperator = BoundUnaryOperator.Bind(node.OperatorToken.Type, boundOperand.Type);
 
-            if (boundOperatorType == null)
+            if (boundOperator == null)
             {
                 diagnostics.Add($"ERROR {node.OperatorToken.Position}: Unary operator '{node.OperatorToken.Type}' is not defined for type {boundOperand.Type}");
                 return boundOperand;
             }
 
-            return new BoundUnaryExpression(boundOperatorType.Value, boundOperand);
+            return new BoundUnaryExpression(boundOperator, boundOperand);
         }
 
         private BoundExpression BindBinaryExpression(BinaryExpressionNode node)
         {
             BoundExpression boundLeft = BindExpression(node.Left);
             BoundExpression boundRight = BindExpression(node.Right);
-            BoundBinaryOperationType? boundOperatorType = BindBinaryOperator(node.OperatorToken.Type, boundLeft.Type, boundRight.Type);
+            BoundBinaryOperator? boundOperator = BoundBinaryOperator.Bind(node.OperatorToken.Type, boundLeft.Type, boundRight.Type);
 
-            if (boundOperatorType == null)
+            if (boundOperator == null)
             {
                 diagnostics.Add($"ERROR {node.OperatorToken.Position}: Binary operator '{node.OperatorToken.Type}' is not defined for types {boundLeft.Type} and {boundRight.Type}");
                 return boundLeft;
             }
 
-            return new BoundBinaryExpression(boundLeft, boundOperatorType.Value, boundRight);
+            return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
         }
 
         private BoundUnaryOperationType? BindUnaryOperator(TokenType tokenType, Type operandType)

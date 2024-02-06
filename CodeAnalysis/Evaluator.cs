@@ -32,7 +32,7 @@ namespace MyCompiler.CodeAnalysis
                     {
                         BoundUnaryExpression unaryExpression = (BoundUnaryExpression)expression;
                         object operand = EvaluateExpression(unaryExpression.Operand);
-                        switch (unaryExpression.OperationType)
+                        switch (unaryExpression.UnaryOperator.OperationType)
                         {
                             case BoundUnaryOperationType.Identity:
                                 return (int)operand;
@@ -41,7 +41,7 @@ namespace MyCompiler.CodeAnalysis
                             case BoundUnaryOperationType.LogicalNegation:
                                 return !(bool)operand;
                             default:
-                                throw new Exception($"Unhandled unary operation {unaryExpression.OperationType}");
+                                throw new Exception($"Unhandled unary operation {unaryExpression.UnaryOperator.OperationType}");
                         }
                     }
                 case BoundNodeType.BinaryExpression:
@@ -49,7 +49,7 @@ namespace MyCompiler.CodeAnalysis
                         BoundBinaryExpression binaryExpression = (BoundBinaryExpression)expression;
                         object left = EvaluateExpression(binaryExpression.Left);
                         object right = EvaluateExpression(binaryExpression.Right);
-                        switch (binaryExpression.OperationType)
+                        switch (binaryExpression.BinaryOperator.OperationType)
                         {
                             case BoundBinaryOperationType.Addition:
                                 return (int)left + (int)right;
@@ -64,7 +64,7 @@ namespace MyCompiler.CodeAnalysis
                             case BoundBinaryOperationType.LogicalOr:
                                 return (bool)left || (bool)right;
                             default:
-                                throw new Exception($"Unhandled binary operation {binaryExpression.OperationType}");
+                                throw new Exception($"Unhandled binary operation {binaryExpression.BinaryOperator.OperationType}");
                         }
                     }
                 default:
