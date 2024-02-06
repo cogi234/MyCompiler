@@ -23,9 +23,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             if (position >= text.Length)
                 return new Token(TokenType.EndOfFile, new TextSpan(position, 1), "\0", null);
 
+            int start = position;
+
             if (char.IsDigit(Current))
             {
-                int start = position;
 
                 while (char.IsDigit(Current))
                     Next();
@@ -41,8 +42,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
             if (char.IsWhiteSpace(Current))
             {
-                int start = position;
-
                 while (char.IsWhiteSpace(Current))
                     Next();
 
@@ -53,8 +52,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
             if (char.IsLetter(Current))
             {
-                int start = position;
-
                 while (char.IsLetterOrDigit(Current))
                     Next();
 
@@ -68,49 +65,58 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             switch (Current)
             {
                 case '+':
-                    return new Token(TokenType.Plus, new TextSpan(position++, 1), "+", null);
+                    position++;
+                    return new Token(TokenType.Plus, new TextSpan(start, 1), "+", null);
                 case '-':
-                    return new Token(TokenType.Minus, new TextSpan(position++, 1), "-", null);
+                    position++;
+                    return new Token(TokenType.Minus, new TextSpan(start, 1), "-", null);
                 case '*':
-                    return new Token(TokenType.Star, new TextSpan(position++, 1), "*", null);
+                    position++;
+                    return new Token(TokenType.Star, new TextSpan(start, 1), "*", null);
                 case '/':
-                    return new Token(TokenType.ForwardSlash, new TextSpan(position++, 1), "/", null);
+                    position++;
+                    return new Token(TokenType.ForwardSlash, new TextSpan(start, 1), "/", null);
                 case '(':
-                    return new Token(TokenType.OpenParenthesis, new TextSpan(position++, 1), "(", null);
+                    position++;
+                    return new Token(TokenType.OpenParenthesis, new TextSpan(start, 1), "(", null);
                 case ')':
-                    return new Token(TokenType.CloseParenthesis, new TextSpan(position++, 1), ")", null);
+                    position++;
+                    return new Token(TokenType.CloseParenthesis, new TextSpan(start, 1), ")", null);
                 case '!':
                     if (Peek(1) == '=')
                     {
                         position += 2;
-                        return new Token(TokenType.BangEqual, new TextSpan(position - 2, 2), "!=", null);
+                        return new Token(TokenType.BangEqual, new TextSpan(start, 2), "!=", null);
                     }
-                    return new Token(TokenType.Bang, new TextSpan(position++, 1), "!", null);
+                    position++;
+                    return new Token(TokenType.Bang, new TextSpan(start, 1), "!", null);
                 case '&':
                     if (Peek(1) == '&')
                     {
                         position += 2;
-                        return new Token(TokenType.AmpersandAmpersand, new TextSpan(position - 2, 2), "&&", null);
+                        return new Token(TokenType.AmpersandAmpersand, new TextSpan(start, 2), "&&", null);
                     }
                     break;
                 case '|':
                     if (Peek(1) == '|')
                     {
                         position += 2;
-                        return new Token(TokenType.PipePipe, new TextSpan(position - 2, 2), "||", null);
+                        return new Token(TokenType.PipePipe, new TextSpan(start, 2), "||", null);
                     }
                     break;
                 case '=':
                     if (Peek(1) == '=')
                     {
                         position += 2;
-                        return new Token(TokenType.EqualEqual, new TextSpan(position - 2, 2), "==", null);
+                        return new Token(TokenType.EqualEqual, new TextSpan(start, 2), "==", null);
                     }
-                    return new Token(TokenType.Equal, new TextSpan(position++, 1), "=", null);
+                    position++;
+                    return new Token(TokenType.Equal, new TextSpan(start, 1), "=", null);
             }
 
-            diagnostics.ReportBadCharacter(new TextSpan(position, 1), Current);
-            return new Token(TokenType.BadToken, new TextSpan(position++, 1), text.Substring(position - 1, 1), null);
+            position++;
+            diagnostics.ReportBadCharacter(new TextSpan(start, 1), Current);
+            return new Token(TokenType.BadToken, new TextSpan(start, 1), text.Substring(position - 1, 1), null);
         }
 
         private char Current => Peek(0);
