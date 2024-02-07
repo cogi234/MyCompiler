@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Mini.Tests.CodeAnalysis.Syntax
 {
-    public class LexerTest
+    public class LexerTests
     {
         [Theory]
         [MemberData(nameof(GetTokensData))]
-        public void LexerParsesToken(TokenType tokenType, string text)
+        public void ParsesToken(TokenType tokenType, string text)
         {
             IEnumerable<Token> tokens = SyntaxTree.ParseTokens(text);
 
@@ -22,7 +22,7 @@ namespace Mini.Tests.CodeAnalysis.Syntax
 
         [Theory]
         [MemberData(nameof(GetTokenPairsData))]
-        public void LexerParsesTokenPairs(TokenType type1, string text1, TokenType type2, string text2)
+        public void ParsesTokenPairs(TokenType type1, string text1, TokenType type2, string text2)
         {
             string text = text1 + text2;
             Token[] tokens = SyntaxTree.ParseTokens(text).ToArray();
@@ -38,7 +38,7 @@ namespace Mini.Tests.CodeAnalysis.Syntax
 
         [Theory]
         [MemberData(nameof(GetSeparatedTokenPairsData))]
-        public void LexerParsesSeparatedTokenPairs(TokenType type1, string text1, TokenType separatorType, string separatorText, TokenType type2, string text2)
+        public void ParsesSeparatedTokenPairs(TokenType type1, string text1, TokenType separatorType, string separatorText, TokenType type2, string text2)
         {
             string text = text1 + separatorText + text2;
             Token[] tokens = SyntaxTree.ParseTokens(text).ToArray();

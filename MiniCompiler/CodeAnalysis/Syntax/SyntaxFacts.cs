@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MiniCompiler.CodeAnalysis.Syntax
 {
-    internal static class SyntaxFacts
+    public static class SyntaxFacts
     {
         public static int GetUnaryOperatorPrecedence(this TokenType type)
         {
@@ -50,7 +50,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             }
         }
 
-        internal static TokenType GetKeywordType(string text)
+        public static TokenType GetKeywordType(string text)
         {
             switch (text)
             {
@@ -60,6 +60,43 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return TokenType.TrueKeyword;
                 default:
                     return TokenType.Identifier;
+            }
+        }
+
+        public static string GetText(TokenType tokenType)
+        {
+            switch (tokenType)
+            {
+                case TokenType.Plus:
+                    return "+";
+                case TokenType.Minus:
+                    return "-";
+                case TokenType.Star:
+                    return "*";
+                case TokenType.ForwardSlash:
+                    return "/";
+                case TokenType.OpenParenthesis:
+                    return "(";
+                case TokenType.CloseParenthesis:
+                    return ")";
+                case TokenType.Bang:
+                    return "!";
+                case TokenType.BangEqual:
+                    return "!=";
+                case TokenType.Equal:
+                    return "=";
+                case TokenType.EqualEqual:
+                    return "==";
+                case TokenType.AmpersandAmpersand:
+                    return "&&";
+                case TokenType.PipePipe:
+                    return "||";
+                case TokenType.FalseKeyword:
+                    return "false";
+                case TokenType.TrueKeyword:
+                    return "true";
+                default:
+                    return null;
             }
         }
     }
