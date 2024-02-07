@@ -37,26 +37,31 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public SyntaxTree Parse()
         {
-            ExpressionNode expression = ParseAssignment();
+            ExpressionNode expression = ParseExpression();
             ExpectToken(TokenType.EndOfFile);
             return new SyntaxTree(diagnostics, expression, tokens);
         }
 
-        private ExpressionNode ParseAssignment()
+        private ExpressionNode ParseExpression(int parentPrecedence = 0)
+        {
+            return ParseAssignmentExpression(parentPrecedence);
+        }
+
+        private ExpressionNode ParseAssignmentExpression(int parentPrecedence = 0)
         {
             if (Current.Type == TokenType.Identifier &&
                 Peek(1).Type == TokenType.Equal)
             {
                 Token identifierToken = NextToken();
                 Token operatorToken = NextToken();
-                ExpressionNode right = ParseAssignment();
+                ExpressionNode right = ParseExpression(parentPrecedence);
                 return new AssignmentExpressionNode(identifierToken, operatorToken, right);
             }
 
-            return ParseExpression();
+            return ParseMathematicalExpression(parentPrecedence);
         }
 
-        private ExpressionNode ParseExpression(int parentPrecedence = 0)
+        private ExpressionNode ParseMathematicalExpression(int parentPrecedence = 0)
         {
             ExpressionNode left;
 

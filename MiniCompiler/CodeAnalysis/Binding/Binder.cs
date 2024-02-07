@@ -68,7 +68,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 diagnostics.ReportUndefinedName(node.IdentifierToken.Span, name);
                 return new BoundLiteralExpression(0);
             }
-            var type = value?.GetType() ?? typeof(object);
+            Type type = value?.GetType() ?? typeof(object);
             return new BoundVariableExpression(name, type);
         }
 
@@ -76,6 +76,18 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             string name = node.IdentifierToken.Text;
             BoundExpression boundExpression = BindExpression(node.Expression);
+
+            object? defaultValue =
+                boundExpression.Type == typeof(int)
+                ? 0
+                : boundExpression.Type == typeof(bool)
+                ? false
+                : null;
+
+            if (defaultValue == null)
+                throw new Exception($"Unsupported variable type: {boundExpression.Type}");
+
+            variables[name] = defaultValue;
             return new BoundAssignmentExpression(name, boundExpression);
         }
 
