@@ -1,4 +1,4 @@
-﻿namespace MiniCompiler.CodeAnalysis
+﻿namespace MiniCompiler.CodeAnalysis.Binding
 {
     public sealed class VariableSymbol
     {

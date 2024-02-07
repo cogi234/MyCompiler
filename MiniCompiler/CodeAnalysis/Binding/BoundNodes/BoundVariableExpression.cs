@@ -1,5 +1,4 @@
-﻿
-namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+﻿namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal class BoundVariableExpression : BoundExpression
     {
