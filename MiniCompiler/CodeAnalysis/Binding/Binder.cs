@@ -13,14 +13,14 @@ namespace MiniCompiler.CodeAnalysis.Binding
     internal sealed class Binder
     {
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
-        private readonly Dictionary<string, object> variables;
+        private readonly Dictionary<VariableSymbol, object> variables;
 
         public DiagnosticBag Diagnostics => diagnostics;
-        public Dictionary<string, object> Variables => variables;
+        public Dictionary<VariableSymbol, object> Variables => variables;
         public SyntaxTree SyntaxTree { get; }
 
 
-        public Binder(SyntaxTree syntaxTree, Dictionary<string, object> variables)
+        public Binder(SyntaxTree syntaxTree, Dictionary<VariableSymbol, object> variables)
         {
             SyntaxTree = syntaxTree;
             this.variables = variables;
@@ -63,13 +63,16 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundExpression BindNameExpression(NameExpressionNode node)
         {
             string name = node.IdentifierToken.Text;
-            if (!variables.TryGetValue(name, out object? value))
+
+            VariableSymbol? variable = variables.Keys.FirstOrDefault(v => v.Name == name);
+
+            if (variable == null)
             {
                 diagnostics.ReportUndefinedName(node.IdentifierToken.Span, name);
                 return new BoundLiteralExpression(0);
             }
-            Type type = value?.GetType() ?? typeof(object);
-            return new BoundVariableExpression(name, type);
+
+            return new BoundVariableExpression(variable);
         }
 
         private BoundExpression BindAssignmentExpression(AssignmentExpressionNode node)
@@ -77,18 +80,16 @@ namespace MiniCompiler.CodeAnalysis.Binding
             string name = node.IdentifierToken.Text;
             BoundExpression boundExpression = BindExpression(node.Expression);
 
-            object? defaultValue =
-                boundExpression.Type == typeof(int)
-                ? 0
-                : boundExpression.Type == typeof(bool)
-                ? false
-                : null;
+            VariableSymbol? existingVariable = variables.Keys.FirstOrDefault(v => v.Name == name);
+            if (existingVariable != null)
+            {
+                variables.Remove(existingVariable);
+            }
 
-            if (defaultValue == null)
-                throw new Exception($"Unsupported variable type: {boundExpression.Type}");
+            VariableSymbol variable = new VariableSymbol(name, boundExpression.Type);
+            variables[variable] = null;
 
-            variables[name] = defaultValue;
-            return new BoundAssignmentExpression(name, boundExpression);
+            return new BoundAssignmentExpression(variable, boundExpression);
         }
 
         private BoundExpression BindUnaryExpression(UnaryExpressionNode node)

@@ -12,7 +12,7 @@ namespace MiniCompiler.CodeAnalysis
 
         public SyntaxTree SyntaxTree { get; }
 
-        public EvaluationResult Evaluate(Dictionary<string, object> variables)
+        public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
         {
             BoundTree boundTree = BoundTree.Bind(SyntaxTree, variables);
 

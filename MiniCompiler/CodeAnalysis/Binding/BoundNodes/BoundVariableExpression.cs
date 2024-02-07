@@ -1,17 +1,17 @@
-﻿namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+﻿
+namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal class BoundVariableExpression : BoundExpression
     {
-        public BoundVariableExpression(string name, Type type)
+        public BoundVariableExpression(VariableSymbol variable)
         {
-            Name = name;
-            Type = type;
+            Variable = variable;
         }
 
-        public string Name { get; }
-        public override Type Type { get; }
-
         public override BoundNodeType BoundNodeType => BoundNodeType.VariableExpression;
+        public VariableSymbol Variable { get; }
+
+        public override Type Type => Variable.Type;
 
         public override IEnumerable<BoundNode> GetChildren()
         {

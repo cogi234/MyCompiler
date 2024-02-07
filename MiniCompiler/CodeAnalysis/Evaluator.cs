@@ -13,10 +13,10 @@ namespace MiniCompiler.CodeAnalysis
     internal sealed class Evaluator
     {
         private BoundExpression root;
-        private readonly Dictionary<string, object> variables;
+        private readonly Dictionary<VariableSymbol, object> variables;
 
-        public Dictionary<string, object> Variables => variables;
-        public Evaluator(BoundExpression root, Dictionary<string, object> variables)
+        public Dictionary<VariableSymbol, object> Variables => variables;
+        public Evaluator(BoundExpression root, Dictionary<VariableSymbol, object> variables)
         {
             this.root = root;
             this.variables = variables;
@@ -36,14 +36,14 @@ namespace MiniCompiler.CodeAnalysis
                 case BoundNodeType.VariableExpression:
                     {
                         BoundVariableExpression variableExpression = (BoundVariableExpression)expression;
-                        object value = variables[variableExpression.Name];
+                        object value = variables[variableExpression.Variable];
                         return value;
                     }
                 case BoundNodeType.AssignmentExpression:
                     {
                         BoundAssignmentExpression assignmentExpression = (BoundAssignmentExpression)expression;
                         object value = EvaluateExpression(assignmentExpression.Expression);
-                        variables[assignmentExpression.Name] = value;
+                        variables[assignmentExpression.Variable] = value;
                         return value;
                     }
                 case BoundNodeType.UnaryExpression:

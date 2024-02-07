@@ -2,13 +2,13 @@
 {
     internal class BoundAssignmentExpression : BoundExpression
     {
-        public BoundAssignmentExpression(string name, BoundExpression boundExpression)
+        public BoundAssignmentExpression(VariableSymbol variable, BoundExpression boundExpression)
         {
-            Name = name;
+            Variable = variable;
             Expression = boundExpression;
         }
 
-        public string Name { get; }
+        public VariableSymbol Variable { get; }
         public BoundExpression Expression { get; }
         public override Type Type => Expression.Type;
         public override BoundNodeType BoundNodeType => BoundNodeType.AssignmentExpression;
