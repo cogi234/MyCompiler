@@ -53,7 +53,7 @@ namespace MyCompiler
 
                 if (tokenOutput)
                 {
-                    IReadOnlyList<Token> tokens = syntaxTree.Tokens;
+                    IEnumerable<Token> tokens = SyntaxTree.ParseTokens(line);
                     foreach (Token token in tokens)
                     {
                         Console.Write($"{token.Type}: '{token.Text}'");

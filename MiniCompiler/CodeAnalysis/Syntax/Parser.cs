@@ -39,7 +39,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         {
             ExpressionNode expression = ParseExpression();
             ExpectToken(TokenType.EndOfFile);
-            return new SyntaxTree(diagnostics, expression, tokens);
+            return new SyntaxTree(diagnostics, expression);
         }
 
         private ExpressionNode ParseExpression(int parentPrecedence = 0)

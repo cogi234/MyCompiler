@@ -26,4 +26,8 @@
     <ProjectReference Include="..\MiniCompiler\MiniCompiler.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="CodeAnalysis\Binding\" />
+  </ItemGroup>
+
 </Project>
