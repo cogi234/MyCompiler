@@ -63,6 +63,26 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             }
         }
 
+        public static IEnumerable<TokenType> GetUnaryOperatorTypes()
+        {
+            TokenType[] types = (TokenType[])Enum.GetValues(typeof(TokenType));
+            foreach (TokenType type in types)
+            {
+                if (GetUnaryOperatorPrecedence(type) > 0)
+                    yield return type;
+            }
+        }
+
+        public static IEnumerable<TokenType> GetBinaryOperatorTypes()
+        {
+            TokenType[] types = (TokenType[])Enum.GetValues(typeof(TokenType));
+            foreach (TokenType type in types)
+            {
+                if (GetBinaryOperatorPrecedence(type) > 0)
+                    yield return type;
+            }
+        }
+
         public static string GetText(TokenType tokenType)
         {
             switch (tokenType)
@@ -99,5 +119,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return null;
             }
         }
+
     }
 }

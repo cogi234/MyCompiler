@@ -2,7 +2,7 @@
 
 namespace Mini.Tests.CodeAnalysis.Syntax
 {
-    public class SyntactFactTests
+    public class SyntaxFactTests
     {
         [Theory]
         [MemberData(nameof(GetTokenTypeData))]
