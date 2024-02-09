@@ -118,7 +118,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     break;
             }
 
-
             int length = position - start;
             if (tokenText == null && tokenType != TokenType.EndOfFile)
                 tokenText = SyntaxFacts.GetText(tokenType);

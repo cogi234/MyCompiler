@@ -76,28 +76,23 @@ namespace Mini.Tests.CodeAnalysis.Syntax
 
         private static IEnumerable<(TokenType type, string text)> GetTokens()
         {
-            return new[]
-            {
-                (TokenType.Plus,"+"),
-                (TokenType.Minus,"-"),
-                (TokenType.Star,"*"),
-                (TokenType.ForwardSlash,"/"),
-                (TokenType.OpenParenthesis,"("),
-                (TokenType.CloseParenthesis,")"),
-                (TokenType.Bang,"!"),
-                (TokenType.BangEqual,"!="),
-                (TokenType.Equal,"="),
-                (TokenType.EqualEqual,"=="),
-                (TokenType.AmpersandAmpersand,"&&"),
-                (TokenType.PipePipe,"||"),
-                (TokenType.FalseKeyword,"false"),
-                (TokenType.TrueKeyword,"true"),
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
+            //The .Where guarantees that text isn't null
+            IEnumerable<(TokenType type, string text)> staticTokens = Enum.GetValues(typeof(TokenType))
+                .Cast<TokenType>()
+                .Select(t => (type: t, text: SyntaxFacts.GetText(t)))
+                .Where(t => t.text != null);
+#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
 
+            (TokenType, string)[] dynamicTokens = new[]
+            {
                 (TokenType.Number,"1"),
                 (TokenType.Number,"1234567890"),
                 (TokenType.Identifier,"a"),
                 (TokenType.Identifier,"abcdefghijklmnopqrstuvwxyz"),
             };
+
+            return staticTokens.Concat(dynamicTokens);
         }
 
         private static IEnumerable<(TokenType type, string text)> GetSeparators()
