@@ -33,7 +33,7 @@ namespace MiniCompiler.CodeAnalysis
             switch (expression.BoundNodeType)
             {
                 case BoundNodeType.LiteralExpression:
-                    return ((BoundLiteralExpression)expression).Value;
+                    return EvaluateLiteralExpression(expression);
                 case BoundNodeType.VariableExpression:
                     return EvaluateVariableExpression(expression);
                 case BoundNodeType.AssignmentExpression:
@@ -45,6 +45,11 @@ namespace MiniCompiler.CodeAnalysis
                 default:
                     throw new Exception($"Unexpected node {expression.BoundNodeType}");
             }
+        }
+
+        private static object EvaluateLiteralExpression(BoundExpression expression)
+        {
+            return ((BoundLiteralExpression)expression).Value;
         }
 
         private object EvaluateVariableExpression(BoundExpression expression)
