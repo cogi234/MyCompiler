@@ -83,7 +83,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             }
         }
 
-        public static string GetText(TokenType tokenType)
+        public static string? GetText(TokenType tokenType)
         {
             switch (tokenType)
             {

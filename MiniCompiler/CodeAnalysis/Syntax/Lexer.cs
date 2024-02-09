@@ -9,8 +9,14 @@ namespace MiniCompiler.CodeAnalysis.Syntax
     internal sealed class Lexer
     {
         private readonly string text;
+
         private int position = 0;
-        private DiagnosticBag diagnostics = new DiagnosticBag();
+        private int start;
+        private TokenType tokenType;
+        private object? tokenValue;
+        private string? tokenText;
+
+        private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         public DiagnosticBag Diagnostics => diagnostics;
 
         public Lexer(string text)
@@ -20,103 +26,139 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public Token NextToken()
         {
-            if (position >= text.Length)
-                return new Token(TokenType.EndOfFile, new TextSpan(position, 1), "\0", null);
+            start = position;
+            tokenType = TokenType.BadToken;
+            tokenValue = null;
+            tokenText = null;
 
-            int start = position;
-
-            if (char.IsDigit(Current))
-            {
-
-                while (char.IsDigit(Current))
-                    Next();
-
-                int length = position - start;
-                string text = this.text.Substring(start, length);
-                if (!int.TryParse(text, out int value))
-                {
-                    diagnostics.ReportInvalidNumber(new TextSpan(start, length), text, typeof(int));
-                }
-                return new Token(TokenType.Number, new TextSpan(start, length), text, value);
-            }
-
-            if (char.IsWhiteSpace(Current))
-            {
-                while (char.IsWhiteSpace(Current))
-                    Next();
-
-                int length = position - start;
-                string text = this.text.Substring(start, length);
-                return new Token(TokenType.WhiteSpace, new TextSpan(start, length), text, null);
-            }
-
-            if (char.IsLetter(Current))
-            {
-                while (char.IsLetterOrDigit(Current))
-                    Next();
-
-                int length = position - start;
-                string text = this.text.Substring(start, length);
-                TokenType type = SyntaxFacts.GetKeywordType(text);
-                return new Token(type, new TextSpan(start, length), text, null);
-            }
-
-            //Single character tokens
             switch (Current)
             {
+                case '\0':
+                    tokenType = TokenType.EndOfFile;
+                    position++;
+                    break;
                 case '+':
+                    tokenType = TokenType.Plus;
                     position++;
-                    return new Token(TokenType.Plus, new TextSpan(start, 1), "+", null);
+                    break;
                 case '-':
+                    tokenType = TokenType.Minus;
                     position++;
-                    return new Token(TokenType.Minus, new TextSpan(start, 1), "-", null);
+                    break;
                 case '*':
+                    tokenType = TokenType.Star;
                     position++;
-                    return new Token(TokenType.Star, new TextSpan(start, 1), "*", null);
+                    break;
                 case '/':
+                    tokenType = TokenType.ForwardSlash;
                     position++;
-                    return new Token(TokenType.ForwardSlash, new TextSpan(start, 1), "/", null);
+                    break;
                 case '(':
+                    tokenType = TokenType.OpenParenthesis;
                     position++;
-                    return new Token(TokenType.OpenParenthesis, new TextSpan(start, 1), "(", null);
+                    break;
                 case ')':
+                    tokenType = TokenType.CloseParenthesis;
                     position++;
-                    return new Token(TokenType.CloseParenthesis, new TextSpan(start, 1), ")", null);
+                    break;
                 case '!':
-                    if (Peek(1) == '=')
-                    {
-                        position += 2;
-                        return new Token(TokenType.BangEqual, new TextSpan(start, 2), "!=", null);
-                    }
                     position++;
-                    return new Token(TokenType.Bang, new TextSpan(start, 1), "!", null);
-                case '&':
-                    if (Peek(1) == '&')
+                    if (Current != '=')
+                        tokenType = TokenType.Bang;
+                    else
                     {
-                        position += 2;
-                        return new Token(TokenType.AmpersandAmpersand, new TextSpan(start, 2), "&&", null);
+                        tokenType = TokenType.BangEqual;
+                        position++;
+                    }
+                    break;
+                case '&':
+                    position++;
+                    if (Current == '&')
+                    {
+                        tokenType = TokenType.AmpersandAmpersand;
+                        position++;
                     }
                     break;
                 case '|':
-                    if (Peek(1) == '|')
+                    position++;
+                    if (Current == '|')
                     {
-                        position += 2;
-                        return new Token(TokenType.PipePipe, new TextSpan(start, 2), "||", null);
+                        tokenType = TokenType.PipePipe;
+                        position++;
                     }
                     break;
                 case '=':
-                    if (Peek(1) == '=')
-                    {
-                        position += 2;
-                        return new Token(TokenType.EqualEqual, new TextSpan(start, 2), "==", null);
-                    }
                     position++;
-                    return new Token(TokenType.Equal, new TextSpan(start, 1), "=", null);
+                    if (Current != '=')
+                        tokenType = TokenType.Equal;
+                    else
+                    {
+                        tokenType = TokenType.EqualEqual;
+                        position++;
+                    }
+                    break;
+                default:
+                    if (char.IsDigit(Current)) //Number tokens
+                    {
+                        ReadNumber();
+                    }
+                    else if (char.IsWhiteSpace(Current)) //Whitespace tokens
+                    {
+                        ReadWhitespace();
+                    }
+                    else if (char.IsLetter(Current)) // Word tokens
+                    {
+                        ReadIdentifierOrKeyword();
+                    }
+                    else
+                    {
+                        diagnostics.ReportBadCharacter(new TextSpan(start, 1), Current);
+                        position++;
+                    }
+                    break;
             }
 
-            position++;
-            diagnostics.ReportBadCharacter(new TextSpan(start, 1), Current);
-            return new Token(TokenType.BadToken, new TextSpan(start, 1), text.Substring(position - 1, 1), null);
+
+            int length = position - start;
+            if (tokenText == null && tokenType != TokenType.EndOfFile)
+                tokenText = SyntaxFacts.GetText(tokenType);
+            if (tokenText == null && tokenType != TokenType.EndOfFile)
+                tokenText = text.Substring(start, length);
+
+            return new Token(tokenType, new TextSpan(start, length), tokenText, tokenValue);
+        }
+
+        private void ReadWhitespace()
+        {
+            while (char.IsWhiteSpace(Current))
+                Next();
+
+            tokenType = TokenType.WhiteSpace;
+        }
+
+        private void ReadIdentifierOrKeyword()
+        {
+            while (char.IsLetterOrDigit(Current))
+                Next();
+
+            int length = position - start;
+            tokenText = text.Substring(start, length);
+            tokenType = SyntaxFacts.GetKeywordType(tokenText);
+        }
+
+        private void ReadNumber()
+        {
+            while (char.IsDigit(Current))
+                Next();
+
+            int length = position - start;
+            tokenText = text.Substring(start, length);
+
+            if (!int.TryParse(tokenText, out int number))
+                diagnostics.ReportInvalidNumber(new TextSpan(start, length), tokenText, typeof(int));
+
+            tokenType = TokenType.Number;
+            tokenValue = number;
         }
 
         private char Current => Peek(0);
