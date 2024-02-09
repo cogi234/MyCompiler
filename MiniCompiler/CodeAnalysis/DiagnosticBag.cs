@@ -35,9 +35,19 @@ namespace MiniCompiler.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportUnexpectedToken(TextSpan span, TokenType expected, TokenType found)
+        public void ReportUnexpectedToken(TextSpan span, TokenType found, params TokenType[] expected)
         {
-            string message = $"Unexpected token. Expected <{expected}>, found <{found}>.";
+            string message = $"Unexpected token. Expected ";
+            for (int i = 0; i < expected.Length; i++)
+            {
+                message += $"<{expected[i]}>";
+
+                if (i > 0 && i == expected.Length - 2)
+                    message += " or ";
+                else
+                    message += ", ";
+            }
+            message += $"found <{found}>.";
             Report(span, message);
         }
 

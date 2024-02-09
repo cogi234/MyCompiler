@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
@@ -11,7 +12,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
     {
         private readonly Token[] tokens;
         private int position;
-        private DiagnosticBag diagnostics = new DiagnosticBag();
+        private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         public DiagnosticBag Diagnostics => diagnostics;
 
         public Parser(string line)
@@ -52,8 +53,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             if (Current.Type == TokenType.Identifier &&
                 Peek(1).Type == TokenType.Equal)
             {
-                Token identifierToken = NextToken();
-                Token operatorToken = NextToken();
+                Token identifierToken = ExpectToken(TokenType.Identifier);
+                Token operatorToken = ExpectToken(TokenType.Equal);
                 ExpressionNode right = ParseExpression(parentPrecedence);
                 return new AssignmentExpressionNode(identifierToken, operatorToken, right);
             }
@@ -69,7 +70,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             int unaryOperatorPrecedence = Current.Type.GetUnaryOperatorPrecedence();
             if (unaryOperatorPrecedence != 0 && unaryOperatorPrecedence >= parentPrecedence)
             {
-                Token operatorToken = NextToken();
+                Token operatorToken = ExpectTokens(SyntaxFacts.GetUnaryOperatorTypes().ToArray());
                 ExpressionNode expression = ParseExpression(unaryOperatorPrecedence);
                 left = new UnaryExpressionNode(operatorToken, expression);
             }
@@ -85,7 +86,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 if (precedence == 0 || precedence <= parentPrecedence)
                     break;
 
-                Token operatorToken = NextToken();
+                Token operatorToken = ExpectTokens(SyntaxFacts.GetBinaryOperatorTypes().ToArray());
                 ExpressionNode right = ParseExpression(precedence);
                 left = new BinaryExpressionNode(left, operatorToken, right);
             }
@@ -98,19 +99,43 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             switch (Current.Type)
             {
                 case TokenType.OpenParenthesis:
-                    return new ParenthesizedExpressionNode(NextToken(), ParseExpression(), ExpectToken(TokenType.CloseParenthesis));
+                    return ParseParenthesizedExpression();
                 case TokenType.TrueKeyword:
-                    return new LiteralExpressionNode(NextToken(), true);
                 case TokenType.FalseKeyword:
-                    return new LiteralExpressionNode(NextToken(), false);
+                    return ParseBooleanLiteral();
+                case TokenType.Number:
+                    return ParseNumberLiteral();
                 case TokenType.Identifier:
-                    return new NameExpressionNode(NextToken());
                 default:
-                    {
-                        Token numberToken = ExpectToken(TokenType.Number);
-                        return new LiteralExpressionNode(numberToken, numberToken.Value);
-                    }
+                    return ParseNameExpression();
             }
+        }
+
+        private ExpressionNode ParseParenthesizedExpression()
+        {
+            Token openToken = ExpectToken(TokenType.OpenParenthesis);
+            ExpressionNode expression = ParseExpression();
+            Token closeToken = ExpectToken(TokenType.CloseParenthesis);
+            return new ParenthesizedExpressionNode(openToken, expression, closeToken);
+        }
+
+        private ExpressionNode ParseBooleanLiteral()
+        {
+            Token token = ExpectTokens(TokenType.TrueKeyword, TokenType.FalseKeyword);
+            bool value = token.Type == TokenType.TrueKeyword;
+            return new LiteralExpressionNode(token, value);
+        }
+
+        private ExpressionNode ParseNumberLiteral()
+        {
+            Token numberToken = ExpectToken(TokenType.Number);
+            return new LiteralExpressionNode(numberToken, numberToken.Value);
+        }
+
+        private ExpressionNode ParseNameExpression()
+        {
+            Token token = ExpectToken(TokenType.Identifier);
+            return new NameExpressionNode(token);
         }
 
         private Token Peek(int offset)
@@ -131,8 +156,18 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             if (Current.Type == expectedType)
                 return NextToken();
 
-            diagnostics.ReportUnexpectedToken(Current.Span, expectedType, Current.Type);
+            diagnostics.ReportUnexpectedToken(Current.Span, Current.Type, expectedType);
             return new Token(expectedType, new TextSpan(Current.Span.Start, 0), null, null);
+        }
+
+        private Token ExpectTokens(params TokenType[] expectedTypes)
+        {
+            if (expectedTypes.Contains(Current.Type))
+                return NextToken();
+
+
+            diagnostics.ReportUnexpectedToken(Current.Span, Current.Type, expectedTypes);
+            return new Token(expectedTypes[0], new TextSpan(Current.Span.Start, 0), null, null);
         }
     }
 }
