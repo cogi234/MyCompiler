@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MiniCompiler.CodeAnalysis.Text;
 
 namespace MiniCompiler.CodeAnalysis.Syntax
 {
     internal sealed class Lexer
     {
-        private readonly string text;
+        private readonly SourceText text;
+        private readonly DiagnosticBag diagnostics = new DiagnosticBag();
+        public DiagnosticBag Diagnostics => diagnostics;
 
         private int position = 0;
         private int start;
@@ -16,10 +19,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         private object? tokenValue;
         private string? tokenText;
 
-        private readonly DiagnosticBag diagnostics = new DiagnosticBag();
-        public DiagnosticBag Diagnostics => diagnostics;
-
-        public Lexer(string text)
+        public Lexer(SourceText text)
         {
             this.text = text;
         }
@@ -122,7 +122,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             if (tokenText == null && tokenType != TokenType.EndOfFile)
                 tokenText = SyntaxFacts.GetText(tokenType);
             if (tokenText == null && tokenType != TokenType.EndOfFile)
-                tokenText = text.Substring(start, length);
+                tokenText = text.ToString(start, length);
 
             return new Token(tokenType, new TextSpan(start, length), tokenText, tokenValue);
         }
@@ -141,7 +141,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 Next();
 
             int length = position - start;
-            tokenText = text.Substring(start, length);
+            tokenText = text.ToString(start, length);
             tokenType = SyntaxFacts.GetKeywordType(tokenText);
         }
 
@@ -151,7 +151,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 Next();
 
             int length = position - start;
-            tokenText = text.Substring(start, length);
+            tokenText = text.ToString(start, length);
 
             if (!int.TryParse(tokenText, out int number))
                 diagnostics.ReportInvalidNumber(new TextSpan(start, length), tokenText, typeof(int));

@@ -6,6 +6,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+using MiniCompiler.CodeAnalysis.Text;
 
 namespace MiniCompiler.CodeAnalysis.Syntax
 {
@@ -16,10 +17,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         public DiagnosticBag Diagnostics => diagnostics;
 
-        public Parser(string line)
+        public Parser(SourceText text)
         {
             List<Token> tokens = new List<Token>();
-            Lexer lexer = new Lexer(line);
+            Lexer lexer = new Lexer(text);
             Token token;
             do
             {

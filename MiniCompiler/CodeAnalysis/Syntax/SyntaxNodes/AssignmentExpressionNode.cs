@@ -1,4 +1,6 @@
-﻿namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
+﻿using MiniCompiler.CodeAnalysis.Text;
+
+namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class AssignmentExpressionNode : ExpressionNode
     {

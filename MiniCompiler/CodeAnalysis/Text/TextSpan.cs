@@ -1,5 +1,4 @@
-﻿
-namespace MiniCompiler.CodeAnalysis
+﻿namespace MiniCompiler.CodeAnalysis.Text
 {
     public struct TextSpan
     {

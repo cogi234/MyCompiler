@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+using MiniCompiler.CodeAnalysis.Text;
 
 namespace MiniCompiler.CodeAnalysis.Syntax
 {
@@ -18,11 +19,21 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public static SyntaxTree Parse(string text)
         {
+            SourceText sourceText = new SourceText(text);
+            return Parse(sourceText);
+        }
+        public static SyntaxTree Parse(SourceText text)
+        {
             Parser parser = new Parser(text);
             return parser.Parse();
         }
 
         public static IEnumerable<Token> ParseTokens(string text)
+        {
+            SourceText source = new SourceText(text);
+            return ParseTokens(source);
+        }
+        public static IEnumerable<Token> ParseTokens(SourceText text)
         {
             Lexer lexer = new Lexer(text);
             while (true)
