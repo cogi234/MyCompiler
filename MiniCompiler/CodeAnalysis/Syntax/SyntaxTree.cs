@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,9 +10,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 {
     public sealed class SyntaxTree
     {
-        public SyntaxTree(IEnumerable<Diagnostic> diagnostics, ExpressionNode root)
+        public SyntaxTree(ImmutableArray<Diagnostic> diagnostics, ExpressionNode root)
         {
-            Diagnostics = diagnostics.ToArray();
+            Diagnostics = diagnostics;
             Root = root;
         }
 
@@ -36,8 +37,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         }
 
 
-        public IReadOnlyList<Diagnostic> Diagnostics { get; }
+        public ImmutableArray<Diagnostic> Diagnostics { get; }
         public ExpressionNode Root { get; }
-        public IReadOnlyList<Token> Tokens { get; }
     }
 }

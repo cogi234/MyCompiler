@@ -1,5 +1,6 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Syntax;
+using System.Collections.Immutable;
 
 namespace MiniCompiler.CodeAnalysis
 {
@@ -20,14 +21,14 @@ namespace MiniCompiler.CodeAnalysis
 
             if (diagnostics.Any())
             {
-                return new EvaluationResult(diagnostics, null);
+                return new EvaluationResult(diagnostics.ToImmutableArray(), null);
             }
             else
             {
                 Evaluator evaluator = new Evaluator(boundTree.Root, variables);
                 object value = evaluator.Evaluate();
 
-                return new EvaluationResult(diagnostics, value);
+                return new EvaluationResult(diagnostics.ToImmutableArray(), value);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
@@ -10,7 +11,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 {
     internal sealed class Parser
     {
-        private readonly Token[] tokens;
+        private readonly ImmutableArray<Token> tokens;
         private int position;
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         public DiagnosticBag Diagnostics => diagnostics;
@@ -31,7 +32,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 }
             } while (token.Type != TokenType.EndOfFile);
 
-            this.tokens = tokens.ToArray();
+            this.tokens = tokens.ToImmutableArray();
 
             diagnostics.AddRange(lexer.Diagnostics);
         }
@@ -40,7 +41,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         {
             ExpressionNode expression = ParseExpression();
             ExpectToken(TokenType.EndOfFile);
-            return new SyntaxTree(diagnostics, expression);
+            return new SyntaxTree(diagnostics.ToImmutableArray(), expression);
         }
 
         private ExpressionNode ParseExpression(int parentPrecedence = 0)
