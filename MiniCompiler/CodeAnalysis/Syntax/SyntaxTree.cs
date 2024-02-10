@@ -11,10 +11,11 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 {
     public sealed class SyntaxTree
     {
-        public SyntaxTree(ImmutableArray<Diagnostic> diagnostics, ExpressionNode root)
+        public SyntaxTree(ImmutableArray<Diagnostic> diagnostics, ExpressionNode root, SourceText sourceText)
         {
             Diagnostics = diagnostics;
             Root = root;
+            SourceText = sourceText;
         }
 
         public static SyntaxTree Parse(string text)
@@ -50,5 +51,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public ImmutableArray<Diagnostic> Diagnostics { get; }
         public ExpressionNode Root { get; }
+        public SourceText SourceText { get; }
     }
 }

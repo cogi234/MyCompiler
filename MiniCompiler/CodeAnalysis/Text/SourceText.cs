@@ -23,7 +23,7 @@ namespace MiniCompiler.CodeAnalysis.Text
         public char this[int index] => text[index];
         public int Length => text.Length;
 
-        public (int line, int column) GetLineIndex(int position)
+        public int GetLineIndex(int position)
         {
             if (position >= text.Length)
                 throw new ArgumentOutOfRangeException(nameof(position));
@@ -39,7 +39,7 @@ namespace MiniCompiler.CodeAnalysis.Text
 
                 //We found the line
                 if (position >= start && position <= end)
-                    return (index, position - start);
+                    return index;
 
                 //Current line is before our position
                 if (start > position)
@@ -48,7 +48,7 @@ namespace MiniCompiler.CodeAnalysis.Text
                     lower = index + 1;
             }
 
-            return (lower, position - Lines[lower].Span.Start);
+            return lower - 1;
         }
 
         private ImmutableArray<TextLine> ParseLines()

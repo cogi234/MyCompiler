@@ -2,6 +2,7 @@
 using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+using MiniCompiler.CodeAnalysis.Text;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
@@ -75,7 +76,7 @@ namespace MyCompiler
                 Compilation compilation = new Compilation(syntaxTree);
                 EvaluationResult result = compilation.Evaluate(variables);
 
-                PrintDiagnostics(result.Diagnostics, line);
+                PrintDiagnostics(result.Diagnostics, line, syntaxTree);
 
                 if (result.Value != null)
                     Console.WriteLine(result.Value);
@@ -91,20 +92,23 @@ namespace MyCompiler
             Console.WriteLine("#syntax: toggle syntax tree");
         }
 
-        static void PrintDiagnostics(IReadOnlyList<Diagnostic> diagnostics, string line)
+        static void PrintDiagnostics(IReadOnlyList<Diagnostic> diagnostics, string line, SyntaxTree syntaxTree)
         {
             foreach (Diagnostic diag in diagnostics)
             {
-                Console.WriteLine();
 
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine(diag);
-                Console.ResetColor();
-
+                int lineIndex = syntaxTree.SourceText.GetLineIndex(diag.Span.Start);
+                int column = diag.Span.Start - syntaxTree.SourceText.Lines[lineIndex].Span.Start;
                 string prefix = line.Substring(0, diag.Span.Start);
                 string error = line.Substring(diag.Span.Start, diag.Span.Length);
                 string suffix = line.Substring(diag.Span.End);
 
+                Console.WriteLine();
+
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.Write($"({lineIndex + 1}, {column + 1}): ");
+                Console.WriteLine(diag);
+                Console.ResetColor();
                 Console.Write("  ");
                 Console.Write(prefix);
                 Console.ForegroundColor = ConsoleColor.Red;

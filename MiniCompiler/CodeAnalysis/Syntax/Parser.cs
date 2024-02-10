@@ -13,12 +13,15 @@ namespace MiniCompiler.CodeAnalysis.Syntax
     internal sealed class Parser
     {
         private readonly ImmutableArray<Token> tokens;
-        private int position;
+        private readonly SourceText sourceText;
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         public DiagnosticBag Diagnostics => diagnostics;
 
+        private int position;
+
         public Parser(SourceText text)
         {
+            sourceText = text;
             List<Token> tokens = new List<Token>();
             Lexer lexer = new Lexer(text);
             Token token;
@@ -42,7 +45,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         {
             ExpressionNode expression = ParseExpression();
             ExpectToken(TokenType.EndOfFile);
-            return new SyntaxTree(diagnostics.ToImmutableArray(), expression);
+            return new SyntaxTree(diagnostics.ToImmutableArray(), expression, sourceText);
         }
 
         private ExpressionNode ParseExpression(int parentPrecedence = 0)
