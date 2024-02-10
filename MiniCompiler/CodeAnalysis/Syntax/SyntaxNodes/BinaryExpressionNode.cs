@@ -14,6 +14,8 @@
         public Token OperatorToken { get; }
         public ExpressionNode Right { get; }
 
+        public override TextSpan Span => TextSpan.FromBounds(Left.Span.Start, Right.Span.End);
+
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return Left;

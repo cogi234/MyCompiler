@@ -15,6 +15,8 @@
         public Token EqualsToken { get; }
         public ExpressionNode Expression { get; }
 
+        public override TextSpan Span => TextSpan.FromBounds(IdentifierToken.Span.Start, Expression.Span.End);
+
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return Expression;

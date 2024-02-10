@@ -1,4 +1,5 @@
-﻿namespace MiniCompiler.CodeAnalysis
+﻿
+namespace MiniCompiler.CodeAnalysis
 {
     public struct TextSpan
     {
@@ -11,5 +12,11 @@
         public int Start { get; }
         public int Length { get; }
         public int End => Start + Length;
+
+        internal static TextSpan FromBounds(int start, int end)
+        {
+            int length = end - start;
+            return new TextSpan(start, length);
+        }
     }
 }

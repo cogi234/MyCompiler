@@ -15,6 +15,8 @@
 
         public override NodeType Type => NodeType.ParenthesizedExpression;
 
+        public override TextSpan Span => TextSpan.FromBounds(OpenParenthesis.Span.Start, CloseParenthesis.Span.End);
+
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             yield return Expression;

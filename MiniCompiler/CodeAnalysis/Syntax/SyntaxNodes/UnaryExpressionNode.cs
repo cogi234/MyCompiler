@@ -12,6 +12,7 @@
         public Token OperatorToken { get; }
         public ExpressionNode Operand { get; }
 
+        public override TextSpan Span => TextSpan.FromBounds(OperatorToken.Span.Start, Operand.Span.End);
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {

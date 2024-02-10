@@ -11,6 +11,8 @@
 
         public override NodeType Type => NodeType.NameExpression;
 
+        public override TextSpan Span => IdentifierToken.Span;
+
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             return Enumerable.Empty<SyntaxNode>();

@@ -19,6 +19,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
     public abstract class SyntaxNode
     {
         public abstract NodeType Type { get; }
+        public abstract TextSpan Span { get; }
         public abstract IEnumerable<SyntaxNode> GetChildren();
     }
 }

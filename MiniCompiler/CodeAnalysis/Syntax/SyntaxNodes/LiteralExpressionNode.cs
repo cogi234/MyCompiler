@@ -14,6 +14,8 @@
         public Token LiteralToken { get; }
         public object Value { get; }
 
+        public override TextSpan Span => LiteralToken.Span;
+
         public override IEnumerable<SyntaxNode> GetChildren()
         {
             return Enumerable.Empty<SyntaxNode>();
