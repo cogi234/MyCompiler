@@ -5,6 +5,7 @@ using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniCompiler.CodeAnalysis.Text;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace MyCompiler
 {
@@ -12,49 +13,64 @@ namespace MyCompiler
     {
         static void Main(string[] args)
         {
+            Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
             bool tokenOutput = false;
             bool syntaxTreeOutput = false;
 
-            Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
+            var textBuilder = new StringBuilder();
 
             PrintHelp();
             while (true)
             {
-                Console.Write("> ");
+                if (textBuilder.Length == 0)
+                    Console.Write("> ");
+                else
+                    Console.Write("  ");
+
                 string line = Console.ReadLine() ?? "";
 
-                if (string.IsNullOrEmpty(line))
-                    continue;
-                else if (line.ToLower() == "#exit")
-                    return;
-                else if (line.ToLower() == "#clear")
+                if (textBuilder.Length == 0)
                 {
-                    Console.Clear();
-                    continue;
+                    if (line.ToLower() == "#exit")
+                        return;
+                    else if (line.ToLower() == "#clear")
+                    {
+                        Console.Clear();
+                        continue;
+                    }
+                    else if (line.ToLower() == "#token")
+                    {
+                        tokenOutput = !tokenOutput;
+                        Console.WriteLine(tokenOutput ? "Toggled tokens on" : "Toggled tokens off");
+                        continue;
+                    }
+                    else if (line.ToLower() == "#syntax")
+                    {
+                        syntaxTreeOutput = !syntaxTreeOutput;
+                        Console.WriteLine(syntaxTreeOutput ? "Toggled syntax tree on" : "Toggled syntax tree off");
+                        continue;
+                    }
+                    else if (line.ToLower() == "#help")
+                    {
+                        PrintHelp();
+                        continue;
+                    }
                 }
-                else if (line.ToLower() == "#token")
+
+                if (!string.IsNullOrEmpty(line))
                 {
-                    tokenOutput = !tokenOutput;
-                    Console.WriteLine(tokenOutput ? "Toggled tokens on" : "Toggled tokens off");
-                    continue;
-                }
-                else if (line.ToLower() == "#syntax")
-                {
-                    syntaxTreeOutput = !syntaxTreeOutput;
-                    Console.WriteLine(syntaxTreeOutput ? "Toggled syntax tree on" : "Toggled syntax tree off");
-                    continue;
-                }
-                else if (line.ToLower() == "#help")
-                {
-                    PrintHelp();
+                    textBuilder.Append(line);
                     continue;
                 }
 
-                SyntaxTree syntaxTree = SyntaxTree.Parse(line);
+                string text = textBuilder.ToString();
+                textBuilder.Clear();
+
+                SyntaxTree syntaxTree = SyntaxTree.Parse(text);
 
                 if (tokenOutput)
                 {
-                    IEnumerable<Token> tokens = SyntaxTree.ParseTokens(line);
+                    IEnumerable<Token> tokens = SyntaxTree.ParseTokens(text);
                     foreach (Token token in tokens)
                     {
                         Console.Write($"{token.Type}: '{token.Text}'");
@@ -76,7 +92,7 @@ namespace MyCompiler
                 Compilation compilation = new Compilation(syntaxTree);
                 EvaluationResult result = compilation.Evaluate(variables);
 
-                PrintDiagnostics(result.Diagnostics, line, syntaxTree);
+                PrintDiagnostics(result.Diagnostics, text, syntaxTree);
 
                 if (result.Value != null)
                     Console.WriteLine(result.Value);
