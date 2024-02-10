@@ -67,7 +67,7 @@ namespace MyCompiler
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
 
-                    PrettyPrintSyntaxNode(syntaxTree.Root);
+                    syntaxTree.Root.PrettyPrint(Console.Out);
 
                     Console.ResetColor();
                 }
@@ -115,40 +115,6 @@ namespace MyCompiler
 
             if (diagnostics.Any())
                 Console.WriteLine();
-        }
-
-        static void PrettyPrintSyntaxNode(SyntaxNode node, string indent = "", bool isLast = true)
-        {
-            // ├ ─ └ │
-
-            string marker = isLast ? "└──" : "├──";
-
-            Console.Write(indent);
-            Console.Write(marker);
-            Console.Write(node.Type);
-
-            switch (node.Type)
-            {
-                case NodeType.LiteralExpression:
-                    Console.Write($" {((LiteralExpressionNode)node).Value}");
-                    break;
-                case NodeType.BinaryExpression:
-                    Console.Write($" {((BinaryExpressionNode)node).OperatorToken.Text}");
-                    break;
-                case NodeType.UnaryExpression:
-                    Console.Write($" {((UnaryExpressionNode)node).OperatorToken.Text}");
-                    break;
-            }
-
-            Console.WriteLine();
-
-            indent += isLast ? "   " : "│  ";
-
-            SyntaxNode lastChild = node.GetChildren().LastOrDefault();
-            foreach (SyntaxNode child in node.GetChildren())
-            {
-                PrettyPrintSyntaxNode(child, indent, child == lastChild);
-            }
         }
     }
 }
