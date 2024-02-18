@@ -17,56 +17,60 @@ namespace MyCompiler
             bool tokenOutput = false;
             bool syntaxTreeOutput = false;
 
-            var textBuilder = new StringBuilder();
+            StringBuilder textBuilder = new StringBuilder();
 
             PrintHelp();
             while (true)
             {
+                Console.ForegroundColor = ConsoleColor.Green;
                 if (textBuilder.Length == 0)
-                    Console.Write("> ");
+                    Console.Write("» ");
                 else
-                    Console.Write("  ");
+                    Console.Write("· ");
+                Console.ResetColor();
 
-                string line = Console.ReadLine() ?? "";
+                string input = Console.ReadLine() ?? "";
+                bool isBlank = string.IsNullOrWhiteSpace(input);
 
                 if (textBuilder.Length == 0)
                 {
-                    if (line.ToLower() == "#exit")
+                    if (input.ToLower() == "#exit")
                         return;
-                    else if (line.ToLower() == "#clear")
+                    else if (input.ToLower() == "#clear")
                     {
                         Console.Clear();
                         continue;
                     }
-                    else if (line.ToLower() == "#token")
+                    else if (input.ToLower() == "#token")
                     {
                         tokenOutput = !tokenOutput;
                         Console.WriteLine(tokenOutput ? "Toggled tokens on" : "Toggled tokens off");
                         continue;
                     }
-                    else if (line.ToLower() == "#syntax")
+                    else if (input.ToLower() == "#syntax")
                     {
                         syntaxTreeOutput = !syntaxTreeOutput;
                         Console.WriteLine(syntaxTreeOutput ? "Toggled syntax tree on" : "Toggled syntax tree off");
                         continue;
                     }
-                    else if (line.ToLower() == "#help")
+                    else if (input.ToLower() == "#help")
                     {
                         PrintHelp();
                         continue;
                     }
                 }
 
-                if (!string.IsNullOrEmpty(line))
-                {
-                    textBuilder.Append(line);
-                    continue;
-                }
-
+                textBuilder.AppendLine(input);
                 string text = textBuilder.ToString();
-                textBuilder.Clear();
 
                 SyntaxTree syntaxTree = SyntaxTree.Parse(text);
+
+                if ((!isBlank && syntaxTree.Diagnostics.Any()) || isBlank)
+                    continue;
+
+                textBuilder.Clear();
+                Compilation compilation = new Compilation(syntaxTree);
+                EvaluationResult result = compilation.Evaluate(variables);
 
                 if (tokenOutput)
                 {
@@ -88,9 +92,6 @@ namespace MyCompiler
 
                     Console.ResetColor();
                 }
-
-                Compilation compilation = new Compilation(syntaxTree);
-                EvaluationResult result = compilation.Evaluate(variables);
 
                 PrintDiagnostics(result.Diagnostics, text, syntaxTree);
 
@@ -119,22 +120,17 @@ namespace MyCompiler
                 string error = line.Substring(diag.Span.Start, diag.Span.Length);
                 string suffix = line.Substring(diag.Span.End);
 
-                Console.WriteLine();
-
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.Write($"({lineIndex + 1}, {column + 1}): ");
                 Console.WriteLine(diag);
+
                 Console.ResetColor();
-                Console.Write("  ");
                 Console.Write(prefix);
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write(error);
                 Console.ResetColor();
                 Console.WriteLine(suffix);
             }
-
-            if (diagnostics.Any())
-                Console.WriteLine();
         }
     }
 }

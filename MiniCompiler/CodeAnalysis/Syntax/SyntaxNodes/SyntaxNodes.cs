@@ -26,14 +26,15 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 
         public void PrettyPrint(TextWriter writer, string indent = "", bool isLast = true)
         {
-            // ├ ─ └ │
-
             string marker = isLast ? "└──" : "├──";
 
             writer.Write(indent);
+            Console.ForegroundColor = ConsoleColor.DarkGray;
             writer.Write(marker);
-            writer.Write(this.Type);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            writer.Write(Type);
 
+            Console.ForegroundColor = ConsoleColor.Blue;
             switch (Type)
             {
                 case NodeType.LiteralExpression:
@@ -46,6 +47,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
                     writer.Write($" {((UnaryExpressionNode)this).OperatorToken.Text}");
                     break;
             }
+            Console.ResetColor();
 
             writer.WriteLine();
 
