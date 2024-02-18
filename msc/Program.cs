@@ -1,10 +1,6 @@
 ﻿using MiniCompiler.CodeAnalysis;
 using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Syntax;
-using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
-using MiniCompiler.CodeAnalysis.Text;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace MyCompiler
@@ -47,7 +43,7 @@ namespace MyCompiler
                         Console.WriteLine(tokenOutput ? "Toggled tokens on" : "Toggled tokens off");
                         continue;
                     }
-                    else if (input.ToLower() == "#syntax")
+                    else if (input.ToLower() == "#tree")
                     {
                         syntaxTreeOutput = !syntaxTreeOutput;
                         Console.WriteLine(syntaxTreeOutput ? "Toggled syntax tree on" : "Toggled syntax tree off");
@@ -106,7 +102,7 @@ namespace MyCompiler
             Console.WriteLine("#help: view this");
             Console.WriteLine("#clear: clear the screen");
             Console.WriteLine("#token: toggle token display");
-            Console.WriteLine("#syntax: toggle syntax tree");
+            Console.WriteLine("#tree: toggle syntax tree");
         }
 
         static void PrintDiagnostics(IReadOnlyList<Diagnostic> diagnostics, string line, SyntaxTree syntaxTree)

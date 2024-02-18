@@ -46,6 +46,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
                 case NodeType.UnaryExpression:
                     writer.Write($" {((UnaryExpressionNode)this).OperatorToken.Text}");
                     break;
+                case NodeType.AssignmentExpression:
+                    writer.Write($" {((AssignmentExpressionNode)this).IdentifierToken.Text}");
+                    break;
             }
             Console.ResetColor();
 
