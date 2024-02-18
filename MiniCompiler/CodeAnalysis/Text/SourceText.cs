@@ -57,6 +57,7 @@ namespace MiniCompiler.CodeAnalysis.Text
 
             int lineStart = 0;
             int position = 0;
+
             while (position < text.Length)
             {
                 int lineBreakWidth = GetLineBreakWidth(position);
@@ -88,7 +89,7 @@ namespace MiniCompiler.CodeAnalysis.Text
             char current = text[position];
             char next = position + 1 >= text.Length ? '\0' : text[position + 1];
 
-            if (current == '\r' && next == 'n')
+            if (current == '\r' && next == '\n')
                 return 2;
             if (current == '\r' || current == '\n')
                 return 1;

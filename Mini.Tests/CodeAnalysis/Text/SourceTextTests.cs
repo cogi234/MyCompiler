@@ -18,5 +18,15 @@ namespace Mini.Tests.CodeAnalysis.Text
             int line = source.GetLineIndex(position);
             Assert.Equal(correctLine, line);
         }
+
+        [Theory]
+        [InlineData(".", 1)]
+        [InlineData(".\r\n", 2)]
+        [InlineData(".\r\n\r\n", 3)]
+        public void IncludesLastLine(string text, int expectedLineCount)
+        {
+            SourceText sourceText = new SourceText(text);
+            Assert.Equal(sourceText.Lines.Length, expectedLineCount);
+        }
     }
 }
