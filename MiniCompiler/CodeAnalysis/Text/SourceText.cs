@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Formats.Tar;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Immutable;
 
 namespace MiniCompiler.CodeAnalysis.Text
 {
@@ -61,7 +55,7 @@ namespace MiniCompiler.CodeAnalysis.Text
             while (position < text.Length)
             {
                 int lineBreakWidth = GetLineBreakWidth(position);
-                
+
                 if (lineBreakWidth == 0)
                     position++;
                 else

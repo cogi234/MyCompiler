@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniCompiler.CodeAnalysis.Text;
 
 namespace MiniCompiler.CodeAnalysis
 {

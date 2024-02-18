@@ -1,11 +1,10 @@
 ﻿using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Text;
 using System.Collections;
-using System.Xml.Linq;
 
 namespace MiniCompiler.CodeAnalysis
 {
-    internal sealed class DiagnosticBag: IEnumerable<Diagnostic>
+    internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
     {
         private readonly List<Diagnostic> diagnostics = new List<Diagnostic>();
 

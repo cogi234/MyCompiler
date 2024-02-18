@@ -1,6 +1,4 @@
-﻿using static System.Net.Mime.MediaTypeNames;
-
-namespace MiniCompiler.CodeAnalysis.Text
+﻿namespace MiniCompiler.CodeAnalysis.Text
 {
     public sealed class TextLine
     {

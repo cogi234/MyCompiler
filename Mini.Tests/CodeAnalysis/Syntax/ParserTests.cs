@@ -1,10 +1,5 @@
 ﻿using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mini.Tests.CodeAnalysis.Syntax
 {
@@ -33,7 +28,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
                     e.AssertNode(NodeType.NameExpression);
                     e.AssertNode(NodeType.NameExpression);
                 }
-            } else
+            }
+            else
             {
                 using (AssertingEnumerator e = new AssertingEnumerator(expression))
                 {

@@ -1,11 +1,6 @@
 ﻿using MiniCompiler.CodeAnalysis;
-using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Binding;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using MiniCompiler.CodeAnalysis.Syntax;
 
 namespace Mini.Tests.CodeAnalysis
 {
