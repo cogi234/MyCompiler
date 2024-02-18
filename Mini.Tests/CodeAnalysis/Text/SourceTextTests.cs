@@ -10,14 +10,13 @@ namespace Mini.Tests.CodeAnalysis.Text
     public class SourceTextTests
     {
         [Theory]
-        [InlineData("-----\n----\n---", 7, 1, 1)]
-        public void FindsLineCorrectly(string text, int position, int correctLine, int correctColumn)
+        [InlineData("-----\n----\n---", 7, 1)]
+        public void FindsLineCorrectly(string text, int position, int correctLine)
         {
             SourceText source = new SourceText(text);
 
-            (int line, int column) = source.GetLineIndex(position);
+            int line = source.GetLineIndex(position);
             Assert.Equal(correctLine, line);
-            Assert.Equal(correctColumn, column);
         }
     }
 }

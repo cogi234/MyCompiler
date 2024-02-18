@@ -26,7 +26,7 @@ namespace MiniCompiler.CodeAnalysis.Text
         public int GetLineIndex(int position)
         {
             if (position >= text.Length)
-                throw new ArgumentOutOfRangeException(nameof(position));
+                return Lines.Length - 1;
 
             int lower = 0;
             int upper = Lines.Length - 1;
@@ -71,7 +71,7 @@ namespace MiniCompiler.CodeAnalysis.Text
                 }
             }
 
-            if (position > lineStart)
+            if (position >= lineStart)
                 AddLine(result, lineStart, position, 0);
 
             return result.DrainToImmutable();
