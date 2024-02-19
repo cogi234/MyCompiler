@@ -1,33 +1,34 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+using System.Collections.Immutable;
 
 namespace MiniCompiler.CodeAnalysis.Binding
 {
     internal sealed class Binder
     {
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
-        private readonly Dictionary<VariableSymbol, object> variables;
+
+        private BoundScope scope;
 
         public DiagnosticBag Diagnostics => diagnostics;
-        public Dictionary<VariableSymbol, object> Variables => variables;
-        public SyntaxTree SyntaxTree { get; }
 
 
-        public Binder(SyntaxTree syntaxTree, Dictionary<VariableSymbol, object> variables)
+        public Binder(BoundScope? parent)
         {
-            SyntaxTree = syntaxTree;
-            this.variables = variables;
-            diagnostics.AddRange(syntaxTree.Diagnostics);
+            scope = new BoundScope(parent);
         }
 
-        public BoundTree Bind()
+        public static BoundGlobalScope BindGlobalScope(CompilationUnit compilationUnit)
         {
-            BoundExpression boundExpression = BindExpression(SyntaxTree.Root.Expression);
-            return new BoundTree(diagnostics, boundExpression);
+            Binder binder = new Binder(null);
+            BoundExpression expression = binder.BindExpression(compilationUnit.Expression);
+            ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
+            ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
+            return new BoundGlobalScope(null, diagnostics, variables, expression);
         }
 
-        private BoundExpression BindExpression(ExpressionNode node)
+        public BoundExpression BindExpression(ExpressionNode node)
         {
             switch (node.Type)
             {
@@ -58,15 +59,13 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             string name = node.IdentifierToken.Text;
 
-            VariableSymbol? variable = variables.Keys.FirstOrDefault(v => v.Name == name);
-
-            if (variable == null)
+            if (scope.TryLookup(name, out VariableSymbol variable))
+                return new BoundVariableExpression(variable);
+            else
             {
                 diagnostics.ReportUndefinedName(node.IdentifierToken.Span, name);
                 return new BoundLiteralExpression(0);
             }
-
-            return new BoundVariableExpression(variable);
         }
 
         private BoundExpression BindAssignmentExpression(AssignmentExpressionNode node)
@@ -74,16 +73,22 @@ namespace MiniCompiler.CodeAnalysis.Binding
             string name = node.IdentifierToken.Text;
             BoundExpression boundExpression = BindExpression(node.Expression);
 
-            VariableSymbol? existingVariable = variables.Keys.FirstOrDefault(v => v.Name == name);
-            if (existingVariable != null)
+            VariableSymbol assignmentVariable = new VariableSymbol(name, boundExpression.Type);
+
+            if (scope.TryLookup(name, out VariableSymbol? existingVariable))
             {
-                variables.Remove(existingVariable);
+                if (existingVariable.Type == assignmentVariable.Type)
+                    return new BoundAssignmentExpression(existingVariable, boundExpression);
+                else
+                {
+                    diagnostics.ReportWrongTypeAssigment(node.Span, name, existingVariable.Type, assignmentVariable.Type);
+                    return new BoundLiteralExpression(0);
+                }
+            } else
+            {
+                scope.TryDeclare(assignmentVariable);
+                return new BoundAssignmentExpression(assignmentVariable, boundExpression);
             }
-
-            VariableSymbol variable = new VariableSymbol(name, boundExpression.Type);
-            variables[variable] = null;
-
-            return new BoundAssignmentExpression(variable, boundExpression);
         }
 
         private BoundExpression BindUnaryExpression(UnaryExpressionNode node)

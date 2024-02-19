@@ -67,5 +67,11 @@ namespace MiniCompiler.CodeAnalysis
             string message = $"Variable '{name}' doesn't exist";
             Report(span, message);
         }
+
+        internal void ReportWrongTypeAssigment(TextSpan span, string name, Type currentType, Type assigmentType)
+        {
+            string message = $"Tried to assign value of type {assigmentType} to variable '{name}' of type {currentType}";
+            Report(span, message);
+        }
     }
 }
