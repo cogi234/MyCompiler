@@ -19,16 +19,42 @@ namespace MiniCompiler.CodeAnalysis.Binding
             scope = new BoundScope(parent);
         }
 
-        public static BoundGlobalScope BindGlobalScope(CompilationUnit compilationUnit)
+        public static BoundGlobalScope BindGlobalScope(BoundGlobalScope? previousGlobalScope, CompilationUnit compilationUnit)
         {
-            Binder binder = new Binder(null);
+            BoundScope parentScope = CreateParentScope(previousGlobalScope);
+            Binder binder = new Binder(parentScope);
             BoundExpression expression = binder.BindExpression(compilationUnit.Expression);
             ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
             ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
-            return new BoundGlobalScope(null, diagnostics, variables, expression);
+            return new BoundGlobalScope(previousGlobalScope, diagnostics, variables, expression);
         }
 
-        public BoundExpression BindExpression(ExpressionNode node)
+        private static BoundScope CreateParentScope(BoundGlobalScope? previous)
+        {
+            Stack<BoundGlobalScope> stack = new Stack<BoundGlobalScope>();
+            while (previous != null)
+            {
+                stack.Push(previous);
+                previous = previous.Previous;
+            }
+
+            BoundScope createdScope = null;
+
+            while (stack.Count > 0)
+            {
+                var current = stack.Pop();
+                var scope = new BoundScope(createdScope);
+
+                foreach (var v in current.Variables)
+                    scope.TryDeclare(v);
+
+                createdScope = scope;
+            }
+
+            return createdScope;
+        }
+
+        private BoundExpression BindExpression(ExpressionNode node)
         {
             switch (node.Type)
             {
@@ -57,9 +83,9 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindNameExpression(NameExpressionNode node)
         {
-            string name = node.IdentifierToken.Text;
+            string name = node.IdentifierToken.Text ?? "";
 
-            if (scope.TryLookup(name, out VariableSymbol variable))
+            if (scope.TryLookup(name, out VariableSymbol? variable))
                 return new BoundVariableExpression(variable);
             else
             {
@@ -70,14 +96,14 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindAssignmentExpression(AssignmentExpressionNode node)
         {
-            string name = node.IdentifierToken.Text;
+            string name = node.IdentifierToken.Text ?? "";
             BoundExpression boundExpression = BindExpression(node.Expression);
 
             VariableSymbol assignmentVariable = new VariableSymbol(name, boundExpression.Type);
 
             if (scope.TryLookup(name, out VariableSymbol? existingVariable))
             {
-                if (existingVariable.Type == assignmentVariable.Type)
+                if (existingVariable.Type == assignmentVariable.Type || true /* TEMPORARY */)
                     return new BoundAssignmentExpression(existingVariable, boundExpression);
                 else
                 {

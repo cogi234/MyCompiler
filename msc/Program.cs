@@ -9,10 +9,11 @@ namespace MyCompiler
     {
         static void Main(string[] args)
         {
-            Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
             bool tokenOutput = false;
             bool syntaxTreeOutput = false;
 
+            Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
+            Compilation? previousCompilation = null;
             StringBuilder textBuilder = new StringBuilder();
 
             PrintHelp();
@@ -65,7 +66,9 @@ namespace MyCompiler
                     continue;
 
                 textBuilder.Clear();
-                Compilation compilation = new Compilation(syntaxTree);
+                Compilation compilation = previousCompilation == null
+                    ? new Compilation(syntaxTree)
+                    : previousCompilation.ContinueWith(syntaxTree);
                 EvaluationResult result = compilation.Evaluate(variables);
 
                 if (tokenOutput)
@@ -89,10 +92,16 @@ namespace MyCompiler
                     Console.ResetColor();
                 }
 
-                PrintDiagnostics(result.Diagnostics, text, syntaxTree);
-
-                if (result.Value != null)
+                if (result.Diagnostics.Any())
+                    PrintDiagnostics(result.Diagnostics, text, syntaxTree);
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Magenta;
                     Console.WriteLine(result.Value);
+                    Console.ResetColor();
+
+                    previousCompilation = compilation;
+                }
             }
         }
 

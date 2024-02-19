@@ -7,18 +7,42 @@ namespace MiniCompiler.CodeAnalysis
 {
     public sealed class Compilation
     {
-        public Compilation(SyntaxTree syntaxTree)
+        private BoundGlobalScope? globalScope;
+
+        private Compilation(Compilation? previous, SyntaxTree syntaxTree)
         {
+            Previous = previous;
             SyntaxTree = syntaxTree;
         }
+        public Compilation(SyntaxTree syntaxTree) : this(null, syntaxTree)
+        {
+        }
 
+        public Compilation? Previous { get; }
         public SyntaxTree SyntaxTree { get; }
+
+        internal BoundGlobalScope GlobalScope
+        {
+            get
+            {
+                if (globalScope == null)
+                {
+                    var globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTree.Root);
+                    Interlocked.CompareExchange(ref this.globalScope, globalScope, null);
+                }
+
+                return globalScope;
+            }
+        }
+
+        public Compilation ContinueWith(SyntaxTree syntaxTree)
+        {
+            return new Compilation(this, syntaxTree);
+        }
 
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
         {
-            BoundGlobalScope globalScope = Binder.BindGlobalScope(SyntaxTree.Root);
-
-            ImmutableArray<Diagnostic> diagnostics = SyntaxTree.Diagnostics.Concat(globalScope.Diagnostics).ToImmutableArray();
+            ImmutableArray<Diagnostic> diagnostics = SyntaxTree.Diagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
 
             if (diagnostics.Any())
             {
@@ -26,7 +50,7 @@ namespace MiniCompiler.CodeAnalysis
             }
             else
             {
-                Evaluator evaluator = new Evaluator(globalScope.Expression, variables);
+                Evaluator evaluator = new Evaluator(GlobalScope.Expression, variables);
                 object value = evaluator.Evaluate();
 
                 return new EvaluationResult(diagnostics.ToImmutableArray(), value);

@@ -128,7 +128,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         private ExpressionNode ParseNumberLiteral()
         {
             Token numberToken = ExpectToken(TokenType.Number);
-            return new LiteralExpressionNode(numberToken, numberToken.Value);
+            return new LiteralExpressionNode(numberToken, numberToken.Value ?? 0);
         }
 
         private ExpressionNode ParseNameExpression()
