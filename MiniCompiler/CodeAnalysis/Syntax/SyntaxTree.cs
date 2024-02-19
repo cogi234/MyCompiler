@@ -6,8 +6,12 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 {
     public sealed class SyntaxTree
     {
-        public SyntaxTree(ImmutableArray<Diagnostic> diagnostics, ExpressionNode root, SourceText sourceText)
+        private SyntaxTree(SourceText sourceText)
         {
+            Parser parser = new Parser(sourceText);
+            var root = parser.ParseCompilationUnit();
+            var diagnostics = parser.Diagnostics.ToImmutableArray();
+
             Diagnostics = diagnostics;
             Root = root;
             SourceText = sourceText;
@@ -20,8 +24,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         }
         public static SyntaxTree Parse(SourceText text)
         {
-            Parser parser = new Parser(text);
-            return parser.Parse();
+            return new SyntaxTree(text);
         }
 
         public static IEnumerable<Token> ParseTokens(string text)
@@ -45,7 +48,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
 
         public ImmutableArray<Diagnostic> Diagnostics { get; }
-        public ExpressionNode Root { get; }
+        public CompilationUnit Root { get; }
         public SourceText SourceText { get; }
     }
 }

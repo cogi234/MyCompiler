@@ -4,12 +4,17 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
     public enum NodeType
     {
+        CompilationUnit,
+
+        //Expressions
         LiteralExpression,
         NameExpression,
         UnaryExpression,
         BinaryExpression,
         ParenthesizedExpression,
         AssignmentExpression,
+
+        //Statements
     }
 
     public abstract class SyntaxNode

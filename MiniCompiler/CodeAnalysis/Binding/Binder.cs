@@ -23,7 +23,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         public BoundTree Bind()
         {
-            BoundExpression boundExpression = BindExpression(SyntaxTree.Root);
+            BoundExpression boundExpression = BindExpression(SyntaxTree.Root.Expression);
             return new BoundTree(diagnostics, boundExpression);
         }
 

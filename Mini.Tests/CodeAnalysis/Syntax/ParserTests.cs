@@ -22,6 +22,7 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             {
                 using (AssertingEnumerator e = new AssertingEnumerator(expression))
                 {
+                    e.AssertCompilationUnit();
                     e.AssertBinaryExpressionNode(op2, text2);
                     e.AssertBinaryExpressionNode(op1, text1);
                     e.AssertNode(NodeType.NameExpression);
@@ -33,6 +34,7 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             {
                 using (AssertingEnumerator e = new AssertingEnumerator(expression))
                 {
+                    e.AssertCompilationUnit();
                     e.AssertBinaryExpressionNode(op1, text1);
                     e.AssertNode(NodeType.NameExpression);
                     e.AssertBinaryExpressionNode(op2, text2);
@@ -58,6 +60,7 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             {
                 using (AssertingEnumerator e = new AssertingEnumerator(expression))
                 {
+                    e.AssertCompilationUnit();
                     e.AssertBinaryExpressionNode(opBin, text2);
                     e.AssertUnaryExpressionNode(opUn, text1);
                     e.AssertNode(NodeType.NameExpression);
@@ -68,6 +71,7 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             {
                 using (AssertingEnumerator e = new AssertingEnumerator(expression))
                 {
+                    e.AssertCompilationUnit();
                     e.AssertUnaryExpressionNode(opUn, text1);
                     e.AssertBinaryExpressionNode(opBin, text2);
                     e.AssertNode(NodeType.NameExpression);

@@ -35,11 +35,11 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             diagnostics.AddRange(lexer.Diagnostics);
         }
 
-        public SyntaxTree Parse()
+        public CompilationUnit ParseCompilationUnit()
         {
             ExpressionNode expression = ParseExpression();
             ExpectToken(TokenType.EndOfFile);
-            return new SyntaxTree(diagnostics.ToImmutableArray(), expression, sourceText);
+            return new CompilationUnit(expression);
         }
 
         private ExpressionNode ParseExpression(int parentPrecedence = 0)
