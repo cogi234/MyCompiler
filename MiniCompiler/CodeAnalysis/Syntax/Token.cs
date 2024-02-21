@@ -18,12 +18,15 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         ForwardSlash,
         OpenParenthesis,
         CloseParenthesis,
+        OpenBrace,
+        CloseBrace,
         Bang,
         BangEqual,
         Equal,
         EqualEqual,
         AmpersandAmpersand,
         PipePipe,
+        Semicolon,
 
         //Keywords
         FalseKeyword,

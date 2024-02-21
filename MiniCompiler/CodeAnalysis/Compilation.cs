@@ -50,7 +50,7 @@ namespace MiniCompiler.CodeAnalysis
             }
             else
             {
-                Evaluator evaluator = new Evaluator(GlobalScope.Expression, variables);
+                Evaluator evaluator = new Evaluator(GlobalScope.Statement, variables);
                 object value = evaluator.Evaluate();
 
                 return new EvaluationResult(diagnostics.ToImmutableArray(), value);

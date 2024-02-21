@@ -4,20 +4,20 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class CompilationUnit : SyntaxNode
     {
-        public CompilationUnit(ExpressionNode expression)
+        public CompilationUnit(StatementNode statement)
         {
-            Expression = expression;
+            Statement = statement;
         }
 
-        public ExpressionNode Expression { get; }
+        public StatementNode Statement { get; }
 
         public override NodeType Type => NodeType.CompilationUnit;
 
-        public override TextSpan Span => Expression.Span;
+        public override TextSpan Span => Statement.Span;
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
-            yield return Expression;
+            yield return Statement;
         }
     }
 }

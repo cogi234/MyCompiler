@@ -2,6 +2,11 @@
 {
     enum BoundNodeType
     {
+        //Statements
+        BlockStatement,
+        ExpressionStatement,
+
+        //Expressions
         LiteralExpression,
         VariableExpression,
         AssignmentExpression,

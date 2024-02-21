@@ -37,10 +37,44 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public CompilationUnit ParseCompilationUnit()
         {
-            ExpressionNode expression = ParseExpression();
+            StatementNode statement = ParseStatement();
             ExpectToken(TokenType.EndOfFile);
-            return new CompilationUnit(expression);
+            return new CompilationUnit(statement);
         }
+
+        //Statement Parsing
+
+        private StatementNode ParseStatement()
+        {
+            if (Current.Type == TokenType.OpenBrace)
+                return ParseBlockStatement();
+
+            return ParseExpressionStatement();
+        }
+
+        private BlockStatementNode ParseBlockStatement()
+        {
+            Token openToken = ExpectToken(TokenType.OpenBrace);
+
+            ImmutableArray<StatementNode>.Builder statements = ImmutableArray.CreateBuilder<StatementNode>();
+            while (Current.Type != TokenType.CloseBrace && Current.Type != TokenType.EndOfFile)
+            {
+                statements.Add(ParseStatement());
+            }
+
+            Token closeToken = ExpectToken(TokenType.CloseBrace);
+            return new BlockStatementNode(openToken, statements.ToImmutable(), closeToken);
+        }
+
+        private ExpressionStatementNode ParseExpressionStatement()
+        {
+            var expression = ParseExpression();
+            var semicolon = ExpectToken(TokenType.Semicolon);
+            return new ExpressionStatementNode(expression, semicolon);
+        }
+
+
+        //Expression parsing
 
         private ExpressionNode ParseExpression(int parentPrecedence = 0)
         {
@@ -110,7 +144,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             }
         }
 
-        private ExpressionNode ParseParenthesizedExpression()
+        private ParenthesizedExpressionNode ParseParenthesizedExpression()
         {
             Token openToken = ExpectToken(TokenType.OpenParenthesis);
             ExpressionNode expression = ParseExpression();
@@ -118,20 +152,20 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             return new ParenthesizedExpressionNode(openToken, expression, closeToken);
         }
 
-        private ExpressionNode ParseBooleanLiteral()
+        private LiteralExpressionNode ParseBooleanLiteral()
         {
             Token token = ExpectTokens(TokenType.TrueKeyword, TokenType.FalseKeyword);
             bool value = token.Type == TokenType.TrueKeyword;
             return new LiteralExpressionNode(token, value);
         }
 
-        private ExpressionNode ParseNumberLiteral()
+        private LiteralExpressionNode ParseNumberLiteral()
         {
             Token numberToken = ExpectToken(TokenType.Number);
             return new LiteralExpressionNode(numberToken, numberToken.Value ?? 0);
         }
 
-        private ExpressionNode ParseNameExpression()
+        private NameExpressionNode ParseNameExpression()
         {
             Token token = ExpectToken(TokenType.Identifier);
             return new NameExpressionNode(token);

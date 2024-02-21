@@ -56,6 +56,18 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     tokenType = TokenType.CloseParenthesis;
                     position++;
                     break;
+                case '{':
+                    tokenType = TokenType.OpenBrace;
+                    position++;
+                    break;
+                case '}':
+                    tokenType = TokenType.CloseBrace;
+                    position++;
+                    break;
+                case ';':
+                    tokenType = TokenType.Semicolon;
+                    position++;
+                    break;
                 case '!':
                     position++;
                     if (Current != '=')

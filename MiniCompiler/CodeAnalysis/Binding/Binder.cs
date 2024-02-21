@@ -23,14 +23,14 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             BoundScope parentScope = CreateParentScope(previousGlobalScope);
             Binder binder = new Binder(parentScope);
-            BoundExpression expression = binder.BindExpression(compilationUnit.Expression);
+            BoundStatement statement = binder.BindStatement(compilationUnit.Statement);
             ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
             ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
 
             if (previousGlobalScope != null)
                 diagnostics = diagnostics.InsertRange(0, previousGlobalScope.Diagnostics);
 
-            return new BoundGlobalScope(previousGlobalScope, diagnostics, variables, expression);
+            return new BoundGlobalScope(previousGlobalScope, diagnostics, variables, statement);
         }
 
         private static BoundScope CreateParentScope(BoundGlobalScope? previous)
@@ -58,6 +58,41 @@ namespace MiniCompiler.CodeAnalysis.Binding
             return createdScope;
         }
 
+        //Binding statements
+
+        private BoundStatement BindStatement(StatementNode node)
+        {
+            switch (node.Type)
+            {
+                case NodeType.BlockStatement:
+                    return BindBlockStatement((BlockStatementNode)node);
+                case NodeType.ExpressionStatement:
+                    return BindExpressionStatement((ExpressionStatementNode)node);
+                default:
+                    throw new Exception($"Unexpected syntax node {node.Type}");
+            }
+        }
+
+        private BoundBlockStatement BindBlockStatement(BlockStatementNode node)
+        {
+            ImmutableArray<BoundStatement>.Builder statements = ImmutableArray.CreateBuilder<BoundStatement>();
+
+            foreach (StatementNode statement in node.Statements)
+            {
+                statements.Add(BindStatement(statement));
+            }
+
+            return new BoundBlockStatement(statements.ToImmutable());
+        }
+
+        private BoundExpressionStatement BindExpressionStatement(ExpressionStatementNode node)
+        {
+            BoundExpression expression = BindExpression(node.Expression);
+            return new BoundExpressionStatement(expression);
+        }
+
+        //Binding expressions
+
         private BoundExpression BindExpression(ExpressionNode node)
         {
             switch (node.Type)
@@ -79,7 +114,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             }
         }
 
-        private BoundExpression BindLiteralExpression(LiteralExpressionNode node)
+        private BoundLiteralExpression BindLiteralExpression(LiteralExpressionNode node)
         {
             object value = node.Value ?? 0;
             return new BoundLiteralExpression(value);

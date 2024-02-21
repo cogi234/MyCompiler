@@ -6,6 +6,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
     {
         CompilationUnit,
 
+        //Statements
+        BlockStatement,
+        ExpressionStatement,
+
         //Expressions
         LiteralExpression,
         NameExpression,
@@ -13,8 +17,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         BinaryExpression,
         ParenthesizedExpression,
         AssignmentExpression,
-
-        //Statements
     }
 
     public abstract class SyntaxNode
@@ -55,7 +57,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 
             indent += isLast ? "   " : "│  ";
 
-            SyntaxNode lastChild = GetChildren().LastOrDefault();
+            SyntaxNode? lastChild = GetChildren().LastOrDefault();
             foreach (SyntaxNode child in GetChildren())
             {
                 child.PrettyPrint(writer, indent, child == lastChild);

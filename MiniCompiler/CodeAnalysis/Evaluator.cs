@@ -6,20 +6,52 @@ namespace MiniCompiler.CodeAnalysis
 
     internal sealed class Evaluator
     {
-        private BoundExpression root;
+        private BoundStatement root;
         private readonly Dictionary<VariableSymbol, object> variables;
 
-        public Dictionary<VariableSymbol, object> Variables => variables;
-        public Evaluator(BoundExpression root, Dictionary<VariableSymbol, object> variables)
+        private object? lastValue = null;
+
+        public Evaluator(BoundStatement root, Dictionary<VariableSymbol, object> variables)
         {
             this.root = root;
             this.variables = variables;
         }
 
-        public object Evaluate()
+        public object? Evaluate()
         {
-            return EvaluateExpression(root);
+            EvaluateStatement(root);
+            return lastValue;
         }
+
+        //Evaluate statements
+
+        private void EvaluateStatement(BoundStatement statement)
+        {
+            switch (statement.BoundNodeType)
+            {
+                case BoundNodeType.BlockStatement:
+                    EvaluateBlockStatement((BoundBlockStatement)statement);
+                    break;
+                case BoundNodeType.ExpressionStatement:
+                    EvaluateExpressionStatement((BoundExpressionStatement)statement);
+                    break;
+                default:
+                    throw new Exception($"Unexpected node {statement.BoundNodeType}");
+            }
+        }
+
+        private void EvaluateBlockStatement(BoundBlockStatement statement)
+        {
+            foreach (BoundStatement currentStatement in statement.Statements)
+                EvaluateStatement(currentStatement);
+        }
+
+        private void EvaluateExpressionStatement(BoundExpressionStatement statement)
+        {
+            lastValue = EvaluateExpression(statement.Expression);
+        }
+
+        //Evaluate expressions
 
         private object EvaluateExpression(BoundExpression expression)
         {
