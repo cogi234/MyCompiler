@@ -4,16 +4,16 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class NameExpressionNode : ExpressionNode
     {
-        public NameExpressionNode(Token identifierToken)
+        public NameExpressionNode(Token identifier)
         {
-            IdentifierToken = identifierToken;
+            Identifier = identifier;
         }
 
-        public Token IdentifierToken { get; }
+        public Token Identifier { get; }
 
         public override NodeType Type => NodeType.NameExpression;
 
-        public override TextSpan Span => IdentifierToken.Span;
+        public override TextSpan Span => Identifier.Span;
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {

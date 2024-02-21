@@ -1,5 +1,6 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
+using System.Linq.Expressions;
 
 namespace MiniCompiler.CodeAnalysis
 {
@@ -35,6 +36,9 @@ namespace MiniCompiler.CodeAnalysis
                 case BoundNodeType.ExpressionStatement:
                     EvaluateExpressionStatement((BoundExpressionStatement)statement);
                     break;
+                case BoundNodeType.VariableDeclarationStatement:
+                    EvaluateVariableDeclarationStatement((BoundVariableDeclarationStatement)statement);
+                    break;
                 default:
                     throw new Exception($"Unexpected node {statement.BoundNodeType}");
             }
@@ -44,6 +48,13 @@ namespace MiniCompiler.CodeAnalysis
         {
             foreach (BoundStatement currentStatement in statement.Statements)
                 EvaluateStatement(currentStatement);
+        }
+
+        private void EvaluateVariableDeclarationStatement(BoundVariableDeclarationStatement statement)
+        {
+            object value = EvaluateExpression(statement.Initializer);
+            variables[statement.Variable] = value;
+            lastValue = value;
         }
 
         private void EvaluateExpressionStatement(BoundExpressionStatement statement)
@@ -58,45 +69,42 @@ namespace MiniCompiler.CodeAnalysis
             switch (expression.BoundNodeType)
             {
                 case BoundNodeType.LiteralExpression:
-                    return EvaluateLiteralExpression(expression);
+                    return EvaluateLiteralExpression((BoundLiteralExpression)expression);
                 case BoundNodeType.VariableExpression:
-                    return EvaluateVariableExpression(expression);
+                    return EvaluateVariableExpression((BoundVariableExpression)expression);
                 case BoundNodeType.AssignmentExpression:
-                    return EvaluateAssignmentExpression(expression);
+                    return EvaluateAssignmentExpression((BoundAssignmentExpression)expression);
                 case BoundNodeType.UnaryExpression:
-                    return EvaluateUnaryExpression(expression);
+                    return EvaluateUnaryExpression((BoundUnaryExpression)expression);
                 case BoundNodeType.BinaryExpression:
-                    return EvaluateBinaryExpression(expression);
+                    return EvaluateBinaryExpression((BoundBinaryExpression)expression);
                 default:
                     throw new Exception($"Unexpected node {expression.BoundNodeType}");
             }
         }
 
-        private static object EvaluateLiteralExpression(BoundExpression expression)
+        private static object EvaluateLiteralExpression(BoundLiteralExpression expression)
         {
-            return ((BoundLiteralExpression)expression).Value;
+            return expression.Value;
         }
 
-        private object EvaluateVariableExpression(BoundExpression expression)
+        private object EvaluateVariableExpression(BoundVariableExpression expression)
         {
-            BoundVariableExpression variableExpression = (BoundVariableExpression)expression;
-            object value = variables[variableExpression.Variable];
+            object value = variables[expression.Variable];
             return value;
         }
 
-        private object EvaluateAssignmentExpression(BoundExpression expression)
+        private object EvaluateAssignmentExpression(BoundAssignmentExpression expression)
         {
-            BoundAssignmentExpression assignmentExpression = (BoundAssignmentExpression)expression;
-            object value = EvaluateExpression(assignmentExpression.Expression);
-            variables[assignmentExpression.Variable] = value;
+            object value = EvaluateExpression(expression.Expression);
+            variables[expression.Variable] = value;
             return value;
         }
 
-        private object EvaluateUnaryExpression(BoundExpression expression)
+        private object EvaluateUnaryExpression(BoundUnaryExpression expression)
         {
-            BoundUnaryExpression unaryExpression = (BoundUnaryExpression)expression;
-            object operand = EvaluateExpression(unaryExpression.Operand);
-            switch (unaryExpression.UnaryOperator.OperationType)
+            object operand = EvaluateExpression(expression.Operand);
+            switch (expression.UnaryOperator.OperationType)
             {
                 case BoundUnaryOperationType.Identity:
                     return (int)operand;
@@ -105,16 +113,15 @@ namespace MiniCompiler.CodeAnalysis
                 case BoundUnaryOperationType.LogicalNegation:
                     return !(bool)operand;
                 default:
-                    throw new Exception($"Unhandled unary operation {unaryExpression.UnaryOperator.OperationType}");
+                    throw new Exception($"Unhandled unary operation {expression.UnaryOperator.OperationType}");
             }
         }
 
-        private object EvaluateBinaryExpression(BoundExpression expression)
+        private object EvaluateBinaryExpression(BoundBinaryExpression expression)
         {
-            BoundBinaryExpression binaryExpression = (BoundBinaryExpression)expression;
-            object left = EvaluateExpression(binaryExpression.Left);
-            object right = EvaluateExpression(binaryExpression.Right);
-            switch (binaryExpression.BinaryOperator.OperationType)
+            object left = EvaluateExpression(expression.Left);
+            object right = EvaluateExpression(expression.Right);
+            switch (expression.BinaryOperator.OperationType)
             {
                 case BoundBinaryOperationType.Addition:
                     return (int)left + (int)right;
@@ -134,7 +141,7 @@ namespace MiniCompiler.CodeAnalysis
                 case BoundBinaryOperationType.Unequality:
                     return !Equals(left, right);
                 default:
-                    throw new Exception($"Unhandled binary operation {binaryExpression.BinaryOperator.OperationType}");
+                    throw new Exception($"Unhandled binary operation {expression.BinaryOperator.OperationType}");
             }
         }
     }

@@ -19,9 +19,6 @@ namespace MiniCompiler.CodeAnalysis.Text
 
         public int GetLineIndex(int position)
         {
-            if (position >= text.Length)
-                return Lines.Length - 1;
-
             int lower = 0;
             int upper = Lines.Length - 1;
 
@@ -29,10 +26,9 @@ namespace MiniCompiler.CodeAnalysis.Text
             {
                 int index = lower + (upper - lower) / 2;
                 int start = Lines[index].SpanWithLineBreak.Start;
-                int end = Lines[index].SpanWithLineBreak.End;
 
                 //We found the line
-                if (position >= start && position <= end)
+                if (position == start)
                     return index;
 
                 //Current line is before our position
@@ -69,12 +65,12 @@ namespace MiniCompiler.CodeAnalysis.Text
             if (position >= lineStart)
                 AddLine(result, lineStart, position, 0);
 
-            return result.DrainToImmutable();
+            return result.ToImmutable();
         }
 
         private void AddLine(ImmutableArray<TextLine>.Builder result, int lineStart, int position, int lineBreakWidth)
         {
-            TextLine line = new TextLine(this, new TextSpan(lineStart, position - 1), lineBreakWidth);
+            TextLine line = new TextLine(this, TextSpan.FromBounds(lineStart, position), lineBreakWidth);
             result.Add(line);
         }
 

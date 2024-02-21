@@ -73,5 +73,17 @@ namespace MiniCompiler.CodeAnalysis
             string message = $"Cannot convert type {fromType} to {toType}.";
             Report(span, message);
         }
+
+        internal void ReportAlreadyExistingVariable(TextSpan span, string name)
+        {
+            string message = $"Variable '{name}' already exists.";
+            Report(span, message);
+        }
+
+        internal void ReportCannotAssign(TextSpan span, string name)
+        {
+            string message = $"Cannot assign to variable '{name}', it is read only.";
+            Report(span, message);
+        }
     }
 }

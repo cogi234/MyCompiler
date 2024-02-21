@@ -31,6 +31,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         //Keywords
         FalseKeyword,
         TrueKeyword,
+        VarKeyword,
+        LetKeyword,
     }
     public sealed class Token
     {

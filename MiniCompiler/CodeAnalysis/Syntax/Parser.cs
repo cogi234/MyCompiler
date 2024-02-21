@@ -7,7 +7,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
     internal sealed class Parser
     {
         private readonly ImmutableArray<Token> tokens;
-        private readonly SourceText sourceText;
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         public DiagnosticBag Diagnostics => diagnostics;
 
@@ -15,7 +14,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public Parser(SourceText text)
         {
-            sourceText = text;
             List<Token> tokens = new List<Token>();
             Lexer lexer = new Lexer(text);
             Token token;
@@ -46,10 +44,16 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         private StatementNode ParseStatement()
         {
-            if (Current.Type == TokenType.OpenBrace)
-                return ParseBlockStatement();
-
-            return ParseExpressionStatement();
+            switch (Current.Type)
+            {
+                case TokenType.OpenBrace:
+                    return ParseBlockStatement();
+                case TokenType.LetKeyword:
+                case TokenType.VarKeyword:
+                    return ParseVariableDeclarationStatement();
+                default:
+                    return ParseExpressionStatement();
+            }
         }
 
         private BlockStatementNode ParseBlockStatement()
@@ -66,10 +70,28 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             return new BlockStatementNode(openToken, statements.ToImmutable(), closeToken);
         }
 
+        private VariableDeclarationStatementNode ParseVariableDeclarationStatement()
+        {
+            Token keyword = ExpectTokens(TokenType.VarKeyword, TokenType.LetKeyword);
+            Token identifier = ExpectToken(TokenType.Identifier);
+
+            //The initializer is optional
+            Token? equal = null;
+            ExpressionNode? initializer = null;
+            //if (Current.Type == TokenType.Equal)
+            //{   Commented until typed variable declaration is implemented
+                equal = ExpectToken(TokenType.Equal);
+                initializer = ParseExpression();
+            //}
+
+            Token semicolon = ExpectToken(TokenType.Semicolon);
+            return new VariableDeclarationStatementNode(keyword, identifier, equal, initializer, semicolon);
+        }
+
         private ExpressionStatementNode ParseExpressionStatement()
         {
-            var expression = ParseExpression();
-            var semicolon = ExpectToken(TokenType.Semicolon);
+            ExpressionNode expression = ParseExpression();
+            Token semicolon = ExpectToken(TokenType.Semicolon);
             return new ExpressionStatementNode(expression, semicolon);
         }
 

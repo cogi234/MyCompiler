@@ -52,6 +52,10 @@
                     return TokenType.FalseKeyword;
                 case "true":
                     return TokenType.TrueKeyword;
+                case "var":
+                    return TokenType.VarKeyword;
+                case "let":
+                    return TokenType.LetKeyword;
                 default:
                     return TokenType.Identifier;
             }
@@ -93,6 +97,12 @@
                     return "(";
                 case TokenType.CloseParenthesis:
                     return ")";
+                case TokenType.OpenBrace:
+                    return "{";
+                case TokenType.CloseBrace:
+                    return "}";
+                case TokenType.Semicolon:
+                    return ";";
                 case TokenType.Bang:
                     return "!";
                 case TokenType.BangEqual:
@@ -109,6 +119,10 @@
                     return "false";
                 case TokenType.TrueKeyword:
                     return "true";
+                case TokenType.VarKeyword:
+                    return "var";
+                case TokenType.LetKeyword:
+                    return "let";
                 default:
                     return null;
             }

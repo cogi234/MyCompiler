@@ -1,7 +1,9 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+using MiniCompiler.CodeAnalysis.Text;
 using System.Collections.Immutable;
+using System.Xml.Linq;
 
 namespace MiniCompiler.CodeAnalysis.Binding
 {
@@ -68,6 +70,8 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     return BindBlockStatement((BlockStatementNode)node);
                 case NodeType.ExpressionStatement:
                     return BindExpressionStatement((ExpressionStatementNode)node);
+                case NodeType.VariableDeclarationStatement:
+                    return BindVariableDeclarationStatement((VariableDeclarationStatementNode)node);
                 default:
                     throw new Exception($"Unexpected syntax node {node.Type}");
             }
@@ -76,13 +80,31 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundBlockStatement BindBlockStatement(BlockStatementNode node)
         {
             ImmutableArray<BoundStatement>.Builder statements = ImmutableArray.CreateBuilder<BoundStatement>();
+            scope = new BoundScope(scope);
 
             foreach (StatementNode statement in node.Statements)
             {
                 statements.Add(BindStatement(statement));
             }
 
+            scope = scope.Parent;
+
             return new BoundBlockStatement(statements.ToImmutable());
+        }
+
+        private BoundStatement BindVariableDeclarationStatement(VariableDeclarationStatementNode node)
+        {
+            bool isReadOnly = node.Keyword.Type == TokenType.LetKeyword;
+            string name = node.Identifier.Text ?? "";
+            //For now, we don't handle declarations without initializer
+            BoundExpression initializer = BindExpression(node.Initializer);
+
+            VariableSymbol assignmentVariable = new VariableSymbol(name, isReadOnly, initializer.Type);
+
+            if (!scope.TryDeclare(assignmentVariable))
+                diagnostics.ReportAlreadyExistingVariable(node.Span, name);
+
+            return new BoundVariableDeclarationStatement(assignmentVariable, initializer);
         }
 
         private BoundExpressionStatement BindExpressionStatement(ExpressionStatementNode node)
@@ -122,13 +144,13 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindNameExpression(NameExpressionNode node)
         {
-            string name = node.IdentifierToken.Text ?? "";
+            string name = node.Identifier.Text ?? "";
 
             if (scope.TryLookup(name, out VariableSymbol? variable))
                 return new BoundVariableExpression(variable);
             else
             {
-                diagnostics.ReportUndefinedName(node.IdentifierToken.Span, name);
+                diagnostics.ReportUndefinedName(node.Identifier.Span, name);
                 return new BoundLiteralExpression(0);
             }
         }
@@ -138,22 +160,25 @@ namespace MiniCompiler.CodeAnalysis.Binding
             string name = node.IdentifierToken.Text ?? "";
             BoundExpression boundExpression = BindExpression(node.Expression);
 
-            VariableSymbol assignmentVariable = new VariableSymbol(name, boundExpression.Type);
-
-            if (scope.TryLookup(name, out VariableSymbol? existingVariable))
+            if (!scope.TryLookup(name, out VariableSymbol? variable))
             {
-                if (existingVariable.Type == assignmentVariable.Type)
-                    return new BoundAssignmentExpression(existingVariable, boundExpression);
-                else
-                {
-                    diagnostics.ReportCannotConvert(node.Expression.Span, assignmentVariable.Type, existingVariable.Type);
-                    return new BoundLiteralExpression(0);
-                }
-            } else
-            {
-                scope.TryDeclare(assignmentVariable);
-                return new BoundAssignmentExpression(assignmentVariable, boundExpression);
+                diagnostics.ReportUndefinedName(node.IdentifierToken.Span, name);
+                return boundExpression;
             }
+
+            if (variable.Type != boundExpression.Type)
+            {
+                diagnostics.ReportCannotConvert(node.Expression.Span, boundExpression.Type, variable.Type);
+                return boundExpression;
+            }
+
+            if (variable.IsReadOnly)
+            {
+                diagnostics.ReportCannotAssign(node.IdentifierToken.Span, name);
+                return boundExpression;
+            }
+
+            return new BoundAssignmentExpression(variable, boundExpression);
         }
 
         private BoundExpression BindUnaryExpression(UnaryExpressionNode node)

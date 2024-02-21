@@ -1,6 +1,7 @@
 ﻿using MiniCompiler.CodeAnalysis;
 using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Syntax;
+using MiniCompiler.CodeAnalysis.Text;
 using System.Text;
 
 namespace MyCompiler
@@ -53,6 +54,7 @@ namespace MyCompiler
                     else if (input.ToLower() == "#reset")
                     {
                         previousCompilation = null;
+                        variables = new Dictionary<VariableSymbol, object>();
                         Console.WriteLine("Reset the context");
                         continue;
                     }
@@ -99,7 +101,7 @@ namespace MyCompiler
                 }
 
                 if (result.Diagnostics.Any())
-                    PrintDiagnostics(result.Diagnostics, text, syntaxTree);
+                    PrintDiagnostics(result.Diagnostics, syntaxTree);
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.Magenta;
@@ -121,22 +123,27 @@ namespace MyCompiler
             Console.WriteLine("#reset: reset the context");
         }
 
-        static void PrintDiagnostics(IReadOnlyList<Diagnostic> diagnostics, string line, SyntaxTree syntaxTree)
+        static void PrintDiagnostics(IReadOnlyList<Diagnostic> diagnostics, SyntaxTree syntaxTree)
         {
             foreach (Diagnostic diag in diagnostics)
             {
-
                 int lineIndex = syntaxTree.SourceText.GetLineIndex(diag.Span.Start);
-                int column = diag.Span.Start - syntaxTree.SourceText.Lines[lineIndex].Span.Start;
-                string prefix = line.Substring(0, diag.Span.Start);
-                string error = line.Substring(diag.Span.Start, diag.Span.Length);
-                string suffix = line.Substring(diag.Span.End);
+                TextLine line = syntaxTree.SourceText.Lines[lineIndex];
+                int column = diag.Span.Start - line.Span.Start;
+
+                var prefixSpan = TextSpan.FromBounds(line.Span.Start, diag.Span.Start);
+                var suffixSpan = TextSpan.FromBounds(diag.Span.End, line.Span.End);
+
+                string prefix = syntaxTree.SourceText.ToString(prefixSpan);
+                string error = syntaxTree.SourceText.ToString(diag.Span);
+                string suffix = syntaxTree.SourceText.ToString(suffixSpan);
 
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.Write($"({lineIndex + 1}, {column + 1}): ");
                 Console.WriteLine(diag);
 
                 Console.ResetColor();
+                Console.Write("  ");
                 Console.Write(prefix);
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write(error);
