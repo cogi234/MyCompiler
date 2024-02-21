@@ -53,24 +53,24 @@ namespace MiniCompiler.CodeAnalysis
 
         public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, Type operandType)
         {
-            string message = $"Unary operator '{operatorText}' is not defined for type {operandType}";
+            string message = $"Unary operator '{operatorText}' is not defined for type {operandType}.";
             Report(span, message);
         }
         public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, Type leftType, Type rightType)
         {
-            string message = $"Binary operator '{operatorText}' is not defined for for types {leftType} and {rightType}";
+            string message = $"Binary operator '{operatorText}' is not defined for for types {leftType} and {rightType}.";
             Report(span, message);
         }
 
         public void ReportUndefinedName(TextSpan span, string name)
         {
-            string message = $"Variable '{name}' doesn't exist";
+            string message = $"Variable '{name}' doesn't exist.";
             Report(span, message);
         }
 
-        internal void ReportWrongTypeAssigment(TextSpan span, string name, Type currentType, Type assigmentType)
+        internal void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
         {
-            string message = $"Tried to assign value of type {assigmentType} to variable '{name}' of type {currentType}";
+            string message = $"Cannot convert type {fromType} to {toType}.";
             Report(span, message);
         }
     }

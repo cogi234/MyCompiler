@@ -107,11 +107,11 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             if (scope.TryLookup(name, out VariableSymbol? existingVariable))
             {
-                if (existingVariable.Type == assignmentVariable.Type || true /* TEMPORARY until I implement variable declaration */)
+                if (existingVariable.Type == assignmentVariable.Type)
                     return new BoundAssignmentExpression(existingVariable, boundExpression);
                 else
                 {
-                    diagnostics.ReportWrongTypeAssigment(node.Span, name, existingVariable.Type, assignmentVariable.Type);
+                    diagnostics.ReportCannotConvert(node.Expression.Span, assignmentVariable.Type, existingVariable.Type);
                     return new BoundLiteralExpression(0);
                 }
             } else
