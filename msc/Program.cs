@@ -50,6 +50,12 @@ namespace MyCompiler
                         Console.WriteLine(syntaxTreeOutput ? "Toggled syntax tree on" : "Toggled syntax tree off");
                         continue;
                     }
+                    else if (input.ToLower() == "#reset")
+                    {
+                        previousCompilation = null;
+                        Console.WriteLine("Reset the context");
+                        continue;
+                    }
                     else if (input.ToLower() == "#help")
                     {
                         PrintHelp();
@@ -112,6 +118,7 @@ namespace MyCompiler
             Console.WriteLine("#clear: clear the screen");
             Console.WriteLine("#token: toggle token display");
             Console.WriteLine("#tree: toggle syntax tree");
+            Console.WriteLine("#reset: reset the context");
         }
 
         static void PrintDiagnostics(IReadOnlyList<Diagnostic> diagnostics, string line, SyntaxTree syntaxTree)

@@ -26,6 +26,10 @@ namespace MiniCompiler.CodeAnalysis.Binding
             BoundExpression expression = binder.BindExpression(compilationUnit.Expression);
             ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
             ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
+
+            if (previousGlobalScope != null)
+                diagnostics = diagnostics.InsertRange(0, previousGlobalScope.Diagnostics);
+
             return new BoundGlobalScope(previousGlobalScope, diagnostics, variables, expression);
         }
 
@@ -103,7 +107,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             if (scope.TryLookup(name, out VariableSymbol? existingVariable))
             {
-                if (existingVariable.Type == assignmentVariable.Type || true /* TEMPORARY */)
+                if (existingVariable.Type == assignmentVariable.Type || true /* TEMPORARY until I implement variable declaration */)
                     return new BoundAssignmentExpression(existingVariable, boundExpression);
                 else
                 {
