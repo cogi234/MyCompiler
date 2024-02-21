@@ -14,7 +14,7 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             int precedence2 = SyntaxFacts.GetBinaryOperatorPrecedence(op2);
             string text1 = SyntaxFacts.GetText(op1);
             string text2 = SyntaxFacts.GetText(op2);
-            string text = $"a {text1} b {text2} c";
+            string text = $"a {text1} b {text2} c;";
 
             SyntaxNode expression = SyntaxTree.Parse(text).Root;
 
@@ -22,7 +22,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             {
                 using (AssertingEnumerator e = new AssertingEnumerator(expression))
                 {
-                    e.AssertCompilationUnit();
+                    e.AssertNode(NodeType.CompilationUnit);
+                    e.AssertNode(NodeType.ExpressionStatement);
                     e.AssertBinaryExpressionNode(op2, text2);
                     e.AssertBinaryExpressionNode(op1, text1);
                     e.AssertNode(NodeType.NameExpression);
@@ -34,7 +35,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             {
                 using (AssertingEnumerator e = new AssertingEnumerator(expression))
                 {
-                    e.AssertCompilationUnit();
+                    e.AssertNode(NodeType.CompilationUnit);
+                    e.AssertNode(NodeType.ExpressionStatement);
                     e.AssertBinaryExpressionNode(op1, text1);
                     e.AssertNode(NodeType.NameExpression);
                     e.AssertBinaryExpressionNode(op2, text2);
@@ -52,7 +54,7 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             int precedence2 = SyntaxFacts.GetBinaryOperatorPrecedence(opBin);
             string text1 = SyntaxFacts.GetText(opUn);
             string text2 = SyntaxFacts.GetText(opBin);
-            string text = $"{text1} b {text2} c";
+            string text = $"{text1} b {text2} c;";
 
             SyntaxNode expression = SyntaxTree.Parse(text).Root;
 
@@ -60,7 +62,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             {
                 using (AssertingEnumerator e = new AssertingEnumerator(expression))
                 {
-                    e.AssertCompilationUnit();
+                    e.AssertNode(NodeType.CompilationUnit);
+                    e.AssertNode(NodeType.ExpressionStatement);
                     e.AssertBinaryExpressionNode(opBin, text2);
                     e.AssertUnaryExpressionNode(opUn, text1);
                     e.AssertNode(NodeType.NameExpression);
@@ -71,7 +74,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             {
                 using (AssertingEnumerator e = new AssertingEnumerator(expression))
                 {
-                    e.AssertCompilationUnit();
+                    e.AssertNode(NodeType.CompilationUnit);
+                    e.AssertNode(NodeType.ExpressionStatement);
                     e.AssertUnaryExpressionNode(opUn, text1);
                     e.AssertBinaryExpressionNode(opBin, text2);
                     e.AssertNode(NodeType.NameExpression);

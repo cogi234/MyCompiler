@@ -26,18 +26,7 @@ namespace Mini.Tests.CodeAnalysis.Syntax
                 throw;
             }
         }
-        public void AssertCompilationUnit()
-        {
-            try
-            {
-                AssertNode(NodeType.CompilationUnit);
-            }
-            catch
-            {
-                hasErrors = true;
-                throw;
-            }
-        }
+
         public void AssertBinaryExpressionNode(TokenType operatorType, string operatorText)
         {
             try
