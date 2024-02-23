@@ -113,13 +113,9 @@ namespace Mini.Tests.CodeAnalysis.Syntax
                 return true;
             if (t1 == TokenType.Number && t2 == TokenType.Number)
                 return true;
-            if (t1 == TokenType.Bang && t2 == TokenType.Equal)
-                return true;
-            if (t1 == TokenType.Equal && t2 == TokenType.Equal)
-                return true;
-            if (t1 == TokenType.Bang && t2 == TokenType.EqualEqual)
-                return true;
-            if (t1 == TokenType.Equal && t2 == TokenType.EqualEqual)
+            if (t1 == TokenType.LessThan || t1 == TokenType.LessThanEqual || t1 == TokenType.GreaterThan ||
+                t1 == TokenType.GreaterThanEqual || t1 == TokenType.Bang || t1 == TokenType.Equal)
+                if (t2 == TokenType.Equal || t2 == TokenType.EqualEqual)
                 return true;
 
             return false;

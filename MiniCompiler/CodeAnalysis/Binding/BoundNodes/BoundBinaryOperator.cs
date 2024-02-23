@@ -25,17 +25,23 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 
         private static BoundBinaryOperator[] operators =
         {
-            new BoundBinaryOperator(BoundBinaryOperationType.LogicalAnd, TokenType.AmpersandAmpersand, typeof(bool)),
-            new BoundBinaryOperator(BoundBinaryOperationType.LogicalOr, TokenType.PipePipe, typeof(bool)),
-            new BoundBinaryOperator(BoundBinaryOperationType.Equality, TokenType.EqualEqual, typeof(bool)),
-            new BoundBinaryOperator(BoundBinaryOperationType.Unequality, TokenType.BangEqual, typeof(bool)),
-
+            //Numbers
             new BoundBinaryOperator(BoundBinaryOperationType.Addition, TokenType.Plus, typeof(int)),
             new BoundBinaryOperator(BoundBinaryOperationType.Subtraction, TokenType.Minus, typeof(int)),
             new BoundBinaryOperator(BoundBinaryOperationType.Multiplication, TokenType.Star, typeof(int)),
             new BoundBinaryOperator(BoundBinaryOperationType.Division, TokenType.ForwardSlash, typeof(int)),
+            //Booleans
+            new BoundBinaryOperator(BoundBinaryOperationType.LogicalAnd, TokenType.AmpersandAmpersand, typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.LogicalOr, TokenType.PipePipe, typeof(bool)),
+            //Comparisons
+            new BoundBinaryOperator(BoundBinaryOperationType.Equality, TokenType.EqualEqual, typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.Unequality, TokenType.BangEqual, typeof(bool)),
             new BoundBinaryOperator(BoundBinaryOperationType.Equality, TokenType.EqualEqual, typeof(int), typeof(bool)),
             new BoundBinaryOperator(BoundBinaryOperationType.Unequality, TokenType.BangEqual, typeof(int), typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.LesserThan, TokenType.LessThan, typeof(int), typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.LesserThanOrEqual, TokenType.LessThanEqual, typeof(int), typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.GreaterThan, TokenType.GreaterThan, typeof(int), typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.GreaterThanOrEqual, TokenType.GreaterThanEqual, typeof(int), typeof(bool)),
         };
 
         public static BoundBinaryOperator? Bind(TokenType tokenType, Type leftType, Type rightType)

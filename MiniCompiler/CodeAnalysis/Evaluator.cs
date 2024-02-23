@@ -123,6 +123,7 @@ namespace MiniCompiler.CodeAnalysis
             object right = EvaluateExpression(expression.Right);
             switch (expression.BinaryOperator.OperationType)
             {
+                //Numbers
                 case BoundBinaryOperationType.Addition:
                     return (int)left + (int)right;
                 case BoundBinaryOperationType.Subtraction:
@@ -131,15 +132,24 @@ namespace MiniCompiler.CodeAnalysis
                     return (int)left * (int)right;
                 case BoundBinaryOperationType.Division:
                     return (int)left / (int)right;
-
+                //Booleans
                 case BoundBinaryOperationType.LogicalAnd:
                     return (bool)left && (bool)right;
                 case BoundBinaryOperationType.LogicalOr:
                     return (bool)left || (bool)right;
+                //Comparisons
                 case BoundBinaryOperationType.Equality:
                     return Equals(left, right);
                 case BoundBinaryOperationType.Unequality:
                     return !Equals(left, right);
+                case BoundBinaryOperationType.LesserThan:
+                    return (int)left < (int)right;
+                case BoundBinaryOperationType.LesserThanOrEqual:
+                    return (int)left <= (int)right;
+                case BoundBinaryOperationType.GreaterThan:
+                    return (int)left > (int)right;
+                case BoundBinaryOperationType.GreaterThanOrEqual:
+                    return (int)left >= (int)right;
                 default:
                     throw new Exception($"Unhandled binary operation {expression.BinaryOperator.OperationType}");
             }

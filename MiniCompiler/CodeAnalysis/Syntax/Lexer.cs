@@ -94,6 +94,26 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                         position++;
                     }
                     break;
+                case '<':
+                    position++;
+                    if (Current != '=')
+                        tokenType = TokenType.LessThan;
+                    else
+                    {
+                        tokenType = TokenType.LessThanEqual;
+                        position++;
+                    }
+                    break;
+                case '>':
+                    position++;
+                    if (Current != '=')
+                        tokenType = TokenType.GreaterThan;
+                    else
+                    {
+                        tokenType = TokenType.GreaterThanEqual;
+                        position++;
+                    }
+                    break;
                 case '=':
                     position++;
                     if (Current != '=')

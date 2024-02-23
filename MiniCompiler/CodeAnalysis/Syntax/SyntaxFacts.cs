@@ -32,6 +32,10 @@
 
                 case TokenType.EqualEqual:
                 case TokenType.BangEqual:
+                case TokenType.LessThan:
+                case TokenType.LessThanEqual:
+                case TokenType.GreaterThan:
+                case TokenType.GreaterThanEqual:
                     return 3;
 
                 case TokenType.AmpersandAmpersand:
@@ -56,6 +60,14 @@
                     return TokenType.VarKeyword;
                 case "let":
                     return TokenType.LetKeyword;
+                case "if":
+                    return TokenType.IfKeyword;
+                case "else":
+                    return TokenType.ElseKeyword;
+                case "while":
+                    return TokenType.WhileKeyword;
+                case "for":
+                    return TokenType.ForKeyword;
                 default:
                     return TokenType.Identifier;
             }
@@ -111,6 +123,14 @@
                     return "=";
                 case TokenType.EqualEqual:
                     return "==";
+                case TokenType.LessThan:
+                    return "<";
+                case TokenType.LessThanEqual:
+                    return "<=";
+                case TokenType.GreaterThan:
+                    return ">";
+                case TokenType.GreaterThanEqual:
+                    return ">=";
                 case TokenType.AmpersandAmpersand:
                     return "&&";
                 case TokenType.PipePipe:

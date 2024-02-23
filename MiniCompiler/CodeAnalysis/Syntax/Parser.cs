@@ -51,23 +51,32 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 case TokenType.LetKeyword:
                 case TokenType.VarKeyword:
                     return ParseVariableDeclarationStatement();
+                case TokenType.IfKeyword:
+                    return ParseIfStatement();
                 default:
                     return ParseExpressionStatement();
             }
         }
 
-        private BlockStatementNode ParseBlockStatement()
+        private StatementNode ParseIfStatement()
         {
-            Token openToken = ExpectToken(TokenType.OpenBrace);
+            Token ifToken = ExpectToken(TokenType.IfKeyword);
+            Token openParenthesis = ExpectToken(TokenType.OpenParenthesis);
+            ExpressionNode condition = ParseExpression();
+            Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
+            StatementNode ifStatement = ParseStatement();
 
-            ImmutableArray<StatementNode>.Builder statements = ImmutableArray.CreateBuilder<StatementNode>();
-            while (Current.Type != TokenType.CloseBrace && Current.Type != TokenType.EndOfFile)
+            //The else is optional
+            Token? elseToken = null;
+            StatementNode? elseStatement = null;
+            if (Current.Type == TokenType.ElseKeyword)
             {
-                statements.Add(ParseStatement());
+                elseToken = ExpectToken(TokenType.ElseKeyword);
+                elseStatement = ParseStatement();
             }
 
-            Token closeToken = ExpectToken(TokenType.CloseBrace);
-            return new BlockStatementNode(openToken, statements.ToImmutable(), closeToken);
+            return new IfStatementNode(ifToken, openParenthesis, condition, closeParenthesis, ifStatement,
+                elseToken, elseStatement);
         }
 
         private VariableDeclarationStatementNode ParseVariableDeclarationStatement()
@@ -93,6 +102,20 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             ExpressionNode expression = ParseExpression();
             Token semicolon = ExpectToken(TokenType.Semicolon);
             return new ExpressionStatementNode(expression, semicolon);
+        }
+
+        private BlockStatementNode ParseBlockStatement()
+        {
+            Token openToken = ExpectToken(TokenType.OpenBrace);
+
+            ImmutableArray<StatementNode>.Builder statements = ImmutableArray.CreateBuilder<StatementNode>();
+            while (Current.Type != TokenType.CloseBrace && Current.Type != TokenType.EndOfFile)
+            {
+                statements.Add(ParseStatement());
+            }
+
+            Token closeToken = ExpectToken(TokenType.CloseBrace);
+            return new BlockStatementNode(openToken, statements.ToImmutable(), closeToken);
         }
 
 

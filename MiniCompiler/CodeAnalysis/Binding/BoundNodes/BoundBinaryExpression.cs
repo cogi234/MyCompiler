@@ -9,8 +9,13 @@
 
         LogicalAnd,
         LogicalOr,
+
         Equality,
-        Unequality
+        Unequality,
+        GreaterThan,
+        GreaterThanOrEqual,
+        LesserThan,
+        LesserThanOrEqual,
     }
     internal sealed class BoundBinaryExpression : BoundExpression
     {

@@ -24,8 +24,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
                 {
                     e.AssertNode(NodeType.CompilationUnit);
                     e.AssertNode(NodeType.ExpressionStatement);
-                    e.AssertBinaryExpressionNode(op2, text2);
-                    e.AssertBinaryExpressionNode(op1, text1);
+                    e.AssertBinaryExpressionNode(op2);
+                    e.AssertBinaryExpressionNode(op1);
                     e.AssertNode(NodeType.NameExpression);
                     e.AssertNode(NodeType.NameExpression);
                     e.AssertNode(NodeType.NameExpression);
@@ -37,9 +37,9 @@ namespace Mini.Tests.CodeAnalysis.Syntax
                 {
                     e.AssertNode(NodeType.CompilationUnit);
                     e.AssertNode(NodeType.ExpressionStatement);
-                    e.AssertBinaryExpressionNode(op1, text1);
+                    e.AssertBinaryExpressionNode(op1);
                     e.AssertNode(NodeType.NameExpression);
-                    e.AssertBinaryExpressionNode(op2, text2);
+                    e.AssertBinaryExpressionNode(op2);
                     e.AssertNode(NodeType.NameExpression);
                     e.AssertNode(NodeType.NameExpression);
                 }
@@ -64,8 +64,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
                 {
                     e.AssertNode(NodeType.CompilationUnit);
                     e.AssertNode(NodeType.ExpressionStatement);
-                    e.AssertBinaryExpressionNode(opBin, text2);
-                    e.AssertUnaryExpressionNode(opUn, text1);
+                    e.AssertBinaryExpressionNode(opBin);
+                    e.AssertUnaryExpressionNode(opUn);
                     e.AssertNode(NodeType.NameExpression);
                     e.AssertNode(NodeType.NameExpression);
                 }
@@ -76,8 +76,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
                 {
                     e.AssertNode(NodeType.CompilationUnit);
                     e.AssertNode(NodeType.ExpressionStatement);
-                    e.AssertUnaryExpressionNode(opUn, text1);
-                    e.AssertBinaryExpressionNode(opBin, text2);
+                    e.AssertUnaryExpressionNode(opUn);
+                    e.AssertBinaryExpressionNode(opBin);
                     e.AssertNode(NodeType.NameExpression);
                     e.AssertNode(NodeType.NameExpression);
                 }

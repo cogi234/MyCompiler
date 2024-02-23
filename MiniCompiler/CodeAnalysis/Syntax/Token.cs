@@ -27,12 +27,20 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         AmpersandAmpersand,
         PipePipe,
         Semicolon,
+        LessThan,
+        LessThanEqual,
+        GreaterThan,
+        GreaterThanEqual,
 
         //Keywords
         FalseKeyword,
         TrueKeyword,
         VarKeyword,
         LetKeyword,
+        IfKeyword,
+        ElseKeyword,
+        WhileKeyword,
+        ForKeyword,
     }
     public sealed class Token
     {

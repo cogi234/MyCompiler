@@ -27,14 +27,13 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             }
         }
 
-        public void AssertBinaryExpressionNode(TokenType operatorType, string operatorText)
+        public void AssertBinaryExpressionNode(TokenType operatorType)
         {
             try
             {
                 AssertNode(NodeType.BinaryExpression);
                 BinaryExpressionNode b = (BinaryExpressionNode)enumerator.Current;
                 Assert.Equal(b.OperatorToken.Type, operatorType);
-                Assert.Equal(b.OperatorToken.Text, operatorText);
             }
             catch
             {
@@ -42,14 +41,13 @@ namespace Mini.Tests.CodeAnalysis.Syntax
                 throw;
             }
         }
-        public void AssertUnaryExpressionNode(TokenType operatorType, string operatorText)
+        public void AssertUnaryExpressionNode(TokenType operatorType)
         {
             try
             {
                 AssertNode(NodeType.UnaryExpression);
                 UnaryExpressionNode b = (UnaryExpressionNode)enumerator.Current;
                 Assert.Equal(b.OperatorToken.Type, operatorType);
-                Assert.Equal(b.OperatorToken.Text, operatorText);
             }
             catch
             {

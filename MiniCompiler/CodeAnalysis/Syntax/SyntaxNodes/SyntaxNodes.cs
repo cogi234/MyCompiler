@@ -8,8 +8,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 
         //Statements
         BlockStatement,
-        VariableDeclarationStatement,
         ExpressionStatement,
+        VariableDeclarationStatement,
+        IfStatement,
 
         //Expressions
         LiteralExpression,

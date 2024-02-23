@@ -24,8 +24,9 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 
         private static BoundUnaryOperator[] operators =
         {
+            //Boolean
             new BoundUnaryOperator(BoundUnaryOperationType.LogicalNegation, TokenType.Bang, typeof(bool)),
-
+            //Number
             new BoundUnaryOperator(BoundUnaryOperationType.Identity, TokenType.Plus, typeof(int)),
             new BoundUnaryOperator(BoundUnaryOperationType.Negation, TokenType.Minus, typeof(int)),
         };
