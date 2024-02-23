@@ -50,8 +50,8 @@ namespace MiniCompiler.CodeAnalysis
 
         private void EvaluateIfStatement(BoundIfStatement statement)
         {
-            bool value = (bool)EvaluateExpression(statement.Condition);
-            if (value)
+            bool condition = (bool)EvaluateExpression(statement.Condition);
+            if (condition)
                 EvaluateStatement(statement.IfStatement);
             else if (statement.ElseStatement != null)
                 EvaluateStatement(statement.ElseStatement);
