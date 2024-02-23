@@ -102,7 +102,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             VariableSymbol assignmentVariable = new VariableSymbol(name, isReadOnly, initializer.Type);
 
             if (!scope.TryDeclare(assignmentVariable))
-                diagnostics.ReportAlreadyExistingVariable(node.Span, name);
+                diagnostics.ReportAlreadyExistingVariable(node.Identifier.Span, name);
 
             return new BoundVariableDeclarationStatement(assignmentVariable, initializer);
         }
