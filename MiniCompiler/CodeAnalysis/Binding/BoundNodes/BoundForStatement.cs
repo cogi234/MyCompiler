@@ -1,6 +1,7 @@
 ﻿
 namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
+    // for (var i = 0; i < 10; i = i + 1)
     internal sealed class BoundForStatement : BoundStatement
     {
         public BoundForStatement(BoundVariableDeclarationStatement? declaration, BoundExpression condition,

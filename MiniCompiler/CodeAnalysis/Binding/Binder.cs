@@ -85,16 +85,20 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundStatement BindForStatement(ForStatementNode node)
         {
+            scope = new BoundScope(scope);
+
             BoundVariableDeclarationStatement? declaration = null;
             if (node.Declaration != null)
                 declaration = BindVariableDeclarationStatement(node.Declaration);
+
             BoundExpression condition = BindExpression(node.Condition, typeof(bool));
+
             BoundAssignmentExpression? increment = null;
             if (node.Increment != null)
                 increment = (BoundAssignmentExpression)BindAssignmentExpression(node.Increment);
 
-            scope = new BoundScope(scope);
             BoundStatement statement = BindStatement(node.Statement);
+
             scope = scope.Parent;
 
             return new BoundForStatement(declaration, condition, increment, statement);

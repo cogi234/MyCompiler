@@ -2,6 +2,7 @@
 
 namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
+    // for (var i = 0; i < 10; i = i + 1)
     public sealed class ForStatementNode : StatementNode
     {
         public ForStatementNode(Token forKeyword, Token openParenthesis, VariableDeclarationStatementNode? declaration,
