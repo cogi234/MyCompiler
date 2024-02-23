@@ -4,7 +4,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class WhileStatementNode : StatementNode
     {
-        public WhileStatementNode(Token whileKeyword, Token openParenthesis, ExpressionNode condition, Token closeParenthesis, StatementNode statement)
+        public WhileStatementNode(Token whileKeyword, Token openParenthesis, ExpressionNode condition,
+            Token closeParenthesis, StatementNode statement)
         {
             WhileKeyword = whileKeyword;
             OpenParenthesis = openParenthesis;

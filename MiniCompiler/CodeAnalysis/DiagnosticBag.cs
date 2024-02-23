@@ -1,6 +1,8 @@
 ﻿using MiniCompiler.CodeAnalysis.Syntax;
+using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniCompiler.CodeAnalysis.Text;
 using System.Collections;
+using System.Xml.Linq;
 
 namespace MiniCompiler.CodeAnalysis
 {
@@ -83,6 +85,12 @@ namespace MiniCompiler.CodeAnalysis
         internal void ReportCannotAssign(TextSpan span, string name)
         {
             string message = $"Cannot assign to variable '{name}', it is read only.";
+            Report(span, message);
+        }
+
+        internal void ReportUnexpectedNode(TextSpan span, NodeType expectedNode, NodeType actualNode)
+        {
+            string message = $"Expected <{expectedNode}>, got <{actualNode}>.";
             Report(span, message);
         }
     }

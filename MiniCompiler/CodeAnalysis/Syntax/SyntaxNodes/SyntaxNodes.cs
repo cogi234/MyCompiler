@@ -13,6 +13,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         IfStatement,
         ElseClause,
         WhileStatement,
+        ForStatement,
 
         //Expressions
         LiteralExpression,

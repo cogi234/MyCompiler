@@ -56,9 +56,46 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return ParseIfStatement();
                 case TokenType.WhileKeyword:
                     return ParseWhileStatement();
+                case TokenType.ForKeyword:
+                    return ParseForStatement();
                 default:
                     return ParseExpressionStatement();
             }
+        }
+
+        // for (var i = 0; i < 10; i = i + 1)
+        private StatementNode ParseForStatement()
+        {
+            bool isValid = true;
+            Token forKeyword = ExpectToken(TokenType.ForKeyword);
+            Token openParenthesis = ExpectToken(TokenType.OpenParenthesis);
+
+            VariableDeclarationStatementNode? declaration = null;
+            if (Current.Type != TokenType.Semicolon)
+                declaration = ParseVariableDeclarationStatement();
+
+            ExpressionNode condition = ParseExpression();
+            ExpectToken(TokenType.Semicolon);
+
+            ExpressionNode? increment = null;
+            if (Current.Type != TokenType.CloseParenthesis)
+            {
+                increment = ParseAssignmentExpression();
+                if (increment.Type != NodeType.AssignmentExpression)
+                {
+                    diagnostics.ReportUnexpectedNode(increment.Span, NodeType.AssignmentExpression, increment.Type);
+                    isValid = false;
+                }
+            }
+
+            Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
+
+            StatementNode statement = ParseStatement();
+
+            if (isValid)
+                return new ForStatementNode(forKeyword, openParenthesis, declaration, condition, (AssignmentExpressionNode)increment, closeParenthesis, statement);
+            else
+                return statement;
         }
 
         private WhileStatementNode ParseWhileStatement()

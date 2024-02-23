@@ -76,9 +76,28 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     return BindIfStatement((IfStatementNode)node);
                 case NodeType.WhileStatement:
                     return BindWhileStatement((WhileStatementNode)node);
+                case NodeType.ForStatement:
+                    return BindForStatement((ForStatementNode)node);
                 default:
                     throw new Exception($"Unexpected syntax node {node.Type}");
             }
+        }
+
+        private BoundStatement BindForStatement(ForStatementNode node)
+        {
+            BoundVariableDeclarationStatement? declaration = null;
+            if (node.Declaration != null)
+                declaration = BindVariableDeclarationStatement(node.Declaration);
+            BoundExpression condition = BindExpression(node.Condition, typeof(bool));
+            BoundAssignmentExpression? increment = null;
+            if (node.Increment != null)
+                increment = (BoundAssignmentExpression)BindAssignmentExpression(node.Increment);
+
+            scope = new BoundScope(scope);
+            BoundStatement statement = BindStatement(node.Statement);
+            scope = scope.Parent;
+
+            return new BoundForStatement(declaration, condition, increment, statement);
         }
 
         private BoundWhileStatement BindWhileStatement(WhileStatementNode node)
@@ -87,6 +106,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             scope = new BoundScope(scope);
             BoundStatement statement = BindStatement(node.Statement);
             scope = scope.Parent;
+
             return new BoundWhileStatement(condition, statement);
         }
 
