@@ -6,7 +6,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
     {
         public IfStatementNode(
             Token ifKeyword, Token openParenthesis, ExpressionNode condition, Token closeParenthesis,
-            StatementNode statement, ElseStatementNode? elseStatement)
+            StatementNode statement, ElseClauseNode? elseStatement)
         {
             IfKeyword = ifKeyword;
             OpenParenthesis = openParenthesis;
@@ -21,7 +21,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         public ExpressionNode Condition { get; }
         public Token CloseParenthesis { get; }
         public StatementNode Statement { get; }
-        public ElseStatementNode? ElseStatement { get; }
+        public ElseClauseNode? ElseStatement { get; }
 
         public override NodeType Type => NodeType.IfStatement;
 

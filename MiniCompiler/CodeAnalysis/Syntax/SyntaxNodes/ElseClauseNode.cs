@@ -2,9 +2,9 @@
 
 namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
-    public sealed class ElseStatementNode : StatementNode
+    public sealed class ElseClauseNode : StatementNode
     {
-        public ElseStatementNode(Token elseKeyword, StatementNode statement)
+        public ElseClauseNode(Token elseKeyword, StatementNode statement)
         {
             ElseKeyword = elseKeyword;
             Statement = statement;
@@ -13,7 +13,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         public Token ElseKeyword { get; }
         public StatementNode Statement { get; }
 
-        public override NodeType Type => NodeType.ElseStatement;
+        public override NodeType Type => NodeType.ElseClause;
 
         public override TextSpan Span => TextSpan.FromBounds(ElseKeyword.Span.Start, Statement.Span.End);
 

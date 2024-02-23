@@ -54,12 +54,7 @@ namespace MiniCompiler.CodeAnalysis
             if (value)
                 EvaluateStatement(statement.IfStatement);
             else if (statement.ElseStatement != null)
-                EvaluateElseStatement(statement.ElseStatement);
-        }
-
-        private void EvaluateElseStatement(BoundElseStatement statement)
-        {
-            EvaluateStatement(statement.Statement);
+                EvaluateStatement(statement.ElseStatement);
         }
 
         private void EvaluateVariableDeclarationStatement(BoundVariableDeclarationStatement statement)

@@ -7,7 +7,6 @@
         ExpressionStatement,
         VariableDeclarationStatement,
         IfStatement,
-        ElseStatement,
 
         //Expressions
         LiteralExpression,

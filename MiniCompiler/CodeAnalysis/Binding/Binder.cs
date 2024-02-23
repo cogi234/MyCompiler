@@ -79,33 +79,17 @@ namespace MiniCompiler.CodeAnalysis.Binding
             }
         }
 
-        private BoundStatement BindIfStatement(IfStatementNode node)
+        private BoundIfStatement BindIfStatement(IfStatementNode node)
         {
-            BoundExpression condition = BindExpression(node.Condition);
+            BoundExpression condition = BindExpression(node.Condition, typeof(bool));
             scope = new BoundScope(scope);
             BoundStatement ifStatement = BindStatement(node.Statement);
             scope = scope.Parent;
 
             //The else is optional
-            BoundElseStatement? elseStatement = null;
-            if (node.ElseStatement != null)
-                elseStatement = BindElseStatement(node.ElseStatement);
-
-            if (condition.Type != typeof(bool))
-            {
-                diagnostics.ReportCannotConvert(node.Condition.Span, condition.Type, typeof(bool));
-                return ifStatement;
-            }
+            BoundStatement? elseStatement = node.ElseStatement == null ? null : BindStatement(node.ElseStatement.Statement);
 
             return new BoundIfStatement(condition, ifStatement, elseStatement);
-        }
-
-        private BoundElseStatement BindElseStatement(ElseStatementNode node)
-        {
-            scope = new BoundScope(scope);
-            BoundStatement statement = BindStatement(node.Statement);
-            scope = scope.Parent;
-            return new BoundElseStatement(statement);
         }
 
         private BoundVariableDeclarationStatement BindVariableDeclarationStatement(VariableDeclarationStatementNode node)
@@ -165,6 +149,14 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 default:
                     throw new Exception($"Unexpected syntax node {node.Type}");
             }
+        }
+
+        private BoundExpression BindExpression(ExpressionNode node, Type expectedType)
+        {
+            BoundExpression boundExpression = BindExpression(node);
+            if (boundExpression.Type != expectedType)
+                diagnostics.ReportCannotConvert(node.Span, boundExpression.Type, expectedType);
+            return boundExpression;
         }
 
         private BoundLiteralExpression BindLiteralExpression(LiteralExpressionNode node)

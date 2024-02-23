@@ -36,6 +36,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         public CompilationUnit ParseCompilationUnit()
         {
             StatementNode statement = ParseStatement();
+
             ExpectToken(TokenType.EndOfFile);
             return new CompilationUnit(statement);
         }
@@ -67,19 +68,15 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             StatementNode ifStatement = ParseStatement();
 
             //The else is optional
-            ElseStatementNode? elseStatement = null;
+            ElseClauseNode? elseStatement = null;
             if (Current.Type == TokenType.ElseKeyword)
-                elseStatement = ParseElseStatement();
+            {
+                Token elseKeyword = ExpectToken(TokenType.ElseKeyword);
+                StatementNode statement = ParseStatement();
+                elseStatement = new ElseClauseNode(elseKeyword, statement);
+            }
 
             return new IfStatementNode(ifToken, openParenthesis, condition, closeParenthesis, ifStatement, elseStatement);
-        }
-
-        private ElseStatementNode ParseElseStatement()
-        {
-            Token elseKeyword = ExpectToken(TokenType.ElseKeyword);
-            StatementNode statement = ParseStatement();
-
-            return new ElseStatementNode(elseKeyword, statement);
         }
 
         private VariableDeclarationStatementNode ParseVariableDeclarationStatement()
