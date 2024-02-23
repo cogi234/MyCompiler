@@ -143,6 +143,14 @@
                     return "var";
                 case TokenType.LetKeyword:
                     return "let";
+                case TokenType.IfKeyword:
+                    return "if";
+                case TokenType.ElseKeyword:
+                    return "else";
+                case TokenType.WhileKeyword:
+                    return "while";
+                case TokenType.ForKeyword:
+                    return "for";
                 default:
                     return null;
             }
