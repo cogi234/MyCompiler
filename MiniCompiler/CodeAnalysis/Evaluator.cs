@@ -43,8 +43,19 @@ namespace MiniCompiler.CodeAnalysis
                 case BoundNodeType.IfStatement:
                     EvaluateIfStatement((BoundIfStatement)statement);
                     break;
+                case BoundNodeType.WhileStatement:
+                    EvaluateWhileStatement((BoundWhileStatement)statement);
+                    break;
                 default:
                     throw new Exception($"Unexpected node {statement.BoundNodeType}");
+            }
+        }
+
+        private void EvaluateWhileStatement(BoundWhileStatement statement)
+        {
+            while ((bool)EvaluateExpression(statement.Condition))
+            {
+                EvaluateStatement(statement.Statement);
             }
         }
 

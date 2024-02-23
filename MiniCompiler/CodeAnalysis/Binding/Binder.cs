@@ -74,9 +74,20 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     return BindVariableDeclarationStatement((VariableDeclarationStatementNode)node);
                 case NodeType.IfStatement:
                     return BindIfStatement((IfStatementNode)node);
+                case NodeType.WhileStatement:
+                    return BindWhileStatement((WhileStatementNode)node);
                 default:
                     throw new Exception($"Unexpected syntax node {node.Type}");
             }
+        }
+
+        private BoundWhileStatement BindWhileStatement(WhileStatementNode node)
+        {
+            BoundExpression condition = BindExpression(node.Condition, typeof(bool));
+            scope = new BoundScope(scope);
+            BoundStatement statement = BindStatement(node.Statement);
+            scope = scope.Parent;
+            return new BoundWhileStatement(condition, statement);
         }
 
         private BoundIfStatement BindIfStatement(IfStatementNode node)

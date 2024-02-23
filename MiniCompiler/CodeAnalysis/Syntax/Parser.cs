@@ -54,14 +54,26 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return ParseVariableDeclarationStatement();
                 case TokenType.IfKeyword:
                     return ParseIfStatement();
+                case TokenType.WhileKeyword:
+                    return ParseWhileStatement();
                 default:
                     return ParseExpressionStatement();
             }
         }
 
+        private WhileStatementNode ParseWhileStatement()
+        {
+            Token whileKeyword = ExpectToken(TokenType.WhileKeyword);
+            Token openParenthesis = ExpectToken(TokenType.OpenParenthesis);
+            ExpressionNode condition = ParseExpression();
+            Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
+            StatementNode statement = ParseStatement();
+            return new WhileStatementNode(whileKeyword, openParenthesis, condition, closeParenthesis, statement);
+        }
+
         private IfStatementNode ParseIfStatement()
         {
-            Token ifToken = ExpectToken(TokenType.IfKeyword);
+            Token ifKeyword = ExpectToken(TokenType.IfKeyword);
             Token openParenthesis = ExpectToken(TokenType.OpenParenthesis);
             ExpressionNode condition = ParseExpression();
             Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
@@ -76,7 +88,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 elseStatement = new ElseClauseNode(elseKeyword, statement);
             }
 
-            return new IfStatementNode(ifToken, openParenthesis, condition, closeParenthesis, ifStatement, elseStatement);
+            return new IfStatementNode(ifKeyword, openParenthesis, condition, closeParenthesis, ifStatement, elseStatement);
         }
 
         private VariableDeclarationStatementNode ParseVariableDeclarationStatement()

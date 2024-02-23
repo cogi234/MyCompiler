@@ -51,6 +51,8 @@ namespace Mini.Tests.CodeAnalysis
         [InlineData("{var a = 1;if (a == 2) a = 10; a;}", 1)]
         [InlineData("{if (true) 1; else 2;}", 1)]
         [InlineData("{if (false) 1; else 2;}", 2)]
+
+        [InlineData("{var i = 0; while(i < 10) i = i + 1; i;}", 10)]
         #endregion InlineData
         public void EvaluatesCorrectly(string text, object expectedValue)
         {
