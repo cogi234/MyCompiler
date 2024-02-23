@@ -162,7 +162,11 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             ImmutableArray<StatementNode>.Builder statements = ImmutableArray.CreateBuilder<StatementNode>();
             while (Current.Type != TokenType.CloseBrace && Current.Type != TokenType.EndOfFile)
             {
+                Token startToken = Current;
                 statements.Add(ParseStatement());
+
+                if (Current == startToken)
+                    NextToken();
             }
 
             Token closeToken = ExpectToken(TokenType.CloseBrace);
