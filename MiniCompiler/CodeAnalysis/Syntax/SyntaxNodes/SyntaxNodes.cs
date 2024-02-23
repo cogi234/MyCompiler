@@ -53,7 +53,13 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
                     writer.Write($" {((UnaryExpressionNode)this).OperatorToken.Text}");
                     break;
                 case NodeType.AssignmentExpression:
-                    writer.Write($" {((AssignmentExpressionNode)this).IdentifierToken.Text}");
+                    writer.Write($" {((AssignmentExpressionNode)this).Identifier.Text}");
+                    break;
+                case NodeType.NameExpression:
+                    writer.Write($" {((NameExpressionNode)this).Identifier.Text}");
+                    break;
+                case NodeType.VariableDeclarationStatement:
+                    writer.Write($" {((VariableDeclarationStatementNode)this).Identifier.Text}");
                     break;
             }
             Console.ResetColor();

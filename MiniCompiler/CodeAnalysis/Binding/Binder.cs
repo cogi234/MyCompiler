@@ -215,12 +215,12 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindAssignmentExpression(AssignmentExpressionNode node)
         {
-            string name = node.IdentifierToken.Text ?? "";
+            string name = node.Identifier.Text ?? "";
             BoundExpression boundExpression = BindExpression(node.Expression);
 
             if (!scope.TryLookup(name, out VariableSymbol? variable))
             {
-                diagnostics.ReportUndefinedName(node.IdentifierToken.Span, name);
+                diagnostics.ReportUndefinedName(node.Identifier.Span, name);
                 return boundExpression;
             }
 
@@ -232,7 +232,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             if (variable.IsReadOnly)
             {
-                diagnostics.ReportCannotAssign(node.IdentifierToken.Span, name);
+                diagnostics.ReportCannotAssign(node.Identifier.Span, name);
                 return boundExpression;
             }
 
