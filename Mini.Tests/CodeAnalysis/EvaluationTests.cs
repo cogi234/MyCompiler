@@ -117,6 +117,42 @@ namespace Mini.Tests.CodeAnalysis
             ");
         }
         [Fact]
+        public void IfStatementReportsCannotConvert()
+        {
+            AssertDiagnostics(@"
+                {
+                    if ([1])
+                        10;
+                }
+            ", @"
+                Cannot convert type System.Int32 to System.Boolean.
+            ");
+        }
+        [Fact]
+        public void WhileStatementReportsCannotConvert()
+        {
+            AssertDiagnostics(@"
+                {
+                    while ([10])
+                        1;
+                }
+            ", @"
+                Cannot convert type System.Int32 to System.Boolean.
+            ");
+        }
+        [Fact]
+        public void ForStatementReportsCannotConvert()
+        {
+            AssertDiagnostics(@"
+                {
+                    for (;[1];)
+                        10;
+                }
+            ", @"
+                Cannot convert type System.Int32 to System.Boolean.
+            ");
+        }
+        [Fact]
         public void ExpressionReportsUndefinedUnary()
         {
             AssertDiagnostics(@"

@@ -73,6 +73,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             VariableDeclarationStatementNode? declaration = null;
             if (Current.Type != TokenType.Semicolon)
                 declaration = ParseVariableDeclarationStatement();
+            else
+                ExpectToken(TokenType.Semicolon);
 
             ExpressionNode condition = ParseExpression();
             ExpectToken(TokenType.Semicolon);
