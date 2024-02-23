@@ -1,5 +1,6 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
+using System.ComponentModel.Design;
 using System.Linq.Expressions;
 
 namespace MiniCompiler.CodeAnalysis
@@ -39,15 +40,21 @@ namespace MiniCompiler.CodeAnalysis
                 case BoundNodeType.VariableDeclarationStatement:
                     EvaluateVariableDeclarationStatement((BoundVariableDeclarationStatement)statement);
                     break;
+                case BoundNodeType.IfStatement:
+                    EvaluateIfStatement((BoundIfStatement)statement);
+                    break;
                 default:
                     throw new Exception($"Unexpected node {statement.BoundNodeType}");
             }
         }
 
-        private void EvaluateBlockStatement(BoundBlockStatement statement)
+        private void EvaluateIfStatement(BoundIfStatement statement)
         {
-            foreach (BoundStatement currentStatement in statement.Statements)
-                EvaluateStatement(currentStatement);
+            bool value = (bool)EvaluateExpression(statement.Condition);
+            if (value)
+                EvaluateStatement(statement.IfStatement);
+            else if (statement.ElseStatement != null)
+                EvaluateStatement(statement.ElseStatement);
         }
 
         private void EvaluateVariableDeclarationStatement(BoundVariableDeclarationStatement statement)
@@ -55,6 +62,12 @@ namespace MiniCompiler.CodeAnalysis
             object value = EvaluateExpression(statement.Initializer);
             variables[statement.Variable] = value;
             lastValue = value;
+        }
+
+        private void EvaluateBlockStatement(BoundBlockStatement statement)
+        {
+            foreach (BoundStatement currentStatement in statement.Statements)
+                EvaluateStatement(currentStatement);
         }
 
         private void EvaluateExpressionStatement(BoundExpressionStatement statement)

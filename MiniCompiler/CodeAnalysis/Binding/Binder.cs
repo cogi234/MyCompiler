@@ -72,9 +72,51 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     return BindExpressionStatement((ExpressionStatementNode)node);
                 case NodeType.VariableDeclarationStatement:
                     return BindVariableDeclarationStatement((VariableDeclarationStatementNode)node);
+                case NodeType.IfStatement:
+                    return BindIfStatement((IfStatementNode)node);
                 default:
                     throw new Exception($"Unexpected syntax node {node.Type}");
             }
+        }
+
+        private BoundStatement BindIfStatement(IfStatementNode node)
+        {
+            BoundExpression condition = BindExpression(node.Condition);
+            scope = new BoundScope(scope);
+            BoundStatement ifStatement = BindStatement(node.IfStatement);
+            scope = scope.Parent;
+
+            //The else is optional
+            BoundStatement? elseStatement = null;
+            if (node.ElseStatement != null)
+            {
+                scope = new BoundScope(scope);
+                elseStatement = BindStatement(node.ElseStatement);
+                scope = scope.Parent;
+            }
+
+            if (condition.Type != typeof(bool))
+            {
+                diagnostics.ReportCannotConvert(node.Condition.Span, condition.Type, typeof(bool));
+                return ifStatement;
+            }
+
+            return new BoundIfStatement(condition, ifStatement, elseStatement);
+        }
+
+        private BoundVariableDeclarationStatement BindVariableDeclarationStatement(VariableDeclarationStatementNode node)
+        {
+            bool isReadOnly = node.Keyword.Type == TokenType.LetKeyword;
+            string name = node.Identifier.Text ?? "";
+            //For now, we don't handle declarations without initializer
+            BoundExpression initializer = BindExpression(node.Initializer);
+
+            VariableSymbol assignmentVariable = new VariableSymbol(name, isReadOnly, initializer.Type);
+
+            if (!scope.TryDeclare(assignmentVariable))
+                diagnostics.ReportAlreadyExistingVariable(node.Identifier.Span, name);
+
+            return new BoundVariableDeclarationStatement(assignmentVariable, initializer);
         }
 
         private BoundBlockStatement BindBlockStatement(BlockStatementNode node)
@@ -90,21 +132,6 @@ namespace MiniCompiler.CodeAnalysis.Binding
             scope = scope.Parent;
 
             return new BoundBlockStatement(statements.ToImmutable());
-        }
-
-        private BoundStatement BindVariableDeclarationStatement(VariableDeclarationStatementNode node)
-        {
-            bool isReadOnly = node.Keyword.Type == TokenType.LetKeyword;
-            string name = node.Identifier.Text ?? "";
-            //For now, we don't handle declarations without initializer
-            BoundExpression initializer = BindExpression(node.Initializer);
-
-            VariableSymbol assignmentVariable = new VariableSymbol(name, isReadOnly, initializer.Type);
-
-            if (!scope.TryDeclare(assignmentVariable))
-                diagnostics.ReportAlreadyExistingVariable(node.Identifier.Span, name);
-
-            return new BoundVariableDeclarationStatement(assignmentVariable, initializer);
         }
 
         private BoundExpressionStatement BindExpressionStatement(ExpressionStatementNode node)

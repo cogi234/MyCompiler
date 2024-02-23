@@ -4,8 +4,9 @@
     {
         //Statements
         BlockStatement,
-        VariableDeclarationStatement,
         ExpressionStatement,
+        VariableDeclarationStatement,
+        IfStatement,
 
         //Expressions
         LiteralExpression,
