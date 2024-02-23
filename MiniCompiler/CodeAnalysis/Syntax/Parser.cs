@@ -58,7 +58,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             }
         }
 
-        private StatementNode ParseIfStatement()
+        private IfStatementNode ParseIfStatement()
         {
             Token ifToken = ExpectToken(TokenType.IfKeyword);
             Token openParenthesis = ExpectToken(TokenType.OpenParenthesis);
@@ -67,16 +67,19 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             StatementNode ifStatement = ParseStatement();
 
             //The else is optional
-            Token? elseToken = null;
-            StatementNode? elseStatement = null;
+            ElseStatementNode? elseStatement = null;
             if (Current.Type == TokenType.ElseKeyword)
-            {
-                elseToken = ExpectToken(TokenType.ElseKeyword);
-                elseStatement = ParseStatement();
-            }
+                elseStatement = ParseElseStatement();
 
-            return new IfStatementNode(ifToken, openParenthesis, condition, closeParenthesis, ifStatement,
-                elseToken, elseStatement);
+            return new IfStatementNode(ifToken, openParenthesis, condition, closeParenthesis, ifStatement, elseStatement);
+        }
+
+        private ElseStatementNode ParseElseStatement()
+        {
+            Token elseKeyword = ExpectToken(TokenType.ElseKeyword);
+            StatementNode statement = ParseStatement();
+
+            return new ElseStatementNode(elseKeyword, statement);
         }
 
         private VariableDeclarationStatementNode ParseVariableDeclarationStatement()

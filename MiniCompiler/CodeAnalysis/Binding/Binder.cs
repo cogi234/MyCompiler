@@ -83,17 +83,13 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             BoundExpression condition = BindExpression(node.Condition);
             scope = new BoundScope(scope);
-            BoundStatement ifStatement = BindStatement(node.IfStatement);
+            BoundStatement ifStatement = BindStatement(node.Statement);
             scope = scope.Parent;
 
             //The else is optional
-            BoundStatement? elseStatement = null;
+            BoundElseStatement? elseStatement = null;
             if (node.ElseStatement != null)
-            {
-                scope = new BoundScope(scope);
-                elseStatement = BindStatement(node.ElseStatement);
-                scope = scope.Parent;
-            }
+                elseStatement = BindElseStatement(node.ElseStatement);
 
             if (condition.Type != typeof(bool))
             {
@@ -102,6 +98,14 @@ namespace MiniCompiler.CodeAnalysis.Binding
             }
 
             return new BoundIfStatement(condition, ifStatement, elseStatement);
+        }
+
+        private BoundElseStatement BindElseStatement(ElseStatementNode node)
+        {
+            scope = new BoundScope(scope);
+            BoundStatement statement = BindStatement(node.Statement);
+            scope = scope.Parent;
+            return new BoundElseStatement(statement);
         }
 
         private BoundVariableDeclarationStatement BindVariableDeclarationStatement(VariableDeclarationStatementNode node)
