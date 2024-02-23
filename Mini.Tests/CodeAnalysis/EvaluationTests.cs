@@ -95,6 +95,24 @@ namespace Mini.Tests.CodeAnalysis
                 Cannot convert type System.Int32 to System.Boolean.
             ");
         }
+        [Fact]
+        public void ExpressionReportsUndefinedUnary()
+        {
+            AssertDiagnostics(@"
+                [-]true;
+            ", @"
+                Unary operator '-' is not defined for type System.Boolean.
+            ");
+        }
+        [Fact]
+        public void ExpressionReportsUndefinedBinary()
+        {
+            AssertDiagnostics(@"
+                1 [&&] true;
+            ", @"
+                Binary operator '&&' is not defined for types System.Int32 and System.Boolean.
+            ");
+        }
 
         private void AssertDiagnostics(string text, string diagnosticText)
         {

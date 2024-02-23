@@ -58,7 +58,7 @@ namespace MiniCompiler.CodeAnalysis
         }
         public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, Type leftType, Type rightType)
         {
-            string message = $"Binary operator '{operatorText}' is not defined for for types {leftType} and {rightType}.";
+            string message = $"Binary operator '{operatorText}' is not defined for types {leftType} and {rightType}.";
             Report(span, message);
         }
 
