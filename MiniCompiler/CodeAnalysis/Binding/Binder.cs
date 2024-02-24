@@ -203,6 +203,10 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundExpression BindNameExpression(NameExpressionNode node)
         {
             string name = node.Identifier.Text ?? "";
+            if (string.IsNullOrEmpty(name))
+            {
+                return new BoundLiteralExpression(0);
+            }
 
             if (scope.TryLookup(name, out VariableSymbol? variable))
                 return new BoundVariableExpression(variable);

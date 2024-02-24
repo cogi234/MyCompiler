@@ -165,6 +165,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 Token startToken = Current;
                 statements.Add(ParseStatement());
 
+                //If we didn't consume any tokens, we skip this one
                 if (Current == startToken)
                     NextToken();
             }
