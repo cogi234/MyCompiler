@@ -117,6 +117,10 @@ namespace Mini.Tests.CodeAnalysis.Syntax
                 t1 == TokenType.GreaterThanEqual || t1 == TokenType.Bang || t1 == TokenType.Equal)
                 if (t2 == TokenType.Equal || t2 == TokenType.EqualEqual)
                 return true;
+            if (t1 == TokenType.Pipe && (t2 == TokenType.Pipe || t2 == TokenType.PipePipe))
+                return true;
+            if (t1 == TokenType.Ampersand && (t2 == TokenType.Ampersand || t2 == TokenType.AmpersandAmpersand))
+                return true;
 
             return false;
         }

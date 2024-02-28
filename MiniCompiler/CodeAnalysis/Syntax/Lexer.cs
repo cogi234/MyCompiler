@@ -29,44 +29,44 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             switch (Current)
             {
                 case '\0':
-                    tokenType = TokenType.EndOfFile;
                     position++;
+                    tokenType = TokenType.EndOfFile;
                     break;
                 case '+':
-                    tokenType = TokenType.Plus;
                     position++;
+                    tokenType = TokenType.Plus;
                     break;
                 case '-':
-                    tokenType = TokenType.Minus;
                     position++;
+                    tokenType = TokenType.Minus;
                     break;
                 case '*':
-                    tokenType = TokenType.Star;
                     position++;
+                    tokenType = TokenType.Star;
                     break;
                 case '/':
-                    tokenType = TokenType.ForwardSlash;
                     position++;
+                    tokenType = TokenType.ForwardSlash;
                     break;
                 case '(':
-                    tokenType = TokenType.OpenParenthesis;
                     position++;
+                    tokenType = TokenType.OpenParenthesis;
                     break;
                 case ')':
-                    tokenType = TokenType.CloseParenthesis;
                     position++;
+                    tokenType = TokenType.CloseParenthesis;
                     break;
                 case '{':
-                    tokenType = TokenType.OpenBrace;
                     position++;
+                    tokenType = TokenType.OpenBrace;
                     break;
                 case '}':
-                    tokenType = TokenType.CloseBrace;
                     position++;
+                    tokenType = TokenType.CloseBrace;
                     break;
                 case ';':
-                    tokenType = TokenType.Semicolon;
                     position++;
+                    tokenType = TokenType.Semicolon;
                     break;
                 case '!':
                     position++;
@@ -80,7 +80,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     break;
                 case '&':
                     position++;
-                    if (Current == '&')
+                    if (Current != '&')
+                        tokenType = TokenType.Ampersand;
+                    else
                     {
                         tokenType = TokenType.AmpersandAmpersand;
                         position++;
@@ -88,11 +90,21 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     break;
                 case '|':
                     position++;
-                    if (Current == '|')
+                    if (Current != '|')
+                        tokenType = TokenType.Pipe;
+                    else
                     {
                         tokenType = TokenType.PipePipe;
                         position++;
                     }
+                    break;
+                case '^':
+                    position++;
+                    tokenType = TokenType.Caret;
+                    break;
+                case '~':
+                    position++;
+                    tokenType = TokenType.Tilde;
                     break;
                 case '<':
                     position++;

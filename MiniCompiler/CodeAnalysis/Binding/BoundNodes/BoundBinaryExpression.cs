@@ -6,6 +6,9 @@
         Subtraction,
         Multiplication,
         Division,
+        BitwiseOr,
+        BitwiseAnd,
+        BitwiseXor,
 
         LogicalAnd,
         LogicalOr,

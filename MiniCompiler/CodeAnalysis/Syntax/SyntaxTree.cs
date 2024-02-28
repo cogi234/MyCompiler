@@ -10,9 +10,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         {
             Parser parser = new Parser(sourceText);
             var root = parser.ParseCompilationUnit();
-            var diagnostics = parser.Diagnostics.ToImmutableArray();
 
-            Diagnostics = diagnostics;
+            Diagnostics = parser.Diagnostics.ToImmutableArray();
             Root = root;
             SourceText = sourceText;
         }

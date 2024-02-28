@@ -150,6 +150,8 @@ namespace MiniCompiler.CodeAnalysis
                     return (int)operand;
                 case BoundUnaryOperationType.Negation:
                     return -(int)operand;
+                case BoundUnaryOperationType.BitwiseNegation:
+                    return ~(int)operand;
                 case BoundUnaryOperationType.LogicalNegation:
                     return !(bool)operand;
                 default:
@@ -172,6 +174,21 @@ namespace MiniCompiler.CodeAnalysis
                     return (int)left * (int)right;
                 case BoundBinaryOperationType.Division:
                     return (int)left / (int)right;
+                case BoundBinaryOperationType.BitwiseAnd:
+                    if (expression.BinaryOperator.LeftType == typeof(int))
+                        return (int)left & (int)right;
+                    else
+                        return (bool)left & (bool)right;
+                case BoundBinaryOperationType.BitwiseOr:
+                    if (expression.BinaryOperator.LeftType == typeof(int))
+                        return (int)left | (int)right;
+                    else
+                        return (bool)left | (bool)right;
+                case BoundBinaryOperationType.BitwiseXor:
+                    if (expression.BinaryOperator.LeftType == typeof(int))
+                        return (int)left ^ (int)right;
+                    else
+                        return (bool)left ^ (bool)right;
                 //Booleans
                 case BoundBinaryOperationType.LogicalAnd:
                     return (bool)left && (bool)right;

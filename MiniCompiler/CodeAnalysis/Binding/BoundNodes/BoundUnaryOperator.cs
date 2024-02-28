@@ -29,6 +29,7 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
             //Number
             new BoundUnaryOperator(BoundUnaryOperationType.Identity, TokenType.Plus, typeof(int)),
             new BoundUnaryOperator(BoundUnaryOperationType.Negation, TokenType.Minus, typeof(int)),
+            new BoundUnaryOperator(BoundUnaryOperationType.BitwiseNegation, TokenType.Tilde, typeof(int)),
         };
 
         public static BoundUnaryOperator? Bind(TokenType tokenType, Type operandType)

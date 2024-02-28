@@ -8,9 +8,8 @@
             {
                 case TokenType.Plus:
                 case TokenType.Minus:
-                    return 6;
-
                 case TokenType.Bang:
+                case TokenType.Tilde:
                     return 6;
 
                 default:
@@ -38,9 +37,13 @@
                 case TokenType.GreaterThanEqual:
                     return 3;
 
+                case TokenType.Ampersand:
                 case TokenType.AmpersandAmpersand:
                     return 2;
+
+                case TokenType.Pipe:
                 case TokenType.PipePipe:
+                case TokenType.Caret:
                     return 1;
 
                 default:
@@ -131,10 +134,18 @@
                     return ">";
                 case TokenType.GreaterThanEqual:
                     return ">=";
+                case TokenType.Ampersand:
+                    return "&";
                 case TokenType.AmpersandAmpersand:
                     return "&&";
+                case TokenType.Pipe:
+                    return "|";
                 case TokenType.PipePipe:
                     return "||";
+                case TokenType.Caret:
+                    return "^";
+                case TokenType.Tilde:
+                    return "~";
                 case TokenType.FalseKeyword:
                     return "false";
                 case TokenType.TrueKeyword:

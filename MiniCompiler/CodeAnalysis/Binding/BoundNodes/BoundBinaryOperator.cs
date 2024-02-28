@@ -30,9 +30,15 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
             new BoundBinaryOperator(BoundBinaryOperationType.Subtraction, TokenType.Minus, typeof(int)),
             new BoundBinaryOperator(BoundBinaryOperationType.Multiplication, TokenType.Star, typeof(int)),
             new BoundBinaryOperator(BoundBinaryOperationType.Division, TokenType.ForwardSlash, typeof(int)),
+            new BoundBinaryOperator(BoundBinaryOperationType.BitwiseAnd, TokenType.Ampersand, typeof(int)),
+            new BoundBinaryOperator(BoundBinaryOperationType.BitwiseOr, TokenType.Pipe, typeof(int)),
+            new BoundBinaryOperator(BoundBinaryOperationType.BitwiseXor, TokenType.Caret, typeof(int)),
             //Booleans
             new BoundBinaryOperator(BoundBinaryOperationType.LogicalAnd, TokenType.AmpersandAmpersand, typeof(bool)),
             new BoundBinaryOperator(BoundBinaryOperationType.LogicalOr, TokenType.PipePipe, typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.BitwiseAnd, TokenType.Ampersand, typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.BitwiseOr, TokenType.Pipe, typeof(bool)),
+            new BoundBinaryOperator(BoundBinaryOperationType.BitwiseXor, TokenType.Caret, typeof(bool)),
             //Comparisons
             new BoundBinaryOperator(BoundBinaryOperationType.Equality, TokenType.EqualEqual, typeof(bool)),
             new BoundBinaryOperator(BoundBinaryOperationType.Unequality, TokenType.BangEqual, typeof(bool)),
