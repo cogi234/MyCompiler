@@ -83,7 +83,6 @@ namespace MyCompiler
                 Compilation compilation = previousCompilation == null
                     ? new Compilation(syntaxTree)
                     : previousCompilation.ContinueWith(syntaxTree);
-                EvaluationResult result = compilation.Evaluate(variables);
 
                 if (tokenOutput)
                 {
@@ -116,6 +115,8 @@ namespace MyCompiler
 
                     Console.ResetColor();
                 }
+
+                EvaluationResult result = compilation.Evaluate(variables);
 
                 if (result.Diagnostics.Any())
                     PrintDiagnostics(result.Diagnostics, syntaxTree);
