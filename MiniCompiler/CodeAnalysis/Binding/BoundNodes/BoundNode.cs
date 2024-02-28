@@ -1,6 +1,4 @@
-﻿using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
-
-namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+﻿namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     enum BoundNodeType
     {
@@ -8,6 +6,9 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
         BlockStatement,
         ExpressionStatement,
         VariableDeclarationStatement,
+        LabelStatement,
+        GotoStatement,
+        ConditionalGotoStatement,
         IfStatement,
         WhileStatement,
         ForStatement,
@@ -65,14 +66,23 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
                 case BoundNodeType.UnaryExpression:
                     writer.Write($" {((BoundUnaryExpression)this).UnaryOperator.OperationType}");
                     break;
+                case BoundNodeType.VariableDeclarationStatement:
+                    writer.Write($" {((BoundVariableDeclarationStatement)this).Variable.Name}");
+                    break;
                 case BoundNodeType.AssignmentExpression:
                     writer.Write($" {((BoundAssignmentExpression)this).Variable.Name}");
                     break;
                 case BoundNodeType.VariableExpression:
                     writer.Write($" {((BoundVariableExpression)this).Variable.Name}");
                     break;
-                case BoundNodeType.VariableDeclarationStatement:
-                    writer.Write($" {((BoundVariableDeclarationStatement)this).Variable.Name}");
+                case BoundNodeType.LabelStatement:
+                    writer.Write($" {((BoundLabelStatement)this).Label.Name}");
+                    break;
+                case BoundNodeType.GotoStatement:
+                    writer.Write($" {((BoundGotoStatement)this).Label.Name}");
+                    break;
+                case BoundNodeType.ConditionalGotoStatement:
+                    writer.Write($" {((BoundConditionalGotoStatement)this).Label.Name}");
                     break;
             }
             Console.ResetColor();

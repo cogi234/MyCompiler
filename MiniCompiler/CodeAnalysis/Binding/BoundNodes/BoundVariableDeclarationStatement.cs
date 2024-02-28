@@ -17,7 +17,7 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
         {
             if (Initializer == null)
                 yield break;
-            else 
+            else
                 yield return Initializer;
         }
     }

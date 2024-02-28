@@ -53,19 +53,19 @@ namespace Mini.Tests.CodeAnalysis.Syntax
 
         public static IEnumerable<object[]> GetTokensData()
         {
-            foreach (var t in GetTokens().Concat(GetSeparators()))
+            foreach ((TokenType type, string text) t in GetTokens().Concat(GetSeparators()))
                 yield return new object[] { t.type, t.text };
         }
 
         public static IEnumerable<object[]> GetTokenPairsData()
         {
-            foreach (var t in GetTokenPairs())
+            foreach ((TokenType type1, string text1, TokenType type2, string text2) t in GetTokenPairs())
                 yield return new object[] { t.type1, t.text1, t.type2, t.text2 };
         }
 
         public static IEnumerable<object[]> GetSeparatedTokenPairsData()
         {
-            foreach (var t in GetSeparatedTokenPairs())
+            foreach ((TokenType type1, string text1, TokenType separatorType, string separatorText, TokenType type2, string text2) t in GetSeparatedTokenPairs())
                 yield return new object[] { t.type1, t.text1, t.separatorType, t.separatorText, t.type2, t.text2 };
         }
 
@@ -116,7 +116,7 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             if (t1 == TokenType.LessThan || t1 == TokenType.LessThanEqual || t1 == TokenType.GreaterThan ||
                 t1 == TokenType.GreaterThanEqual || t1 == TokenType.Bang || t1 == TokenType.Equal)
                 if (t2 == TokenType.Equal || t2 == TokenType.EqualEqual)
-                return true;
+                    return true;
             if (t1 == TokenType.Pipe && (t2 == TokenType.Pipe || t2 == TokenType.PipePipe))
                 return true;
             if (t1 == TokenType.Ampersand && (t2 == TokenType.Ampersand || t2 == TokenType.AmpersandAmpersand))
@@ -127,9 +127,9 @@ namespace Mini.Tests.CodeAnalysis.Syntax
 
         private static IEnumerable<(TokenType type1, string text1, TokenType type2, string text2)> GetTokenPairs()
         {
-            foreach (var t1 in GetTokens())
+            foreach ((TokenType type, string text) t1 in GetTokens())
             {
-                foreach (var t2 in GetTokens())
+                foreach ((TokenType type, string text) t2 in GetTokens())
                 {
                     if (!RequiresSeparator(t1.type, t2.type))
                         yield return (t1.type, t1.text, t2.type, t2.text);
@@ -138,13 +138,13 @@ namespace Mini.Tests.CodeAnalysis.Syntax
         }
         private static IEnumerable<(TokenType type1, string text1, TokenType separatorType, string separatorText, TokenType type2, string text2)> GetSeparatedTokenPairs()
         {
-            foreach (var t1 in GetTokens())
+            foreach ((TokenType type, string text) t1 in GetTokens())
             {
-                foreach (var t2 in GetTokens())
+                foreach ((TokenType type, string text) t2 in GetTokens())
                 {
                     if (RequiresSeparator(t1.type, t2.type))
                     {
-                        foreach (var s in GetSeparators())
+                        foreach ((TokenType type, string text) s in GetSeparators())
                         {
                             yield return (t1.type, t1.text, s.type, s.text, t2.type, t2.text);
                         }

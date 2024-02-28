@@ -150,8 +150,8 @@ namespace MyCompiler
                 TextLine line = syntaxTree.SourceText.Lines[lineIndex];
                 int column = diag.Span.Start - line.Span.Start;
 
-                var prefixSpan = TextSpan.FromBounds(line.Span.Start, diag.Span.Start);
-                var suffixSpan = TextSpan.FromBounds(diag.Span.End, line.Span.End);
+                TextSpan prefixSpan = TextSpan.FromBounds(line.Span.Start, diag.Span.Start);
+                TextSpan suffixSpan = TextSpan.FromBounds(diag.Span.End, line.Span.End);
 
                 string prefix = syntaxTree.SourceText.ToString(prefixSpan);
                 string error = syntaxTree.SourceText.ToString(diag.Span);

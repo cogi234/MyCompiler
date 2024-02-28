@@ -16,6 +16,12 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                     return RewriteExpressionStatement((BoundExpressionStatement)node);
                 case BoundNodeType.VariableDeclarationStatement:
                     return RewriteVariableDeclarationStatement((BoundVariableDeclarationStatement)node);
+                case BoundNodeType.LabelStatement:
+                    return RewriteLabelStatement((BoundLabelStatement)node);
+                case BoundNodeType.GotoStatement:
+                    return RewriteGotoStatement((BoundGotoStatement)node);
+                case BoundNodeType.ConditionalGotoStatement:
+                    return RewriteConditionalGotoStatement((BoundConditionalGotoStatement)node);
                 case BoundNodeType.IfStatement:
                     return RewriteIfStatement((BoundIfStatement)node);
                 case BoundNodeType.WhileStatement:
@@ -68,6 +74,26 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                 return node;
 
             return new BoundIfStatement(condition, thenStatement, elseStatement);
+        }
+
+        protected virtual BoundStatement RewriteConditionalGotoStatement(BoundConditionalGotoStatement node)
+        {
+            BoundExpression condition = RewriteExpression(node.Condition);
+
+            if (condition == node.Condition)
+                return node;
+
+            return new BoundConditionalGotoStatement(node.Label, condition, node.InvertCondition);
+        }
+
+        protected virtual BoundStatement RewriteGotoStatement(BoundGotoStatement node)
+        {
+            return node;
+        }
+
+        protected virtual BoundStatement RewriteLabelStatement(BoundLabelStatement node)
+        {
+            return node;
         }
 
         protected virtual BoundStatement RewriteVariableDeclarationStatement(BoundVariableDeclarationStatement node)

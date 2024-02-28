@@ -1,9 +1,7 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
-using MiniCompiler.CodeAnalysis.Text;
 using System.Collections.Immutable;
-using System.Xml.Linq;
 
 namespace MiniCompiler.CodeAnalysis.Binding
 {
@@ -48,10 +46,10 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             while (stack.Count > 0)
             {
-                var current = stack.Pop();
-                var scope = new BoundScope(createdScope);
+                BoundGlobalScope current = stack.Pop();
+                BoundScope scope = new BoundScope(createdScope);
 
-                foreach (var v in current.Variables)
+                foreach (VariableSymbol v in current.Variables)
                     scope.TryDeclare(v);
 
                 createdScope = scope;
@@ -60,7 +58,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             return createdScope;
         }
 
-#region Statements
+        #region Statements
         private BoundStatement BindStatement(StatementNode node)
         {
             switch (node.Type)
@@ -161,9 +159,9 @@ namespace MiniCompiler.CodeAnalysis.Binding
             BoundExpression expression = BindExpression(node.Expression);
             return new BoundExpressionStatement(expression);
         }
-#endregion Statements
+        #endregion Statements
 
-#region Expressions
+        #region Expressions
         private BoundExpression BindExpression(ExpressionNode node)
         {
             switch (node.Type)
@@ -270,6 +268,6 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
         }
-#endregion Expressions
+        #endregion Expressions
     }
 }

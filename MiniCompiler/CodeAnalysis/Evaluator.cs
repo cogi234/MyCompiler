@@ -1,19 +1,16 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
-using System.ComponentModel.Design;
-using System.Linq.Expressions;
 
 namespace MiniCompiler.CodeAnalysis
 {
-
     internal sealed class Evaluator
     {
-        private BoundStatement root;
+        private BoundBlockStatement root;
         private readonly Dictionary<VariableSymbol, object> variables;
 
         private object? lastValue = null;
 
-        public Evaluator(BoundStatement root, Dictionary<VariableSymbol, object> variables)
+        public Evaluator(BoundBlockStatement root, Dictionary<VariableSymbol, object> variables)
         {
             this.root = root;
             this.variables = variables;
@@ -21,51 +18,50 @@ namespace MiniCompiler.CodeAnalysis
 
         public object? Evaluate()
         {
-            EvaluateStatement(root);
+            Dictionary<LabelSymbol, int> labelIndex = new Dictionary<LabelSymbol, int>();
+
+            for (int i = 0; i < root.Statements.Length; i++)
+            {
+                if (root.Statements[i].BoundNodeType == BoundNodeType.LabelStatement)
+                    labelIndex.Add(((BoundLabelStatement)root.Statements[i]).Label, i);
+            }
+
+            int index = 0;
+            while (index < root.Statements.Length)
+            {
+                BoundStatement statement = root.Statements[index];
+                switch (statement.BoundNodeType)
+                {
+                    case BoundNodeType.ExpressionStatement:
+                        EvaluateExpressionStatement((BoundExpressionStatement)statement);
+                        index++;
+                        break;
+                    case BoundNodeType.VariableDeclarationStatement:
+                        EvaluateVariableDeclarationStatement((BoundVariableDeclarationStatement)statement);
+                        index++;
+                        break;
+                    case BoundNodeType.LabelStatement:
+                        index++;
+                        break;
+                    case BoundNodeType.GotoStatement:
+                        BoundGotoStatement gotoStatement = (BoundGotoStatement)statement;
+                        index = labelIndex[gotoStatement.Label];
+                        break;
+                    case BoundNodeType.ConditionalGotoStatement:
+                        BoundConditionalGotoStatement conditionalGotoStatement = (BoundConditionalGotoStatement)statement;
+                        bool condition = (bool)EvaluateExpression(conditionalGotoStatement.Condition);
+                        if ((condition && !conditionalGotoStatement.InvertCondition) ||
+                            (!condition && conditionalGotoStatement.InvertCondition))
+                            index = labelIndex[conditionalGotoStatement.Label];
+                        else
+                            index++;
+                        break;
+                    default:
+                        throw new Exception($"Unexpected node {statement.BoundNodeType}");
+                }
+            }
+
             return lastValue;
-        }
-
-        //Evaluate statements
-
-        private void EvaluateStatement(BoundStatement statement)
-        {
-            switch (statement.BoundNodeType)
-            {
-                case BoundNodeType.BlockStatement:
-                    EvaluateBlockStatement((BoundBlockStatement)statement);
-                    break;
-                case BoundNodeType.ExpressionStatement:
-                    EvaluateExpressionStatement((BoundExpressionStatement)statement);
-                    break;
-                case BoundNodeType.VariableDeclarationStatement:
-                    EvaluateVariableDeclarationStatement((BoundVariableDeclarationStatement)statement);
-                    break;
-                case BoundNodeType.IfStatement:
-                    EvaluateIfStatement((BoundIfStatement)statement);
-                    break;
-                case BoundNodeType.WhileStatement:
-                    EvaluateWhileStatement((BoundWhileStatement)statement);
-                    break;
-                default:
-                    throw new Exception($"Unexpected node {statement.BoundNodeType}");
-            }
-        }
-
-        private void EvaluateWhileStatement(BoundWhileStatement statement)
-        {
-            while ((bool)EvaluateExpression(statement.Condition))
-            {
-                EvaluateStatement(statement.Body);
-            }
-        }
-
-        private void EvaluateIfStatement(BoundIfStatement statement)
-        {
-            bool condition = (bool)EvaluateExpression(statement.Condition);
-            if (condition)
-                EvaluateStatement(statement.ThenStatement);
-            else if (statement.ElseStatement != null)
-                EvaluateStatement(statement.ElseStatement);
         }
 
         private void EvaluateVariableDeclarationStatement(BoundVariableDeclarationStatement statement)
@@ -75,19 +71,12 @@ namespace MiniCompiler.CodeAnalysis
             lastValue = value;
         }
 
-        private void EvaluateBlockStatement(BoundBlockStatement statement)
-        {
-            foreach (BoundStatement currentStatement in statement.Statements)
-                EvaluateStatement(currentStatement);
-        }
-
         private void EvaluateExpressionStatement(BoundExpressionStatement statement)
         {
             lastValue = EvaluateExpression(statement.Expression);
         }
 
-        //Evaluate expressions
-
+        #region Expressions
         private object EvaluateExpression(BoundExpression expression)
         {
             switch (expression.BoundNodeType)
@@ -195,5 +184,6 @@ namespace MiniCompiler.CodeAnalysis
                     throw new Exception($"Unhandled binary operation {expression.BinaryOperator.OperationType}");
             }
         }
+        #endregion Expressions
     }
 }

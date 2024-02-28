@@ -9,7 +9,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         private SyntaxTree(SourceText sourceText)
         {
             Parser parser = new Parser(sourceText);
-            var root = parser.ParseCompilationUnit();
+            CompilationUnit root = parser.ParseCompilationUnit();
 
             Diagnostics = parser.Diagnostics.ToImmutableArray();
             Root = root;

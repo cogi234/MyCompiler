@@ -28,7 +28,7 @@ namespace MiniCompiler.CodeAnalysis
             {
                 if (globalScope == null)
                 {
-                    var globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTree.Root);
+                    BoundGlobalScope globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTree.Root);
                     Interlocked.CompareExchange(ref this.globalScope, globalScope, null);
                 }
 
@@ -63,7 +63,7 @@ namespace MiniCompiler.CodeAnalysis
             GetStatement().PrettyPrint(writer);
         }
 
-        private BoundStatement GetStatement()
+        private BoundBlockStatement GetStatement()
         {
             BoundStatement initialStatement = GlobalScope.Statement;
             return Lowerer.Lower(initialStatement);

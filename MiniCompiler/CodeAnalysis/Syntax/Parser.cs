@@ -41,7 +41,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             return new CompilationUnit(statement);
         }
 
-#region Statements
+        #region Statements
         private StatementNode ParseStatement()
         {
             switch (Current.Type)
@@ -139,8 +139,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             ExpressionNode? initializer = null;
             //if (Current.Type == TokenType.Equal)
             //{   Commented until typed variable declaration is implemented
-                equal = ExpectToken(TokenType.Equal);
-                initializer = ParseExpression();
+            equal = ExpectToken(TokenType.Equal);
+            initializer = ParseExpression();
             //}
 
             Token semicolon = ExpectToken(TokenType.Semicolon);
@@ -172,9 +172,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             Token closeToken = ExpectToken(TokenType.CloseBrace);
             return new BlockStatementNode(openToken, statements.ToImmutable(), closeToken);
         }
-#endregion Statements
+        #endregion Statements
 
-#region Expressions
+        #region Expressions
         private ExpressionNode ParseExpression(int parentPrecedence = 0)
         {
             return ParseAssignmentExpression(parentPrecedence);
@@ -269,7 +269,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             Token token = ExpectToken(TokenType.Identifier);
             return new NameExpressionNode(token);
         }
-#endregion Expressions
+        #endregion Expressions
 
         private Token Peek(int offset)
         {

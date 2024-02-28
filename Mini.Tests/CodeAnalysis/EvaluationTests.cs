@@ -78,7 +78,7 @@ namespace Mini.Tests.CodeAnalysis
             Compilation compilation = new Compilation(syntaxTree);
             Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
             EvaluationResult result = compilation.Evaluate(variables);
-            
+
             Assert.Empty(result.Diagnostics);
             Assert.Equal(expectedValue, result.Value);
         }
@@ -203,12 +203,12 @@ namespace Mini.Tests.CodeAnalysis
 
             for (int i = 0; i < expectedDiagnostics.Length; i++)
             {
-                var expectedMessage = expectedDiagnostics[i];
-                var actualMessage = result.Diagnostics[i].Message;
+                string expectedMessage = expectedDiagnostics[i];
+                string actualMessage = result.Diagnostics[i].Message;
                 Assert.Equal(expectedMessage, actualMessage);
 
-                var expectedSpan = annotatedText.Spans[i];
-                var actualSpan = result.Diagnostics[i].Span;
+                MiniCompiler.CodeAnalysis.Text.TextSpan expectedSpan = annotatedText.Spans[i];
+                MiniCompiler.CodeAnalysis.Text.TextSpan actualSpan = result.Diagnostics[i].Span;
                 Assert.Equal(expectedSpan, actualSpan);
             }
         }
