@@ -1,5 +1,4 @@
 ﻿using MiniCompiler.CodeAnalysis;
-using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Syntax;
 
 namespace Mini.Tests.CodeAnalysis

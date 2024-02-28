@@ -1,4 +1,4 @@
-﻿namespace MiniCompiler.CodeAnalysis.Binding
+﻿namespace MiniCompiler.CodeAnalysis
 {
     internal sealed class LabelSymbol
     {
@@ -8,5 +8,7 @@
         }
 
         public string Name { get; }
+
+        public override string? ToString() => Name;
     }
 }

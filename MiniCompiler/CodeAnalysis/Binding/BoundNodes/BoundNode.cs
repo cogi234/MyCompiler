@@ -67,22 +67,22 @@
                     writer.Write($" {((BoundUnaryExpression)this).UnaryOperator.OperationType}");
                     break;
                 case BoundNodeType.VariableDeclarationStatement:
-                    writer.Write($" {((BoundVariableDeclarationStatement)this).Variable.Name}");
+                    writer.Write($" {((BoundVariableDeclarationStatement)this).Variable}");
                     break;
                 case BoundNodeType.AssignmentExpression:
-                    writer.Write($" {((BoundAssignmentExpression)this).Variable.Name}");
+                    writer.Write($" {((BoundAssignmentExpression)this).Variable}");
                     break;
                 case BoundNodeType.VariableExpression:
-                    writer.Write($" {((BoundVariableExpression)this).Variable.Name}");
+                    writer.Write($" {((BoundVariableExpression)this).Variable}");
                     break;
                 case BoundNodeType.LabelStatement:
-                    writer.Write($" {((BoundLabelStatement)this).Label.Name}");
+                    writer.Write($" {((BoundLabelStatement)this).Label}");
                     break;
                 case BoundNodeType.GotoStatement:
-                    writer.Write($" {((BoundGotoStatement)this).Label.Name}");
+                    writer.Write($" {((BoundGotoStatement)this).Label}");
                     break;
                 case BoundNodeType.ConditionalGotoStatement:
-                    writer.Write($" on {!((BoundConditionalGotoStatement)this).InvertCondition} {((BoundConditionalGotoStatement)this).Label.Name} ");
+                    writer.Write($" on {!((BoundConditionalGotoStatement)this).InvertCondition} {((BoundConditionalGotoStatement)this).Label} ");
                     break;
             }
             Console.ResetColor();

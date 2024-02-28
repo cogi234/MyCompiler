@@ -1,5 +1,4 @@
-﻿
-namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+﻿namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundVariableDeclarationStatement : BoundStatement
     {
