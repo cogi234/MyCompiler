@@ -89,7 +89,7 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             {
                 LabelSymbol endLabel = GenerateLabel();
                 //gotoFalse <condition> end
-                builder.Add(new BoundConditionalGotoStatement(endLabel, node.Condition, true));
+                builder.Add(new BoundConditionalGotoStatement(endLabel, node.Condition, false));
                 //then
                 builder.Add(node.ThenStatement);
                 //end:
@@ -100,7 +100,7 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                 LabelSymbol elseLabel = GenerateLabel();
                 LabelSymbol endLabel = GenerateLabel();
                 //gotoFalse <condition> else
-                builder.Add(new BoundConditionalGotoStatement(elseLabel, node.Condition, true));
+                builder.Add(new BoundConditionalGotoStatement(elseLabel, node.Condition, false));
                 //then
                 builder.Add(node.ThenStatement);
                 //goto end
@@ -130,7 +130,7 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             //check:
             builder.Add(new BoundLabelStatement(checkLabel));
             //gotoTrue <condition> continue
-            builder.Add(new BoundConditionalGotoStatement(continueLabel, node.Condition, false));
+            builder.Add(new BoundConditionalGotoStatement(continueLabel, node.Condition, true));
             //end:
             builder.Add(new BoundLabelStatement(endLabel));
 

@@ -49,8 +49,7 @@ namespace MiniCompiler.CodeAnalysis
                     case BoundNodeType.ConditionalGotoStatement:
                         BoundConditionalGotoStatement conditionalGotoStatement = (BoundConditionalGotoStatement)statement;
                         bool condition = (bool)EvaluateExpression(conditionalGotoStatement.Condition);
-                        if ((condition && !conditionalGotoStatement.InvertCondition) ||
-                            (!condition && conditionalGotoStatement.InvertCondition))
+                        if (condition == conditionalGotoStatement.JumpIfTrue)
                             index = labelIndex[conditionalGotoStatement.Label];
                         else
                             index++;
