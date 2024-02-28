@@ -44,7 +44,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 previous = previous.Previous;
             }
 
-            BoundScope createdScope = null;
+            BoundScope? createdScope = null;
 
             while (stack.Count > 0)
             {

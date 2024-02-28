@@ -1,5 +1,6 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
+using MiniCompiler.CodeAnalysis.Lowering;
 using MiniCompiler.CodeAnalysis.Syntax;
 using System.Collections.Immutable;
 
@@ -50,8 +51,8 @@ namespace MiniCompiler.CodeAnalysis
             }
             else
             {
-                Evaluator evaluator = new Evaluator(GlobalScope.Statement, variables);
-                object value = evaluator.Evaluate();
+                Evaluator evaluator = new Evaluator(GetStatement(), variables);
+                object? value = evaluator.Evaluate();
 
                 return new EvaluationResult(diagnostics.ToImmutableArray(), value);
             }
@@ -59,7 +60,13 @@ namespace MiniCompiler.CodeAnalysis
 
         public void EmitTree(TextWriter writer)
         {
-            GlobalScope.Statement.PrettyPrint(writer);
+            GetStatement().PrettyPrint(writer);
+        }
+
+        private BoundStatement GetStatement()
+        {
+            BoundStatement initialStatement = GlobalScope.Statement;
+            return Lowerer.Lower(initialStatement);
         }
     }
 }
