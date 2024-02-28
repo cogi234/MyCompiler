@@ -37,6 +37,22 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
             writer.Write(indent);
             Console.ForegroundColor = ConsoleColor.DarkGray;
             writer.Write(marker);
+
+            WriteNode(writer);
+
+            writer.WriteLine();
+
+            indent += isLast ? "   " : "│  ";
+
+            SyntaxNode? lastChild = GetChildren().LastOrDefault();
+            foreach (SyntaxNode child in GetChildren())
+            {
+                child.PrettyPrint(writer, indent, child == lastChild);
+            }
+        }
+
+        private void WriteNode(TextWriter writer)
+        {
             Console.ForegroundColor = ConsoleColor.Cyan;
             writer.Write(Type);
 
@@ -63,16 +79,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
                     break;
             }
             Console.ResetColor();
-
-            writer.WriteLine();
-
-            indent += isLast ? "   " : "│  ";
-
-            SyntaxNode? lastChild = GetChildren().LastOrDefault();
-            foreach (SyntaxNode child in GetChildren())
-            {
-                child.PrettyPrint(writer, indent, child == lastChild);
-            }
         }
 
         public override string ToString()

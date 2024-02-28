@@ -12,6 +12,7 @@ namespace MyCompiler
         {
             bool tokenOutput = false;
             bool syntaxTreeOutput = false;
+            bool boundTreeOutput = false;
 
             Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
             Compilation? previousCompilation = null;
@@ -45,10 +46,16 @@ namespace MyCompiler
                         Console.WriteLine(tokenOutput ? "Toggled tokens on" : "Toggled tokens off");
                         continue;
                     }
-                    else if (input.ToLower() == "#tree")
+                    else if (input.ToLower() == "#showtree")
                     {
                         syntaxTreeOutput = !syntaxTreeOutput;
                         Console.WriteLine(syntaxTreeOutput ? "Toggled syntax tree on" : "Toggled syntax tree off");
+                        continue;
+                    }
+                    else if (input.ToLower() == "#showprogram")
+                    {
+                        boundTreeOutput = !boundTreeOutput;
+                        Console.WriteLine(boundTreeOutput ? "Toggled bound tree on" : "Toggled bound tree off");
                         continue;
                     }
                     else if (input.ToLower() == "#reset")
@@ -93,9 +100,20 @@ namespace MyCompiler
 
                 if (syntaxTreeOutput)
                 {
+                    Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.DarkGray;
 
                     syntaxTree.Root.PrettyPrint(Console.Out);
+
+                    Console.ResetColor();
+                }
+
+                if (boundTreeOutput)
+                {
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+
+                    compilation.EmitTree(Console.Out);
 
                     Console.ResetColor();
                 }
@@ -119,7 +137,8 @@ namespace MyCompiler
             Console.WriteLine("#help: view this");
             Console.WriteLine("#clear: clear the screen");
             Console.WriteLine("#token: toggle token display");
-            Console.WriteLine("#tree: toggle syntax tree");
+            Console.WriteLine("#showTree: toggle syntax tree");
+            Console.WriteLine("#showProgram: toggle bound tree");
             Console.WriteLine("#reset: reset the context");
         }
 

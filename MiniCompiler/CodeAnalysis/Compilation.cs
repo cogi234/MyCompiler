@@ -56,5 +56,10 @@ namespace MiniCompiler.CodeAnalysis
                 return new EvaluationResult(diagnostics.ToImmutableArray(), value);
             }
         }
+
+        public void EmitTree(TextWriter writer)
+        {
+            GlobalScope.Statement.PrettyPrint(writer);
+        }
     }
 }
