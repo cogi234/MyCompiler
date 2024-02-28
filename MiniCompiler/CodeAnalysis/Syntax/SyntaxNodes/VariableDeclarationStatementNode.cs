@@ -4,7 +4,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class VariableDeclarationStatementNode : StatementNode
     {
-        public VariableDeclarationStatementNode(Token keyword, Token identifier, Token? equal, ExpressionNode? initializer, Token semicolon)
+        public VariableDeclarationStatementNode(Token keyword, Token identifier, Token? equal, ExpressionNode? initializer, Token? semicolon)
         {
             Keyword = keyword;
             Identifier = identifier;
@@ -17,11 +17,23 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         public Token Identifier { get; }
         public Token? Equal { get; }
         public ExpressionNode? Initializer { get; }
-        public Token Semicolon { get; }
+        public Token? Semicolon { get; }
 
         public override NodeType Type => NodeType.VariableDeclarationStatement;
 
-        public override TextSpan Span => TextSpan.FromBounds(Keyword.Span.Start, Semicolon.Span.End);
+        public override TextSpan Span
+        {
+            get
+            {
+                if (Semicolon != null)
+                    return TextSpan.FromBounds(Keyword.Span.Start, Semicolon.Span.End);
+                if (Initializer != null)
+                    return TextSpan.FromBounds(Keyword.Span.Start, Initializer.Span.End);
+                if (Equal != null)
+                    return TextSpan.FromBounds(Keyword.Span.Start, Equal.Span.End);
+                return TextSpan.FromBounds(Keyword.Span.Start, Identifier.Span.End);
+            }
+        }
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {

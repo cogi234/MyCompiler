@@ -71,9 +71,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
             VariableDeclarationStatementNode? declaration = null;
             if (Current.Type != TokenType.Semicolon)
-                declaration = ParseVariableDeclarationStatement();
-            else
-                ExpectToken(TokenType.Semicolon);
+                declaration = ParseVariableDeclarationStatement(false);
+
+            ExpectToken(TokenType.Semicolon);
 
             ExpressionNode condition = ParseExpression();
             ExpectToken(TokenType.Semicolon);
@@ -129,7 +129,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             return new IfStatementNode(ifKeyword, openParenthesis, condition, closeParenthesis, ifStatement, elseStatement);
         }
 
-        private VariableDeclarationStatementNode ParseVariableDeclarationStatement()
+        private VariableDeclarationStatementNode ParseVariableDeclarationStatement(bool takeSemicolon = true)
         {
             Token keyword = ExpectTokens(TokenType.VarKeyword, TokenType.LetKeyword);
             Token identifier = ExpectToken(TokenType.Identifier);
@@ -143,7 +143,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             initializer = ParseExpression();
             //}
 
-            Token semicolon = ExpectToken(TokenType.Semicolon);
+            Token? semicolon = takeSemicolon ? ExpectToken(TokenType.Semicolon) : null;
             return new VariableDeclarationStatementNode(keyword, identifier, equal, initializer, semicolon);
         }
 
