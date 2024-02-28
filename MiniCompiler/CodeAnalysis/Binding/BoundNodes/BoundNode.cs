@@ -82,7 +82,7 @@
                     writer.Write($" {((BoundGotoStatement)this).Label.Name}");
                     break;
                 case BoundNodeType.ConditionalGotoStatement:
-                    writer.Write($" {((BoundConditionalGotoStatement)this).Label.Name}");
+                    writer.Write($" on {!((BoundConditionalGotoStatement)this).InvertCondition} {((BoundConditionalGotoStatement)this).Label.Name} ");
                     break;
             }
             Console.ResetColor();
