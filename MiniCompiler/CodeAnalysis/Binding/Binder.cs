@@ -60,8 +60,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             return createdScope;
         }
 
-        //Binding statements
-
+#region Statements
         private BoundStatement BindStatement(StatementNode node)
         {
             switch (node.Type)
@@ -162,9 +161,9 @@ namespace MiniCompiler.CodeAnalysis.Binding
             BoundExpression expression = BindExpression(node.Expression);
             return new BoundExpressionStatement(expression);
         }
+#endregion Statements
 
-        //Binding expressions
-
+#region Expressions
         private BoundExpression BindExpression(ExpressionNode node)
         {
             switch (node.Type)
@@ -271,5 +270,6 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
         }
+#endregion Expressions
     }
 }

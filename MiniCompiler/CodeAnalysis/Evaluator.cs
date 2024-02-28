@@ -61,7 +61,7 @@ namespace MiniCompiler.CodeAnalysis
 
             while ((bool)EvaluateExpression(statement.Condition))
             {
-                EvaluateStatement(statement.Statement);
+                EvaluateStatement(statement.Body);
                 if (statement.Increment != null)
                     EvaluateAssignmentExpression(statement.Increment);
             }
@@ -71,7 +71,7 @@ namespace MiniCompiler.CodeAnalysis
         {
             while ((bool)EvaluateExpression(statement.Condition))
             {
-                EvaluateStatement(statement.Statement);
+                EvaluateStatement(statement.Body);
             }
         }
 
@@ -79,7 +79,7 @@ namespace MiniCompiler.CodeAnalysis
         {
             bool condition = (bool)EvaluateExpression(statement.Condition);
             if (condition)
-                EvaluateStatement(statement.IfStatement);
+                EvaluateStatement(statement.ThenStatement);
             else if (statement.ElseStatement != null)
                 EvaluateStatement(statement.ElseStatement);
         }

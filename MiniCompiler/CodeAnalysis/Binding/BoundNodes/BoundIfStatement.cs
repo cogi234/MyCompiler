@@ -3,15 +3,15 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundIfStatement : BoundStatement
     {
-        public BoundIfStatement(BoundExpression condition, BoundStatement ifStatement, BoundStatement? elseStatement)
+        public BoundIfStatement(BoundExpression condition, BoundStatement thenStatement, BoundStatement? elseStatement)
         {
             Condition = condition;
-            IfStatement = ifStatement;
+            ThenStatement = thenStatement;
             ElseStatement = elseStatement;
         }
 
         public BoundExpression Condition { get; }
-        public BoundStatement IfStatement { get; }
+        public BoundStatement ThenStatement { get; }
         public BoundStatement? ElseStatement { get; }
 
         public override BoundNodeType BoundNodeType => BoundNodeType.IfStatement;
@@ -19,7 +19,7 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
         public override IEnumerable<BoundNode> GetChildren()
         {
             yield return Condition;
-            yield return IfStatement;
+            yield return ThenStatement;
             if (ElseStatement != null)
                 yield return ElseStatement;
         }

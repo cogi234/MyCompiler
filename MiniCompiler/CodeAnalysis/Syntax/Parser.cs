@@ -41,8 +41,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             return new CompilationUnit(statement);
         }
 
-        //Statement Parsing
-
+#region Statements
         private StatementNode ParseStatement()
         {
             switch (Current.Type)
@@ -173,10 +172,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             Token closeToken = ExpectToken(TokenType.CloseBrace);
             return new BlockStatementNode(openToken, statements.ToImmutable(), closeToken);
         }
+#endregion Statements
 
-
-        //Expression parsing
-
+#region Expressions
         private ExpressionNode ParseExpression(int parentPrecedence = 0)
         {
             return ParseAssignmentExpression(parentPrecedence);
@@ -271,6 +269,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             Token token = ExpectToken(TokenType.Identifier);
             return new NameExpressionNode(token);
         }
+#endregion Expressions
 
         private Token Peek(int offset)
         {

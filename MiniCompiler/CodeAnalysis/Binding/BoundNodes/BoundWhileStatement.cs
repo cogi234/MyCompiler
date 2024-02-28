@@ -3,21 +3,21 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundWhileStatement : BoundStatement
     {
-        public BoundWhileStatement(BoundExpression condition, BoundStatement statement)
+        public BoundWhileStatement(BoundExpression condition, BoundStatement body)
         {
             Condition = condition;
-            Statement = statement;
+            Body = body;
         }
 
         public BoundExpression Condition { get; }
-        public BoundStatement Statement { get; }
+        public BoundStatement Body { get; }
 
         public override BoundNodeType BoundNodeType => BoundNodeType.WhileStatement;
 
         public override IEnumerable<BoundNode> GetChildren()
         {
             yield return Condition;
-            yield return Statement;
+            yield return Body;
         }
     }
 }
