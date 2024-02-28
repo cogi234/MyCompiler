@@ -35,7 +35,12 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                 whileStatement = new BoundWhileStatement(node.Condition, node.Body);
             else
             {
-                BoundBlockStatement whileBody = new BoundBlockStatement([node.Body, new BoundExpressionStatement(node.Increment)]);
+                BoundBlockStatement whileBody;
+                //If the body is already a block, we just add the increment at the end of the block
+                if (node.Body.BoundNodeType == BoundNodeType.BlockStatement)
+                    whileBody = new BoundBlockStatement(((BoundBlockStatement)node.Body).Statements.Concat([new BoundExpressionStatement(node.Increment)]).ToImmutableArray());
+                else
+                    whileBody = new BoundBlockStatement([node.Body, new BoundExpressionStatement(node.Increment)]);
                 whileStatement = new BoundWhileStatement(node.Condition, whileBody);
             }
 
