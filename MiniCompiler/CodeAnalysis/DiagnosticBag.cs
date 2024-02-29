@@ -1,6 +1,7 @@
 ﻿using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniCompiler.CodeAnalysis.Text;
+using System;
 using System.Collections;
 
 namespace MiniCompiler.CodeAnalysis
@@ -24,6 +25,7 @@ namespace MiniCompiler.CodeAnalysis
             diagnostics.Add(diagnostic);
         }
 
+        #region LexerErrors
         public void ReportInvalidNumber(TextSpan span, string text, Type type)
         {
             string message = $"The number {text} isn't a valid {type}.";
@@ -36,6 +38,13 @@ namespace MiniCompiler.CodeAnalysis
             Report(span, message);
         }
 
+        public void ReportUnterminatedString(TextSpan span)
+        {
+            string message = $"Unterminated string literal.";
+            Report(span, message);
+        }
+        #endregion
+        #region ParserErrors
         public void ReportUnexpectedToken(TextSpan span, TokenType found, params TokenType[] expected)
         {
             string message = $"Unexpected token. Expected ";
@@ -52,6 +61,13 @@ namespace MiniCompiler.CodeAnalysis
             Report(span, message);
         }
 
+        public void ReportUnexpectedNode(TextSpan span, NodeType expectedNode, NodeType actualNode)
+        {
+            string message = $"Expected <{expectedNode}>, got <{actualNode}>.";
+            Report(span, message);
+        }
+        #endregion
+        #region BinderErrors
         public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, Type operandType)
         {
             string message = $"Unary operator '{operatorText}' is not defined for type {operandType}.";
@@ -69,28 +85,23 @@ namespace MiniCompiler.CodeAnalysis
             Report(span, message);
         }
 
-        internal void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
+        public void ReportCannotConvert(TextSpan span, Type fromType, Type toType)
         {
             string message = $"Cannot convert type {fromType} to {toType}.";
             Report(span, message);
         }
 
-        internal void ReportAlreadyExistingVariable(TextSpan span, string name)
+        public void ReportAlreadyExistingVariable(TextSpan span, string name)
         {
             string message = $"Variable '{name}' already exists.";
             Report(span, message);
         }
 
-        internal void ReportCannotAssign(TextSpan span, string name)
+        public void ReportCannotAssign(TextSpan span, string name)
         {
             string message = $"Cannot assign to variable '{name}', it is read only.";
             Report(span, message);
         }
-
-        internal void ReportUnexpectedNode(TextSpan span, NodeType expectedNode, NodeType actualNode)
-        {
-            string message = $"Expected <{expectedNode}>, got <{actualNode}>.";
-            Report(span, message);
-        }
+        #endregion
     }
 }

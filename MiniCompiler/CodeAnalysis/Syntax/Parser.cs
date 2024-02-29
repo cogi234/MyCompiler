@@ -249,6 +249,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return ParseBooleanLiteral();
                 case TokenType.Number:
                     return ParseNumberLiteral();
+                case TokenType.String:
+                    return ParseStringLiteral();
                 case TokenType.Identifier:
                 default:
                     return ParseNameExpression();
@@ -274,6 +276,12 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         {
             Token numberToken = ExpectToken(TokenType.Number);
             return new LiteralExpressionNode(numberToken, numberToken.Value ?? 0);
+        }
+
+        private LiteralExpressionNode ParseStringLiteral()
+        {
+            Token stringToken = ExpectToken(TokenType.String);
+            return new LiteralExpressionNode(stringToken, stringToken.Value ?? "");
         }
 
         private NameExpressionNode ParseNameExpression()

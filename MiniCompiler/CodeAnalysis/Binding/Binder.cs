@@ -63,14 +63,11 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundBlockStatement BindCompilationUnit(CompilationUnit node)
         {
             ImmutableArray<BoundStatement>.Builder statements = ImmutableArray.CreateBuilder<BoundStatement>();
-            scope = new BoundScope(scope);
 
             foreach (StatementNode statement in node.Statements)
             {
                 statements.Add(BindStatement(statement));
             }
-
-            scope = scope.Parent!;
 
             return new BoundBlockStatement(statements.ToImmutable());
         }

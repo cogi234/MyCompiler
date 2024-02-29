@@ -12,6 +12,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         //Tokens
         Number,
+        String,
         Identifier,
         Plus,
         Minus,

@@ -1,4 +1,5 @@
 ﻿using MiniCompiler.CodeAnalysis.Text;
+using System.Text;
 
 namespace MiniCompiler.CodeAnalysis.Syntax
 {
@@ -136,6 +137,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                         position++;
                     }
                     break;
+                case '"':
+                    ReadString();
+                    break;
                 default:
                     if (char.IsDigit(Current)) //Number tokens
                     {
@@ -164,6 +168,47 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 tokenText = text.ToString(start, length);
 
             return new Token(tokenType, new TextSpan(start, length), tokenText, tokenValue);
+        }
+
+        private void ReadString()
+        {
+            //Skip the first quote
+            Next();
+
+            StringBuilder builder = new StringBuilder();
+            bool done = false;
+
+            while (!done)
+            {
+                switch (Current)
+                {
+                    case '\0':
+                    case '\r':
+                    case '\n':
+                        diagnostics.ReportUnterminatedString(new TextSpan(start, 1));
+                        done = true;
+                        break;
+                    case '"':
+                        if (Peek(1) == '"')
+                        {
+                            builder.Append(Current);
+                            Next();
+                            Next();
+                        } else
+                        {
+                            Next();
+                            done = true;
+                        }
+                        break;
+                    default:
+                        builder.Append(Current);
+                        Next();
+                        break;
+                }
+            }
+
+            tokenType = TokenType.String;
+            tokenValue = builder.ToString();
         }
 
         private void ReadWhitespace()
