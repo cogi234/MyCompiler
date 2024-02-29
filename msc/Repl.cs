@@ -309,13 +309,17 @@ namespace MyCompiler
                 Console.CursorVisible = false;
 
                 int lineCount = 0;
-                foreach (string line in submissionDocument)
+                for (; lineCount < submissionDocument.Count; lineCount++)
                 {
+                    string line = submissionDocument[lineCount];
+
                     Console.SetCursorPosition(0, cursorTop + lineCount);
 
                     Console.ForegroundColor = ConsoleColor.Green;
                     if (lineCount == 0)
                         Console.Write("» ");
+                    else if (lineCount == submissionDocument.Count - 1)
+                        Console.Write("« ");
                     else
                         Console.Write("· ");
                     Console.ResetColor();
@@ -324,8 +328,6 @@ namespace MyCompiler
 
                     int remainder = Console.WindowWidth - line.Length - 2;
                     Console.WriteLine(new string(' ', remainder));
-
-                    lineCount++;
                 }
                 int numberOfBlankLines = renderedLineCount - lineCount;
                 if (numberOfBlankLines > 0)
