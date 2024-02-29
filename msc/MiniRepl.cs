@@ -80,6 +80,32 @@ namespace MyCompiler
             return true;
         }
 
+        protected override void RenderLine(string line)
+        {
+            IEnumerable<Token> tokens = SyntaxTree.ParseTokens(line);
+
+            foreach (Token token in tokens)
+            {
+                bool isKeyword = token.Type.ToString().EndsWith("Keyword");
+                bool isOperator = SyntaxFacts.GetUnaryOperatorPrecedence(token.Type) > 0 ||
+                    SyntaxFacts.GetBinaryOperatorPrecedence(token.Type) > 0;
+                if (isKeyword)
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                else if (isOperator)
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                else if (token.Type == TokenType.Number)
+                    Console.ForegroundColor = ConsoleColor.White;
+                else if (token.Type == TokenType.Identifier)
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                else
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+
+                Console.Write(token.Text);
+
+                Console.ResetColor();
+            }
+        }
+
         protected override void EvaluateMetaCommand(string input)
         {
             string lowerInput = input.ToLower();

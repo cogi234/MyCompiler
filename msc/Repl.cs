@@ -39,7 +39,7 @@ namespace MyCompiler
             done = false;
 
             ObservableCollection<string> document = new ObservableCollection<string>() { "" };
-            SubmissionView view = new SubmissionView(document);
+            SubmissionView view = new SubmissionView(RenderLine, document);
 
             while (!done)
             {
@@ -299,6 +299,10 @@ namespace MyCompiler
             submissionHistory.Clear();
         }
 
+        protected virtual void RenderLine(string line)
+        {
+            Console.Write(line);
+        }
         protected virtual void EvaluateMetaCommand(string input)
         {
             Console.ForegroundColor = ConsoleColor.Red;
@@ -321,14 +325,16 @@ namespace MyCompiler
 
         private sealed class SubmissionView
         {
+            private readonly Action<string> lineRenderer;
             private readonly ObservableCollection<string> submissionDocument;
             private readonly int cursorTop;
             private int renderedLineCount;
             private int currentLine;
             private int currentColumn;
 
-            public SubmissionView(ObservableCollection<string> submissionDocument)
+            public SubmissionView(Action<string> lineRenderer, ObservableCollection<string> submissionDocument)
             {
+                this.lineRenderer = lineRenderer;
                 this.submissionDocument = submissionDocument;
                 this.submissionDocument.CollectionChanged += SubmissionDocumentChanged;
                 cursorTop = Console.CursorTop;
@@ -360,7 +366,7 @@ namespace MyCompiler
                         Console.Write("· ");
                     Console.ResetColor();
 
-                    Console.Write(line);
+                    lineRenderer(line);
 
                     int remainder = Console.WindowWidth - line.Length - 2;
                     Console.WriteLine(new string(' ', remainder));

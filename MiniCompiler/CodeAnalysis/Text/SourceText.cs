@@ -95,7 +95,7 @@ namespace MiniCompiler.CodeAnalysis.Text
                 return "";
             if (start >= text.Length)
                 return "";
-            if (start + length >= text.Length)
+            if (start + length > text.Length)
                 return "";
             return text.Substring(start, length); 
         }
