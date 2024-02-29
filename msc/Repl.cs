@@ -9,6 +9,9 @@ namespace MyCompiler
 {
     internal abstract class Repl
     {
+        private List<string> submissionHistory = new List<string>();
+        private int submissionHistoryIndex;
+
         private bool done;
 
         public void Run()
@@ -25,6 +28,9 @@ namespace MyCompiler
                     EvaluateMetaCommand(text);
                 else
                     EvaluateSubmission(text);
+
+                submissionHistory.Add(text);
+                submissionHistoryIndex = 0;
             }
         }
 
@@ -248,12 +254,24 @@ namespace MyCompiler
 
         private void HandlePageUp(ObservableCollection<string> document, SubmissionView view)
         {
-
+            if (submissionHistory.Count > 0)
+            {
+                submissionHistoryIndex--;
+                if (submissionHistoryIndex < 0)
+                    submissionHistoryIndex = submissionHistory.Count - 1;
+                UpdateDocumentFromHistory(document, view);
+            }
         }
 
         private void HandlePageDown(ObservableCollection<string> document, SubmissionView view)
         {
-
+            if (submissionHistory.Count > 0)
+            {
+                submissionHistoryIndex++;
+                if (submissionHistoryIndex > submissionHistory.Count - 1)
+                    submissionHistoryIndex = 0;
+                UpdateDocumentFromHistory(document, view);
+            }
         }
 
         private void HandleTyping(ObservableCollection<string> document, SubmissionView view, string text)
@@ -262,6 +280,24 @@ namespace MyCompiler
             view.CurrentColumn += text.Length;
         }
         #endregion
+
+        private void UpdateDocumentFromHistory(ObservableCollection<string> document, SubmissionView view)
+        {
+            document.Clear();
+
+            string historyItem = submissionHistory[submissionHistoryIndex];
+            string[] lines = historyItem.Split(Environment.NewLine);
+            foreach (string line in lines)
+                document.Add(line);
+
+            view.CurrentLine = document.Count - 1;
+            view.CurrentColumn = document[view.CurrentLine].Length;
+        }
+        
+        private void ClearHistory()
+        {
+            submissionHistory.Clear();
+        }
 
         protected virtual void EvaluateMetaCommand(string input)
         {
