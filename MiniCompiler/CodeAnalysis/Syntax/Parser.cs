@@ -6,7 +6,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 {
     internal sealed class Parser
     {
-        private readonly SourceText text;
         private readonly ImmutableArray<Token> tokens;
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         public DiagnosticBag Diagnostics => diagnostics;
@@ -15,7 +14,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public Parser(SourceText text)
         {
-            this.text = text;
             List<Token> tokens = new List<Token>();
             Lexer lexer = new Lexer(text);
             Token token;

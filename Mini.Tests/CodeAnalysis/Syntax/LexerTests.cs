@@ -71,21 +71,21 @@ namespace Mini.Tests.CodeAnalysis.Syntax
 
         private static IEnumerable<(TokenType type, string text)> GetTokens()
         {
-#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
             //The .Where guarantees that text isn't null
             IEnumerable<(TokenType type, string text)> staticTokens = Enum.GetValues(typeof(TokenType))
                 .Cast<TokenType>()
                 .Select(t => (type: t, text: SyntaxFacts.GetText(t)))
-                .Where(t => t.text != null);
-#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
+                .Where(t => t.text != null)!;
 
-            (TokenType, string)[] dynamicTokens = new[]
-            {
+            (TokenType, string)[] dynamicTokens =
+            [
                 (TokenType.Number,"1"),
                 (TokenType.Number,"1234567890"),
                 (TokenType.Identifier,"a"),
                 (TokenType.Identifier,"abcdefghijklmnopqrstuvwxyz"),
-            };
+                (TokenType.String,"\"Test\""),
+                (TokenType.String,"\"Te\"\"st\""),
+            ];
 
             return staticTokens.Concat(dynamicTokens);
         }
@@ -112,6 +112,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
             if (t1IsWord && t2 == TokenType.Number)
                 return true;
             if (t1 == TokenType.Number && t2 == TokenType.Number)
+                return true;
+            if (t1 == TokenType.String && t2 == TokenType.String)
                 return true;
             if (t1 == TokenType.LessThan || t1 == TokenType.LessThanEqual || t1 == TokenType.GreaterThan ||
                 t1 == TokenType.GreaterThanEqual || t1 == TokenType.Bang || t1 == TokenType.Equal)

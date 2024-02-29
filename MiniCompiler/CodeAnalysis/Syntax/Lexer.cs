@@ -211,6 +211,21 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             tokenValue = builder.ToString();
         }
 
+        private void ReadNumber()
+        {
+            while (char.IsDigit(Current))
+                Next();
+
+            int length = position - start;
+            tokenText = text.ToString(start, length);
+
+            if (!int.TryParse(tokenText, out int number))
+                diagnostics.ReportInvalidNumber(new TextSpan(start, length), tokenText, typeof(int));
+
+            tokenType = TokenType.Number;
+            tokenValue = number;
+        }
+
         private void ReadWhitespace()
         {
             while (char.IsWhiteSpace(Current))
@@ -227,21 +242,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             int length = position - start;
             tokenText = text.ToString(start, length);
             tokenType = SyntaxFacts.GetKeywordType(tokenText);
-        }
-
-        private void ReadNumber()
-        {
-            while (char.IsDigit(Current))
-                Next();
-
-            int length = position - start;
-            tokenText = text.ToString(start, length);
-
-            if (!int.TryParse(tokenText, out int number))
-                diagnostics.ReportInvalidNumber(new TextSpan(start, length), tokenText, typeof(int));
-
-            tokenType = TokenType.Number;
-            tokenValue = number;
         }
 
         private char Current => Peek(0);
