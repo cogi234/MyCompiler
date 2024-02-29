@@ -1,5 +1,6 @@
 ﻿using MiniCompiler.CodeAnalysis;
 using MiniCompiler.CodeAnalysis.Syntax;
+using MiniCompiler.CodeAnalysis.Text;
 
 namespace MyCompiler
 {
@@ -110,6 +111,46 @@ namespace MyCompiler
                 default:
                     base.EvaluateMetaCommand(input);
                     break;
+            }
+        }
+
+        protected void PrintHelp()
+        {
+            Console.WriteLine("#exit: exit the program");
+            Console.WriteLine("#help: view this");
+            Console.WriteLine("#clear: clear the screen");
+            Console.WriteLine("#token: toggle token display");
+            Console.WriteLine("#showTree: toggle syntax tree");
+            Console.WriteLine("#showProgram: toggle bound tree");
+            Console.WriteLine("#reset: reset the context");
+        }
+
+        protected void PrintDiagnostics(IReadOnlyList<Diagnostic> diagnostics, SyntaxTree syntaxTree)
+        {
+            foreach (Diagnostic diag in diagnostics)
+            {
+                int lineIndex = syntaxTree.SourceText.GetLineIndex(diag.Span.Start);
+                TextLine line = syntaxTree.SourceText.Lines[lineIndex];
+                int column = diag.Span.Start - line.Span.Start;
+
+                TextSpan prefixSpan = TextSpan.FromBounds(line.Span.Start, diag.Span.Start);
+                TextSpan suffixSpan = TextSpan.FromBounds(diag.Span.End, line.Span.End);
+
+                string prefix = syntaxTree.SourceText.ToString(prefixSpan);
+                string error = syntaxTree.SourceText.ToString(diag.Span);
+                string suffix = syntaxTree.SourceText.ToString(suffixSpan);
+
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.Write($"({lineIndex + 1}, {column + 1}): ");
+                Console.WriteLine(diag);
+
+                Console.ResetColor();
+                Console.Write("  ");
+                Console.Write(prefix);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(error);
+                Console.ResetColor();
+                Console.WriteLine(suffix);
             }
         }
     }
