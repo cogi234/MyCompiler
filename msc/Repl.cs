@@ -294,7 +294,7 @@ namespace MyCompiler
             view.CurrentColumn = document[view.CurrentLine].Length;
         }
         
-        private void ClearHistory()
+        protected void ClearHistory()
         {
             submissionHistory.Clear();
         }
@@ -365,6 +365,7 @@ namespace MyCompiler
                     int remainder = Console.WindowWidth - line.Length - 2;
                     Console.WriteLine(new string(' ', remainder));
                 }
+
                 int numberOfBlankLines = renderedLineCount - lineCount;
                 if (numberOfBlankLines > 0)
                 {

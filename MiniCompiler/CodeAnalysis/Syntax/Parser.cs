@@ -6,6 +6,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 {
     internal sealed class Parser
     {
+        private readonly SourceText text;
         private readonly ImmutableArray<Token> tokens;
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         public DiagnosticBag Diagnostics => diagnostics;
@@ -14,6 +15,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public Parser(SourceText text)
         {
+            this.text = text;
             List<Token> tokens = new List<Token>();
             Lexer lexer = new Lexer(text);
             Token token;
@@ -35,10 +37,25 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public CompilationUnit ParseCompilationUnit()
         {
-            StatementNode statement = ParseStatement();
+            ImmutableArray<StatementNode>.Builder statements = ImmutableArray.CreateBuilder<StatementNode>();
+            while (Current.Type != TokenType.EndOfFile)
+            {
+                Token startToken = Current;
+                statements.Add(ParseStatement());
+
+                //If we didn't consume any tokens, we skip this one
+                if (Current == startToken)
+                    NextToken();
+            }
 
             ExpectToken(TokenType.EndOfFile);
-            return new CompilationUnit(statement);
+
+            BlockStatementNode blockStatement = new BlockStatementNode(
+                new Token(TokenType.OpenBrace, new TextSpan(0, 0), "", null),
+                statements.ToImmutable(),
+                new Token(TokenType.CloseBrace, new TextSpan(text.Length - 1, 0), "", null));
+
+            return new CompilationUnit(blockStatement);
         }
 
         #region Statements

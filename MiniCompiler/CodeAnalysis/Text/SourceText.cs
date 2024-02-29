@@ -89,6 +89,12 @@ namespace MiniCompiler.CodeAnalysis.Text
 
         public override string ToString() => text;
         public string ToString(int start, int length) {
+            if (length == 0)
+                return "";
+            if (start < 0)
+                return "";
+            if (start >= text.Length)
+                return "";
             if (start + length >= text.Length)
                 return "";
             return text.Substring(start, length); 
