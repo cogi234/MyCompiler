@@ -70,7 +70,13 @@ namespace MyCompiler
         protected override bool IsCompleteSubmission(string text)
         {
             if (string.IsNullOrEmpty(text))
-                return false;
+                return true;
+
+            bool lastTwoLinesAreBlank = text.Split(Environment.NewLine)
+                .Reverse()
+                .TakeWhile(s => string.IsNullOrWhiteSpace(s)).Count() >= 2;
+            if (lastTwoLinesAreBlank)
+                return true;
 
             SyntaxTree syntaxTree = SyntaxTree.Parse(text);
 
