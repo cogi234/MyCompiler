@@ -27,5 +27,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
                 yield return statement;
             }
         }
+
+        public override Token GetLastToken()
+        {
+            return CloseBrace;
+        }
     }
 }

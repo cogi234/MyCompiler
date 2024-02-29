@@ -2,6 +2,7 @@
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using System.Collections.Immutable;
+using System.Xml.Linq;
 
 namespace MiniCompiler.CodeAnalysis.Binding
 {
@@ -23,7 +24,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             BoundScope parentScope = CreateParentScope(previousGlobalScope);
             Binder binder = new Binder(parentScope);
-            BoundStatement statement = binder.BindStatement(compilationUnit.Statement);
+            BoundStatement statement = binder.BindCompilationUnit(compilationUnit);
             ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
             ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
 
@@ -59,6 +60,20 @@ namespace MiniCompiler.CodeAnalysis.Binding
         }
 
         #region Statements
+        private BoundBlockStatement BindCompilationUnit(CompilationUnit node)
+        {
+            ImmutableArray<BoundStatement>.Builder statements = ImmutableArray.CreateBuilder<BoundStatement>();
+            scope = new BoundScope(scope);
+
+            foreach (StatementNode statement in node.Statements)
+            {
+                statements.Add(BindStatement(statement));
+            }
+
+            scope = scope.Parent!;
+
+            return new BoundBlockStatement(statements.ToImmutable());
+        }
         private BoundStatement BindStatement(StatementNode node)
         {
             switch (node.Type)
@@ -119,7 +134,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             scope = scope.Parent!;
 
             //The else is optional
-            BoundStatement? elseStatement = node.ElseStatement == null ? null : BindStatement(node.ElseStatement.Statement);
+            BoundStatement? elseStatement = node.ElseClause == null ? null : BindStatement(node.ElseClause.Statement);
 
             return new BoundIfStatement(condition, ifStatement, elseStatement);
         }

@@ -20,5 +20,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         {
             yield return Operand;
         }
+
+        public override Token GetLastToken()
+        {
+            return Operand.GetLastToken();
+        }
     }
 }

@@ -21,5 +21,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         {
             yield return Expression;
         }
+
+        public override Token GetLastToken()
+        {
+            return Semicolon;
+        }
     }
 }

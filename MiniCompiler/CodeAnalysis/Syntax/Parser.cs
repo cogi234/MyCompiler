@@ -50,12 +50,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
             ExpectToken(TokenType.EndOfFile);
 
-            BlockStatementNode blockStatement = new BlockStatementNode(
-                new Token(TokenType.OpenBrace, new TextSpan(0, 0), "", null),
-                statements.ToImmutable(),
-                new Token(TokenType.CloseBrace, new TextSpan(text.Length - 1, 0), "", null));
-
-            return new CompilationUnit(blockStatement);
+            return new CompilationUnit(statements.ToImmutable());
         }
 
         #region Statements

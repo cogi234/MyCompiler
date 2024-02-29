@@ -22,5 +22,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         {
             return Enumerable.Empty<SyntaxNode>();
         }
+
+        public override Token GetLastToken()
+        {
+            return LiteralToken;
+        }
     }
 }

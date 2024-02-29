@@ -61,15 +61,15 @@ namespace Mini.Tests.CodeAnalysis
         [InlineData("true != true;", false)]
         [InlineData("false != true;", true)]
 
-        [InlineData("{var a = 10; a * a;}", 100)]
-        [InlineData("{var a = 1;if (a == 1) a = 10; a;}", 10)]
-        [InlineData("{var a = 1;if (a == 2) a = 10; a;}", 1)]
-        [InlineData("{if (true) 1; else 2;}", 1)]
-        [InlineData("{if (false) 1; else 2;}", 2)]
-        [InlineData("{var i = 0; while(i < 10) i = i + 1;}", 10)]
-        [InlineData("{for(var i = 0; i < 10; i = i + 1) i;}", 10)]
+        [InlineData("var a = 10; a * a;", 100)]
+        [InlineData("var a = 1;if (a == 1) a = 10; a;", 10)]
+        [InlineData("var a = 1;if (a == 2) a = 10; a;", 1)]
+        [InlineData("if (true) 1; else 2;", 1)]
+        [InlineData("if (false) 1; else 2;", 2)]
+        [InlineData("var i = 0; while(i < 10) i = i + 1;", 10)]
+        [InlineData("for(var i = 0; i < 10; i = i + 1) i;", 10)]
         //Fibonnaci
-        [InlineData("{var f1 = 0; var f2 = 1; for (var i = 0; i < 10; i = i + 1){var result = f1 + f2; f1 = f2; f2 = result;} f2;}", 89)]
+        [InlineData("var f1 = 0; var f2 = 1; for (var i = 0; i < 10; i = i + 1){var result = f1 + f2; f1 = f2; f2 = result;} f2;", 89)]
         #endregion InlineData
         public void EvaluatesCorrectly(string text, object expectedValue)
         {

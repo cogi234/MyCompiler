@@ -1,4 +1,5 @@
-﻿using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+using MiniCompiler.CodeAnalysis.Text;
 
 namespace MiniCompiler.CodeAnalysis.Syntax
 {
@@ -60,5 +61,9 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         public TextSpan Span { get; }
         public string? Text { get; }
         public object? Value { get; }
+        /// <summary>
+        /// A token is missing if it was inserted by the parser and isn't in the source
+        /// </summary>
+        public bool IsMissing => Text == null;
     }
 }

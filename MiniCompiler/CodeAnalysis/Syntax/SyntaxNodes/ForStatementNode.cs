@@ -38,5 +38,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
                 yield return Increment;
             yield return Statement;
         }
+
+        public override Token GetLastToken()
+        {
+            return Statement.GetLastToken();
+        }
     }
 }

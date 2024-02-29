@@ -29,6 +29,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         public abstract NodeType Type { get; }
         public abstract TextSpan Span { get; }
         public abstract IEnumerable<SyntaxNode> GetChildren();
+        public abstract Token GetLastToken();
 
         public void PrettyPrint(TextWriter writer, string indent = "", bool isLast = true)
         {

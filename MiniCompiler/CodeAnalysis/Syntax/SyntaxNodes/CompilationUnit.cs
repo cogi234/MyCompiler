@@ -1,23 +1,33 @@
 ﻿using MiniCompiler.CodeAnalysis.Text;
+using System.Collections.Immutable;
 
 namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class CompilationUnit : SyntaxNode
     {
-        public CompilationUnit(StatementNode statement)
+        public CompilationUnit(ImmutableArray<StatementNode> statements)
         {
-            Statement = statement;
+            Statements = statements;
         }
 
-        public StatementNode Statement { get; }
+        public ImmutableArray<StatementNode> Statements { get; }
 
         public override NodeType Type => NodeType.CompilationUnit;
 
-        public override TextSpan Span => Statement.Span;
+        public override TextSpan Span => TextSpan.FromBounds(Statements.First().Span.Start, Statements.Last().Span.End);
+
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
-            yield return Statement;
+            foreach (StatementNode statement in Statements)
+            {
+                yield return statement;
+            }
+        }
+
+        public override Token GetLastToken()
+        {
+            return Statements.Last().GetLastToken();
         }
     }
 }

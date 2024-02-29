@@ -29,8 +29,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
                     return TextSpan.FromBounds(Keyword.Span.Start, Semicolon.Span.End);
                 if (Initializer != null)
                     return TextSpan.FromBounds(Keyword.Span.Start, Initializer.Span.End);
-                if (Equal != null)
-                    return TextSpan.FromBounds(Keyword.Span.Start, Equal.Span.End);
                 return TextSpan.FromBounds(Keyword.Span.Start, Identifier.Span.End);
             }
         }
@@ -41,6 +39,15 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
                 yield break;
             else
                 yield return Initializer;
+        }
+
+        public override Token GetLastToken()
+        {
+            if (Semicolon != null)
+                return Semicolon;
+            if (Initializer != null)
+                return Initializer.GetLastToken();
+            return Identifier;
         }
     }
 }
