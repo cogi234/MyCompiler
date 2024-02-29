@@ -12,8 +12,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
         {
             int precedence1 = SyntaxFacts.GetBinaryOperatorPrecedence(op1);
             int precedence2 = SyntaxFacts.GetBinaryOperatorPrecedence(op2);
-            string text1 = SyntaxFacts.GetText(op1);
-            string text2 = SyntaxFacts.GetText(op2);
+            string text1 = SyntaxFacts.GetText(op1)!;
+            string text2 = SyntaxFacts.GetText(op2)!;
             string text = $"a {text1} b {text2} c;";
 
             SyntaxNode expression = SyntaxTree.Parse(text).Root;
@@ -52,8 +52,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
         {
             int precedence1 = SyntaxFacts.GetUnaryOperatorPrecedence(opUn);
             int precedence2 = SyntaxFacts.GetBinaryOperatorPrecedence(opBin);
-            string text1 = SyntaxFacts.GetText(opUn);
-            string text2 = SyntaxFacts.GetText(opBin);
+            string text1 = SyntaxFacts.GetText(opUn)!;
+            string text2 = SyntaxFacts.GetText(opBin)!;
             string text = $"{text1} b {text2} c;";
 
             SyntaxNode expression = SyntaxTree.Parse(text).Root;

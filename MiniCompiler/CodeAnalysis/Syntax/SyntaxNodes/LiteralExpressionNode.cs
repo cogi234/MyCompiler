@@ -4,7 +4,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class LiteralExpressionNode : ExpressionNode
     {
-        public LiteralExpressionNode(Token literalToken) : this(literalToken, literalToken.Value) { }
+        public LiteralExpressionNode(Token literalToken) : this(literalToken, literalToken.Value!) { }
 
         public LiteralExpressionNode(Token literalToken, object value)
         {

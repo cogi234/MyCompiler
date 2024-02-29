@@ -42,7 +42,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 previous = previous.Previous;
             }
 
-            BoundScope? createdScope = null;
+            BoundScope createdScope = new BoundScope(null);
 
             while (stack.Count > 0)
             {
@@ -96,7 +96,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             BoundStatement statement = BindStatement(node.Statement);
 
-            scope = scope.Parent;
+            scope = scope.Parent!;
 
             return new BoundForStatement(declaration, condition, increment, statement);
         }
@@ -106,7 +106,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             BoundExpression condition = BindExpression(node.Condition, typeof(bool));
             scope = new BoundScope(scope);
             BoundStatement statement = BindStatement(node.Statement);
-            scope = scope.Parent;
+            scope = scope.Parent!;
 
             return new BoundWhileStatement(condition, statement);
         }
@@ -116,7 +116,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             BoundExpression condition = BindExpression(node.Condition, typeof(bool));
             scope = new BoundScope(scope);
             BoundStatement ifStatement = BindStatement(node.Statement);
-            scope = scope.Parent;
+            scope = scope.Parent!;
 
             //The else is optional
             BoundStatement? elseStatement = node.ElseStatement == null ? null : BindStatement(node.ElseStatement.Statement);
@@ -149,7 +149,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 statements.Add(BindStatement(statement));
             }
 
-            scope = scope.Parent;
+            scope = scope.Parent!;
 
             return new BoundBlockStatement(statements.ToImmutable());
         }
@@ -206,7 +206,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             }
 
             if (scope.TryLookup(name, out VariableSymbol? variable))
-                return new BoundVariableExpression(variable);
+                return new BoundVariableExpression(variable!);
             else
             {
                 diagnostics.ReportUndefinedName(node.Identifier.Span, name);
@@ -225,7 +225,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 return boundExpression;
             }
 
-            if (variable.Type != boundExpression.Type)
+            if (variable!.Type != boundExpression.Type)
             {
                 diagnostics.ReportCannotConvert(node.Expression.Span, boundExpression.Type, variable.Type);
                 return boundExpression;

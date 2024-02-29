@@ -78,10 +78,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             ExpressionNode condition = ParseExpression();
             ExpectToken(TokenType.Semicolon);
 
-            ExpressionNode? increment = null;
+            AssignmentExpressionNode? increment = null;
             if (Current.Type != TokenType.CloseParenthesis)
             {
-                increment = ParseAssignmentExpression();
+                increment = (AssignmentExpressionNode)ParseAssignmentExpression();
                 if (increment.Type != NodeType.AssignmentExpression)
                 {
                     diagnostics.ReportUnexpectedNode(increment.Span, NodeType.AssignmentExpression, increment.Type);
@@ -94,7 +94,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             StatementNode statement = ParseStatement();
 
             if (isValid)
-                return new ForStatementNode(forKeyword, openParenthesis, declaration, condition, (AssignmentExpressionNode)increment, closeParenthesis, statement);
+                return new ForStatementNode(forKeyword, openParenthesis, declaration, condition, increment, closeParenthesis, statement);
             else
                 return statement;
         }
