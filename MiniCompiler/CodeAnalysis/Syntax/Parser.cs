@@ -1,4 +1,5 @@
-﻿using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
+using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniCompiler.CodeAnalysis.Text;
 using System.Collections.Immutable;
 
@@ -91,12 +92,14 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             AssignmentExpressionNode? increment = null;
             if (Current.Type != TokenType.CloseParenthesis)
             {
-                increment = (AssignmentExpressionNode)ParseAssignmentExpression();
-                if (increment.Type != NodeType.AssignmentExpression)
+                ExpressionNode expression = ParseAssignmentExpression();
+                if (expression.Type != NodeType.AssignmentExpression)
                 {
-                    diagnostics.ReportUnexpectedNode(increment.Span, NodeType.AssignmentExpression, increment.Type);
+                    diagnostics.ReportUnexpectedNode(expression.Span, NodeType.AssignmentExpression, expression.Type);
                     isValid = false;
                 }
+                else
+                    increment = (AssignmentExpressionNode)expression;
             }
 
             Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
