@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using MiniCompiler.CodeAnalysis.Symbols;
 
 namespace MiniCompiler.CodeAnalysis.Binding
 {

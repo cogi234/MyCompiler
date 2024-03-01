@@ -1,4 +1,5 @@
 ﻿using MiniCompiler.CodeAnalysis;
+using MiniCompiler.CodeAnalysis.Symbols;
 using MiniCompiler.CodeAnalysis.Syntax;
 
 namespace Mini.Tests.CodeAnalysis
@@ -183,6 +184,16 @@ namespace Mini.Tests.CodeAnalysis
                 1 [&&] true;
             ", @"
                 Binary operator '&&' is not defined for types System.Int32 and System.Boolean.
+            ");
+        }
+        [Fact]
+        public void UnterminatedStringGetsReported()
+        {
+            AssertDiagnostics(@"
+                [""]asd""""asd[]
+            ", @"
+                Unterminated string literal.
+                Unexpected token. Expected <Semicolon>, found <EndOfFile>.
             ");
         }
 

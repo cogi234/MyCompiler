@@ -1,4 +1,6 @@
-﻿namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+﻿using MiniCompiler.CodeAnalysis.Symbols;
+
+namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundConditionalGotoStatement : BoundStatement
     {

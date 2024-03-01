@@ -1,4 +1,5 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
+using MiniCompiler.CodeAnalysis.Symbols;
 
 namespace MiniCompiler.CodeAnalysis
 {

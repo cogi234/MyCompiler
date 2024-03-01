@@ -30,9 +30,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             switch (Current)
             {
                 case '\0':
-                    position++;
-                    tokenType = TokenType.EndOfFile;
-                    break;
+                    return new Token(TokenType.EndOfFile, new TextSpan(start, 0), "\0", null);
                 case '+':
                     position++;
                     tokenType = TokenType.Plus;

@@ -4,6 +4,22 @@ namespace Mini.Tests.CodeAnalysis.Syntax
 {
     public class LexerTests
     {
+        [Fact]
+        public void TestsCoverAllTokens()
+        {
+            IEnumerable<TokenType> tokenTypes = Enum.GetValues(typeof(TokenType)).Cast<TokenType>();
+
+            IEnumerable<TokenType> testedTokenTypes = GetTokens().Concat(GetSeparators()).Select(t => t.type);
+
+            SortedSet<TokenType> untestedTokenTypes = new SortedSet<TokenType>(tokenTypes);
+
+            untestedTokenTypes.Remove(TokenType.BadToken);
+            untestedTokenTypes.Remove(TokenType.EndOfFile);
+            untestedTokenTypes.ExceptWith(testedTokenTypes);
+
+            Assert.Empty(untestedTokenTypes);
+        }
+
         [Theory]
         [MemberData(nameof(GetTokensData))]
         public void ParsesToken(TokenType tokenType, string text)

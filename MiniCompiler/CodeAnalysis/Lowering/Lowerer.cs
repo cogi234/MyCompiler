@@ -1,4 +1,5 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
+using MiniCompiler.CodeAnalysis.Symbols;
 using System.Collections.Immutable;
 
 namespace MiniCompiler.CodeAnalysis.Lowering

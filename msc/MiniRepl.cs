@@ -1,4 +1,5 @@
 ﻿using MiniCompiler.CodeAnalysis;
+using MiniCompiler.CodeAnalysis.Symbols;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Text;
 
@@ -74,7 +75,7 @@ namespace MyCompiler
 
             bool lastTwoLinesAreBlank = text.Split(Environment.NewLine)
                 .Reverse()
-                .TakeWhile(s => string.IsNullOrWhiteSpace(s)).Count() >= 2;
+                .TakeWhile(string.IsNullOrWhiteSpace).Count() >= 2;
             if (lastTwoLinesAreBlank)
                 return true;
 
