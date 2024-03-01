@@ -1,4 +1,6 @@
-﻿namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+﻿using MiniCompiler.CodeAnalysis.Symbols;
+
+namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal enum BoundUnaryOperationType
     {
@@ -15,7 +17,7 @@
             Operand = operand;
         }
 
-        public override Type Type => UnaryOperator.ResultType;
+        public override TypeSymbol Type => UnaryOperator.ResultType;
 
         public override BoundNodeType BoundNodeType => BoundNodeType.UnaryExpression;
 

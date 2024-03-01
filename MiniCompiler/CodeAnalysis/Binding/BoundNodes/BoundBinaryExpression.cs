@@ -1,4 +1,6 @@
-﻿namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+﻿using MiniCompiler.CodeAnalysis.Symbols;
+
+namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal enum BoundBinaryOperationType
     {
@@ -29,7 +31,7 @@
             Right = right;
         }
 
-        public override Type Type => BinaryOperator.ResultType;
+        public override TypeSymbol Type => BinaryOperator.ResultType;
 
         public override BoundNodeType BoundNodeType => BoundNodeType.BinaryExpression;
 

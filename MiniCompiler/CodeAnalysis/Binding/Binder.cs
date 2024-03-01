@@ -101,7 +101,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             if (node.Declaration != null)
                 declaration = BindVariableDeclarationStatement(node.Declaration);
 
-            BoundExpression condition = BindExpression(node.Condition, typeof(bool));
+            BoundExpression condition = BindExpression(node.Condition, TypeSymbol.Bool);
 
             BoundAssignmentExpression? increment = null;
             if (node.Increment != null)
@@ -116,7 +116,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundWhileStatement BindWhileStatement(WhileStatementNode node)
         {
-            BoundExpression condition = BindExpression(node.Condition, typeof(bool));
+            BoundExpression condition = BindExpression(node.Condition, TypeSymbol.Bool);
             scope = new BoundScope(scope);
             BoundStatement statement = BindStatement(node.Statement);
             scope = scope.Parent!;
@@ -126,7 +126,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundIfStatement BindIfStatement(IfStatementNode node)
         {
-            BoundExpression condition = BindExpression(node.Condition, typeof(bool));
+            BoundExpression condition = BindExpression(node.Condition, TypeSymbol.Bool);
             scope = new BoundScope(scope);
             BoundStatement ifStatement = BindStatement(node.Statement);
             scope = scope.Parent!;
@@ -196,7 +196,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             }
         }
 
-        private BoundExpression BindExpression(ExpressionNode node, Type expectedType)
+        private BoundExpression BindExpression(ExpressionNode node, TypeSymbol expectedType)
         {
             BoundExpression boundExpression = BindExpression(node);
             if (boundExpression.Type != expectedType)

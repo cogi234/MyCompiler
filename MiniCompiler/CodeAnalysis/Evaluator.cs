@@ -18,7 +18,7 @@ namespace MiniCompiler.CodeAnalysis
 
         public object? Evaluate()
         {
-            Dictionary<LabelSymbol, int> labelIndex = new Dictionary<LabelSymbol, int>();
+            Dictionary<BoundLabel, int> labelIndex = new Dictionary<BoundLabel, int>();
 
             for (int i = 0; i < root.Statements.Length; i++)
             {
@@ -147,17 +147,17 @@ namespace MiniCompiler.CodeAnalysis
                 case BoundBinaryOperationType.Division:
                     return (int)left / (int)right;
                 case BoundBinaryOperationType.BitwiseAnd:
-                    if (expression.BinaryOperator.LeftType == typeof(int))
+                    if (expression.BinaryOperator.LeftType == TypeSymbol.Int)
                         return (int)left & (int)right;
                     else
                         return (bool)left & (bool)right;
                 case BoundBinaryOperationType.BitwiseOr:
-                    if (expression.BinaryOperator.LeftType == typeof(int))
+                    if (expression.BinaryOperator.LeftType == TypeSymbol.Int)
                         return (int)left | (int)right;
                     else
                         return (bool)left | (bool)right;
                 case BoundBinaryOperationType.BitwiseXor:
-                    if (expression.BinaryOperator.LeftType == typeof(int))
+                    if (expression.BinaryOperator.LeftType == TypeSymbol.Int)
                         return (int)left ^ (int)right;
                     else
                         return (bool)left ^ (bool)right;

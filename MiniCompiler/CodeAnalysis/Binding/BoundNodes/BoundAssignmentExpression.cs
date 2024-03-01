@@ -12,7 +12,7 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 
         public VariableSymbol Variable { get; }
         public BoundExpression Expression { get; }
-        public override Type Type => Expression.Type;
+        public override TypeSymbol Type => Expression.Type;
         public override BoundNodeType BoundNodeType => BoundNodeType.AssignmentExpression;
 
 

@@ -1,10 +1,11 @@
-﻿using MiniCompiler.CodeAnalysis.Syntax;
+﻿using MiniCompiler.CodeAnalysis.Symbols;
+using MiniCompiler.CodeAnalysis.Syntax;
 
 namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundUnaryOperator
     {
-        private BoundUnaryOperator(BoundUnaryOperationType operationType, TokenType tokenType, Type operandType, Type resultType)
+        private BoundUnaryOperator(BoundUnaryOperationType operationType, TokenType tokenType, TypeSymbol operandType, TypeSymbol resultType)
         {
             OperationType = operationType;
             TokenType = tokenType;
@@ -12,27 +13,27 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
             ResultType = resultType;
         }
 
-        private BoundUnaryOperator(BoundUnaryOperationType operationType, TokenType tokenType, Type operandType)
+        private BoundUnaryOperator(BoundUnaryOperationType operationType, TokenType tokenType, TypeSymbol operandType)
             : this(operationType, tokenType, operandType, operandType)
         {
         }
 
         public BoundUnaryOperationType OperationType { get; }
         public TokenType TokenType { get; }
-        public Type OperandType { get; }
-        public Type ResultType { get; }
+        public TypeSymbol OperandType { get; }
+        public TypeSymbol ResultType { get; }
 
         private static BoundUnaryOperator[] operators =
         {
             //Boolean
-            new BoundUnaryOperator(BoundUnaryOperationType.LogicalNegation, TokenType.Bang, typeof(bool)),
+            new BoundUnaryOperator(BoundUnaryOperationType.LogicalNegation, TokenType.Bang, TypeSymbol.Bool),
             //Number
-            new BoundUnaryOperator(BoundUnaryOperationType.Identity, TokenType.Plus, typeof(int)),
-            new BoundUnaryOperator(BoundUnaryOperationType.Negation, TokenType.Minus, typeof(int)),
-            new BoundUnaryOperator(BoundUnaryOperationType.BitwiseNegation, TokenType.Tilde, typeof(int)),
+            new BoundUnaryOperator(BoundUnaryOperationType.Identity, TokenType.Plus, TypeSymbol.Int),
+            new BoundUnaryOperator(BoundUnaryOperationType.Negation, TokenType.Minus, TypeSymbol.Int),
+            new BoundUnaryOperator(BoundUnaryOperationType.BitwiseNegation, TokenType.Tilde, TypeSymbol.Int),
         };
 
-        public static BoundUnaryOperator? Bind(TokenType tokenType, Type operandType)
+        public static BoundUnaryOperator? Bind(TokenType tokenType, TypeSymbol operandType)
         {
             foreach (BoundUnaryOperator op in operators)
             {

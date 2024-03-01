@@ -129,7 +129,7 @@ namespace Mini.Tests.CodeAnalysis
                     x = [10];
                 }
             ", @"
-                Cannot convert type System.Int32 to System.Boolean.
+                Cannot convert type int to bool.
             ");
         }
         [Fact]
@@ -141,7 +141,7 @@ namespace Mini.Tests.CodeAnalysis
                         10;
                 }
             ", @"
-                Cannot convert type System.Int32 to System.Boolean.
+                Cannot convert type int to bool.
             ");
         }
         [Fact]
@@ -153,7 +153,7 @@ namespace Mini.Tests.CodeAnalysis
                         1;
                 }
             ", @"
-                Cannot convert type System.Int32 to System.Boolean.
+                Cannot convert type int to bool.
             ");
         }
         [Fact]
@@ -165,7 +165,7 @@ namespace Mini.Tests.CodeAnalysis
                         10;
                 }
             ", @"
-                Cannot convert type System.Int32 to System.Boolean.
+                Cannot convert type int to bool.
             ");
         }
         [Fact]
@@ -174,7 +174,7 @@ namespace Mini.Tests.CodeAnalysis
             AssertDiagnostics(@"
                 [-]true;
             ", @"
-                Unary operator '-' is not defined for type System.Boolean.
+                Unary operator '-' is not defined for type bool.
             ");
         }
         [Fact]
@@ -183,7 +183,7 @@ namespace Mini.Tests.CodeAnalysis
             AssertDiagnostics(@"
                 1 [&&] true;
             ", @"
-                Binary operator '&&' is not defined for types System.Int32 and System.Boolean.
+                Binary operator '&&' is not defined for types int and bool.
             ");
         }
         [Fact]

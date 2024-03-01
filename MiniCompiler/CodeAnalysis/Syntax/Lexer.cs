@@ -1,4 +1,5 @@
-﻿using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniCompiler.CodeAnalysis.Symbols;
+using MiniCompiler.CodeAnalysis.Text;
 using System.Text;
 
 namespace MiniCompiler.CodeAnalysis.Syntax
@@ -218,7 +219,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             tokenText = text.ToString(start, length);
 
             if (!int.TryParse(tokenText, out int number))
-                diagnostics.ReportInvalidNumber(new TextSpan(start, length), tokenText, typeof(int));
+                diagnostics.ReportInvalidNumber(new TextSpan(start, length), tokenText, TypeSymbol.Int);
 
             tokenType = TokenType.Number;
             tokenValue = number;

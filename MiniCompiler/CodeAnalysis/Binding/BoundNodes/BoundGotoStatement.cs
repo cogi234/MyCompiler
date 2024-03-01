@@ -1,15 +1,13 @@
-﻿using MiniCompiler.CodeAnalysis.Symbols;
-
-namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+﻿namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundGotoStatement : BoundStatement
     {
-        public BoundGotoStatement(LabelSymbol label)
+        public BoundGotoStatement(BoundLabel label)
         {
             Label = label;
         }
 
-        public LabelSymbol Label { get; }
+        public BoundLabel Label { get; }
 
         public override BoundNodeType BoundNodeType => BoundNodeType.GotoStatement;
 

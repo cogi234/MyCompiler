@@ -1,5 +1,4 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
-using MiniCompiler.CodeAnalysis.Symbols;
 using System.Collections.Immutable;
 
 namespace MiniCompiler.CodeAnalysis.Lowering
@@ -88,7 +87,7 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             ImmutableArray<BoundStatement>.Builder builder = ImmutableArray.CreateBuilder<BoundStatement>();
             if (node.ElseStatement == null)
             {
-                LabelSymbol endLabel = GenerateLabel();
+                BoundLabel endLabel = GenerateLabel();
                 //gotoFalse <condition> end
                 builder.Add(new BoundConditionalGotoStatement(endLabel, node.Condition, false));
                 //then
@@ -98,8 +97,8 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             }
             else
             {
-                LabelSymbol elseLabel = GenerateLabel();
-                LabelSymbol endLabel = GenerateLabel();
+                BoundLabel elseLabel = GenerateLabel();
+                BoundLabel endLabel = GenerateLabel();
                 //gotoFalse <condition> else
                 builder.Add(new BoundConditionalGotoStatement(elseLabel, node.Condition, false));
                 //then
@@ -119,9 +118,9 @@ namespace MiniCompiler.CodeAnalysis.Lowering
         protected override BoundStatement RewriteWhileStatement(BoundWhileStatement node)
         {
             ImmutableArray<BoundStatement>.Builder builder = ImmutableArray.CreateBuilder<BoundStatement>();
-            LabelSymbol continueLabel = GenerateLabel();
-            LabelSymbol checkLabel = GenerateLabel();
-            LabelSymbol endLabel = GenerateLabel();
+            BoundLabel continueLabel = GenerateLabel();
+            BoundLabel checkLabel = GenerateLabel();
+            BoundLabel endLabel = GenerateLabel();
             //goto check
             builder.Add(new BoundGotoStatement(checkLabel));
             //continue:
@@ -138,11 +137,11 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             return new BoundBlockStatement(builder.ToImmutable());
         }
 
-        private LabelSymbol GenerateLabel()
+        private BoundLabel GenerateLabel()
         {
             string name = $"Label{labelCount}";
             labelCount++;
-            return new LabelSymbol(name);
+            return new BoundLabel(name);
         }
     }
 }
