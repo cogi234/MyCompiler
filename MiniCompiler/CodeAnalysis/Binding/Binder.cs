@@ -210,14 +210,12 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundExpression BindNameExpression(NameExpressionNode node)
         {
             string? name = node.Identifier.Text;
-            if (string.IsNullOrEmpty(name))
-            {
+            if (node.Identifier.IsFake)
                 return new BoundErrorExpression();
-            }
 
-            if (!scope.TryLookup(name, out VariableSymbol? variable))
+            if (!scope.TryLookup(name!, out VariableSymbol? variable))
             {
-                diagnostics.ReportUndefinedName(node.Identifier.Span, name);
+                diagnostics.ReportUndefinedName(node.Identifier.Span, name!);
                 return new BoundErrorExpression();
             }
 
