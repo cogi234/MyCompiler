@@ -81,7 +81,7 @@ namespace MyCompiler
 
             SyntaxTree syntaxTree = SyntaxTree.Parse(text);
 
-            if (syntaxTree.Root.GetLastToken().IsMissing)
+            if (syntaxTree.Root.GetLastToken().IsFake)
                 return false;
 
             return true;

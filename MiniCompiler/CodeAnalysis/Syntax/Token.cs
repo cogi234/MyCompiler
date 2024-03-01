@@ -50,21 +50,19 @@ namespace MiniCompiler.CodeAnalysis.Syntax
     }
     public sealed class Token
     {
-        public Token(TokenType type, TextSpan span, string? text, object? value)
+        public Token(TokenType type, TextSpan span, string? text, object? value, bool isFake = false)
         {
             Type = type;
             Span = span;
             Text = text;
             Value = value;
+            IsFake = isFake;
         }
 
         public TokenType Type { get; }
         public TextSpan Span { get; }
         public string? Text { get; }
         public object? Value { get; }
-        /// <summary>
-        /// A token is missing if it was inserted by the parser and isn't in the source
-        /// </summary>
-        public bool IsMissing => Text == null;
+        public bool IsFake { get; }
     }
 }

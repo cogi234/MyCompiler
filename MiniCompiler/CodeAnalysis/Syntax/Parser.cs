@@ -308,7 +308,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 return NextToken();
 
             diagnostics.ReportUnexpectedToken(Current.Span, Current.Type, expectedType);
-            return new Token(expectedType, new TextSpan(Current.Span.Start, 0), null, null);
+            return new Token(expectedType, new TextSpan(Current.Span.Start, 0), null, null, true);
         }
 
         private Token ExpectTokens(params TokenType[] expectedTypes)
@@ -318,7 +318,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
 
             diagnostics.ReportUnexpectedToken(Current.Span, Current.Type, expectedTypes);
-            return new Token(expectedTypes[0], new TextSpan(Current.Span.Start, 0), null, null);
+            return new Token(expectedTypes[0], new TextSpan(Current.Span.Start, 0), null, null, true);
         }
     }
 }
