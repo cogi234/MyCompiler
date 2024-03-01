@@ -2,7 +2,7 @@
 
 namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
-    internal class BoundVariableExpression : BoundExpression
+    internal sealed class BoundVariableExpression : BoundExpression
     {
         public BoundVariableExpression(VariableSymbol variable)
         {

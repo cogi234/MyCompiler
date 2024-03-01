@@ -14,6 +14,7 @@
         ForStatement,
 
         //Expressions
+        ErrorExpression,
         LiteralExpression,
         VariableExpression,
         AssignmentExpression,

@@ -200,7 +200,10 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             BoundExpression boundExpression = BindExpression(node);
             if (boundExpression.Type != expectedType)
+            {
                 diagnostics.ReportCannotConvert(node.Span, boundExpression.Type, expectedType);
+                return new BoundErrorExpression();
+            }
             return boundExpression;
         }
 
@@ -215,16 +218,16 @@ namespace MiniCompiler.CodeAnalysis.Binding
             string name = node.Identifier.Text ?? "";
             if (string.IsNullOrEmpty(name))
             {
-                return new BoundLiteralExpression(0);
+                return new BoundErrorExpression();
             }
 
-            if (scope.TryLookup(name, out VariableSymbol? variable))
-                return new BoundVariableExpression(variable!);
-            else
+            if (!scope.TryLookup(name, out VariableSymbol? variable))
             {
                 diagnostics.ReportUndefinedName(node.Identifier.Span, name);
-                return new BoundLiteralExpression(0);
+                return new BoundErrorExpression();
             }
+
+            return new BoundVariableExpression(variable!);
         }
 
         private BoundExpression BindAssignmentExpression(AssignmentExpressionNode node)
@@ -235,19 +238,22 @@ namespace MiniCompiler.CodeAnalysis.Binding
             if (!scope.TryLookup(name, out VariableSymbol? variable))
             {
                 diagnostics.ReportUndefinedName(node.Identifier.Span, name);
-                return boundExpression;
+                return new BoundErrorExpression();
             }
+
+            if (boundExpression.Type == TypeSymbol.Error || variable.Type == TypeSymbol.Error)
+                return new BoundErrorExpression();
 
             if (variable!.Type != boundExpression.Type)
             {
                 diagnostics.ReportCannotConvert(node.Expression.Span, boundExpression.Type, variable.Type);
-                return boundExpression;
+                return new BoundErrorExpression();
             }
 
             if (variable.IsReadOnly)
             {
                 diagnostics.ReportCannotAssign(node.Identifier.Span, name);
-                return boundExpression;
+                return new BoundErrorExpression();
             }
 
             return new BoundAssignmentExpression(variable, boundExpression);
@@ -256,12 +262,17 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundExpression BindUnaryExpression(UnaryExpressionNode node)
         {
             BoundExpression boundOperand = BindExpression(node.Operand);
+
+            if (boundOperand.Type == TypeSymbol.Error)
+                return new BoundErrorExpression();
+
             BoundUnaryOperator? boundOperator = BoundUnaryOperator.Bind(node.OperatorToken.Type, boundOperand.Type);
 
             if (boundOperator == null)
             {
-                diagnostics.ReportUndefinedUnaryOperator(node.OperatorToken.Span, node.OperatorToken.Text ?? node.OperatorToken.Type.ToString(), boundOperand.Type);
-                return boundOperand;
+                diagnostics.ReportUndefinedUnaryOperator(node.OperatorToken.Span, node.OperatorToken.Text ??
+                    node.OperatorToken.Type.ToString(), boundOperand.Type);
+                return new BoundErrorExpression();
             }
 
             return new BoundUnaryExpression(boundOperator, boundOperand);
@@ -271,12 +282,18 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             BoundExpression boundLeft = BindExpression(node.Left);
             BoundExpression boundRight = BindExpression(node.Right);
-            BoundBinaryOperator? boundOperator = BoundBinaryOperator.Bind(node.OperatorToken.Type, boundLeft.Type, boundRight.Type);
+
+            if (boundLeft.Type == TypeSymbol.Error || boundRight.Type == TypeSymbol.Error)
+                return new BoundErrorExpression();
+
+            BoundBinaryOperator? boundOperator = BoundBinaryOperator.Bind(node.OperatorToken.Type, boundLeft.Type,
+                boundRight.Type);
 
             if (boundOperator == null)
             {
-                diagnostics.ReportUndefinedBinaryOperator(node.OperatorToken.Span, node.OperatorToken.Text ?? node.OperatorToken.Type.ToString(), boundLeft.Type, boundRight.Type);
-                return boundLeft;
+                diagnostics.ReportUndefinedBinaryOperator(node.OperatorToken.Span,node.OperatorToken.Text ??
+                    node.OperatorToken.Type.ToString(), boundLeft.Type, boundRight.Type);
+                return new BoundErrorExpression();
             }
 
             return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);

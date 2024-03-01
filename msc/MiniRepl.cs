@@ -180,7 +180,7 @@ namespace MyCompiler
                 Console.ResetColor();
                 Console.Write("  ");
                 Console.Write(prefix);
-                Console.ForegroundColor = ConsoleColor.Red;
+                Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.Write(error);
                 Console.ResetColor();
                 Console.WriteLine(suffix);
