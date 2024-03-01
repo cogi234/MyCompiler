@@ -193,7 +193,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                             builder.Append(Current);
                             Next();
                             Next();
-                        } else
+                        }
+                        else
                         {
                             Next();
                             done = true;

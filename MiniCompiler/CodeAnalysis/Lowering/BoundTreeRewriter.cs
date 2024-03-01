@@ -156,6 +156,8 @@ namespace MiniCompiler.CodeAnalysis.Lowering
         {
             switch (node.BoundNodeType)
             {
+                case BoundNodeType.ErrorExpression:
+                    return RewriteErrorExpression((BoundErrorExpression)node);
                 case BoundNodeType.LiteralExpression:
                     return RewriteLiteralExpression((BoundLiteralExpression)node);
                 case BoundNodeType.VariableExpression:
@@ -208,6 +210,11 @@ namespace MiniCompiler.CodeAnalysis.Lowering
         }
 
         protected virtual BoundExpression RewriteLiteralExpression(BoundLiteralExpression node)
+        {
+            return node;
+        }
+
+        protected virtual BoundExpression RewriteErrorExpression(BoundErrorExpression node)
         {
             return node;
         }

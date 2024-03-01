@@ -3,7 +3,6 @@ using MiniCompiler.CodeAnalysis.Symbols;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using System.Collections.Immutable;
-using System.Xml.Linq;
 
 namespace MiniCompiler.CodeAnalysis.Binding
 {
@@ -140,16 +139,11 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundVariableDeclarationStatement BindVariableDeclarationStatement(VariableDeclarationStatementNode node)
         {
             bool isReadOnly = node.Keyword.Type == TokenType.LetKeyword;
-            string name = node.Identifier.Text ?? "";
             //For now, we don't handle declarations without initializer
             BoundExpression initializer = BindExpression(node.Initializer);
+            VariableSymbol variable = BindVariable(node.Identifier, isReadOnly, initializer.Type);
 
-            VariableSymbol assignmentVariable = new VariableSymbol(name, isReadOnly, initializer.Type);
-
-            if (!scope.TryDeclare(assignmentVariable))
-                diagnostics.ReportAlreadyExistingVariable(node.Identifier.Span, name);
-
-            return new BoundVariableDeclarationStatement(assignmentVariable, initializer);
+            return new BoundVariableDeclarationStatement(variable, initializer);
         }
 
         private BoundBlockStatement BindBlockStatement(BlockStatementNode node)
@@ -209,13 +203,13 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundLiteralExpression BindLiteralExpression(LiteralExpressionNode node)
         {
-            object value = node.Value ?? 0;
+            object value = node.Value;
             return new BoundLiteralExpression(value);
         }
 
         private BoundExpression BindNameExpression(NameExpressionNode node)
         {
-            string name = node.Identifier.Text ?? "";
+            string? name = node.Identifier.Text;
             if (string.IsNullOrEmpty(name))
             {
                 return new BoundErrorExpression();
@@ -232,7 +226,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindAssignmentExpression(AssignmentExpressionNode node)
         {
-            string name = node.Identifier.Text ?? "";
+            string? name = node.Identifier.Text;
             BoundExpression boundExpression = BindExpression(node.Expression);
 
             if (!scope.TryLookup(name, out VariableSymbol? variable))
@@ -291,7 +285,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             if (boundOperator == null)
             {
-                diagnostics.ReportUndefinedBinaryOperator(node.OperatorToken.Span,node.OperatorToken.Text ??
+                diagnostics.ReportUndefinedBinaryOperator(node.OperatorToken.Span, node.OperatorToken.Text ??
                     node.OperatorToken.Type.ToString(), boundLeft.Type, boundRight.Type);
                 return new BoundErrorExpression();
             }
@@ -299,5 +293,16 @@ namespace MiniCompiler.CodeAnalysis.Binding
             return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);
         }
         #endregion Expressions
+
+        private VariableSymbol BindVariable(Token identifier, bool isReadOnly, TypeSymbol type)
+        {
+            string name = identifier.Text ?? "?";
+            VariableSymbol variable = new VariableSymbol(name, isReadOnly, type);
+
+            if (!identifier.IsFake && !scope.TryDeclare(variable))
+                diagnostics.ReportAlreadyExistingVariable(identifier.Span, name);
+
+            return variable;
+        }
     }
 }

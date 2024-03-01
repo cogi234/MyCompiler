@@ -1,9 +1,5 @@
-﻿using MiniCompiler.CodeAnalysis;
-using MiniCompiler.CodeAnalysis.Syntax;
-using MiniCompiler.CodeAnalysis.Text;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Text;
 
 namespace MyCompiler
 {
@@ -101,7 +97,8 @@ namespace MyCompiler
                         HandlePageDown(document, view);
                         break;
                 }
-            } else if (key.Modifiers == ConsoleModifiers.Control)
+            }
+            else if (key.Modifiers == ConsoleModifiers.Control)
             {
                 switch (key.Key)
                 {
@@ -109,7 +106,8 @@ namespace MyCompiler
                         HandleControlEnter(document, view);
                         break;
                 }
-            } else if (key.Modifiers == ConsoleModifiers.Shift)
+            }
+            else if (key.Modifiers == ConsoleModifiers.Shift)
             {
                 switch (key.Key)
                 {
@@ -201,7 +199,8 @@ namespace MyCompiler
                 view.CurrentLine--;
                 document[view.CurrentLine] = previousLine + currentLine;
                 view.CurrentColumn = previousLine.Length;
-            } else
+            }
+            else
             {
                 string line = document[view.CurrentLine];
                 string before = line.Substring(0, start - 1);
@@ -296,7 +295,7 @@ namespace MyCompiler
             view.CurrentLine = document.Count - 1;
             view.CurrentColumn = document[view.CurrentLine].Length;
         }
-        
+
         protected void ClearHistory()
         {
             submissionHistory.Clear();

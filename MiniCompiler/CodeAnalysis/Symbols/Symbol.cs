@@ -7,7 +7,8 @@
     }
     public abstract class Symbol
     {
-        private protected Symbol(string name) {
+        private protected Symbol(string name)
+        {
             Name = name;
         }
 

@@ -2,7 +2,6 @@
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniCompiler.CodeAnalysis.Text;
-using System;
 using System.Collections;
 
 namespace MiniCompiler.CodeAnalysis
