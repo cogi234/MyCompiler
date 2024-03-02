@@ -57,8 +57,8 @@
             writer.Write(BoundNodeType);
 
             Console.ForegroundColor = ConsoleColor.Blue;
-            if (this is BoundExpression)
-                writer.Write($" {((BoundExpression)this).Type}");
+            if (this is BoundExpression expression)
+                writer.Write($" {expression.Type}");
             switch (BoundNodeType)
             {
                 case BoundNodeType.LiteralExpression:

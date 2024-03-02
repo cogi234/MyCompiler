@@ -105,7 +105,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             }
         }
 
-        private BoundStatement BindForStatement(ForStatementNode node)
+        private BoundForStatement BindForStatement(ForStatementNode node)
         {
             scope = new BoundScope(scope);
 
@@ -308,8 +308,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             else
             {
 
-                FunctionSymbol? function;
-                if (!scope.TryLookupFunction(name, out function))
+                if (!scope.TryLookupFunction(name, out FunctionSymbol? function))
                 {
                     diagnostics.ReportUndefinedFunction(node.Identifier.Span, name);
                     return new BoundErrorExpression();

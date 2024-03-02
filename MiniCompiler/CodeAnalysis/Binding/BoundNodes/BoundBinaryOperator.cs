@@ -24,7 +24,7 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
         public TypeSymbol RightType { get; }
         public TypeSymbol ResultType { get; }
 
-        private static BoundBinaryOperator[] operators =
+        private static readonly BoundBinaryOperator[] operators =
         {
             //Numbers
             new BoundBinaryOperator(BoundBinaryOperationType.Addition, TokenType.Plus, TypeSymbol.Int),

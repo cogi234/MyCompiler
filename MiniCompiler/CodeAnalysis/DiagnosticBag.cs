@@ -2,10 +2,8 @@
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniCompiler.CodeAnalysis.Text;
-using System;
 using System.Collections;
 using System.Text;
-using System.Xml.Linq;
 
 namespace MiniCompiler.CodeAnalysis
 {
@@ -67,7 +65,7 @@ namespace MiniCompiler.CodeAnalysis
         public void ReportUnexpectedNode(TextSpan span, NodeType actualNode, params NodeType[] expectedNode)
         {
             StringBuilder message = new StringBuilder($"Unexpected node <{actualNode}>.");
-            
+
             if (expectedNode.Length > 0)
             {
                 message.Append(" Expected");
@@ -124,7 +122,7 @@ namespace MiniCompiler.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportUndefinedFunction(TextSpan span,  string? name)
+        public void ReportUndefinedFunction(TextSpan span, string? name)
         {
             string message = $"Function '{name}' doesn't exist.";
             Report(span, message);

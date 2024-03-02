@@ -39,12 +39,13 @@ namespace MiniCompiler.CodeAnalysis.Binding
             {
                 if (to == TypeSymbol.Bool)
                     return Explicit;
-            } else if (from == TypeSymbol.String)
+            }
+            else if (from == TypeSymbol.String)
             {
                 if (to == TypeSymbol.Int)
                     return Explicit;
             }
-            
+
 
 
             return None;

@@ -26,7 +26,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 
         public override ImmutableArray<SyntaxNode> GetNodes() => nodes;
         public override ImmutableArray<Token> GetSeparators() => separators;
-        
+
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -36,6 +36,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
             }
         }
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        
+
     }
 }

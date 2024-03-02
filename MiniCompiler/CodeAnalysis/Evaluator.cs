@@ -128,25 +128,28 @@ namespace MiniCompiler.CodeAnalysis
         private object? EvaluateCallExpression(BoundCallExpression expression)
         {
             ImmutableArray<object?>.Builder argumentBuilder = ImmutableArray.CreateBuilder<object?>();
-            foreach (var argument in expression.Arguments)
+            foreach (BoundExpression argument in expression.Arguments)
                 argumentBuilder.Add(EvaluateExpression(argument));
             ImmutableArray<object?> arguments = argumentBuilder.ToImmutable();
 
             if (expression.Function == BuiltInFunctions.Input)
             {
                 return Console.ReadLine();
-            } else if (expression.Function == BuiltInFunctions.Print)
+            }
+            else if (expression.Function == BuiltInFunctions.Print)
             {
-                string? message = (string?)EvaluateExpression(expression.Arguments[0]);
+                string? message = (string?)arguments[0];
                 Console.WriteLine(message);
                 return null;
-            } else if (expression.Function == BuiltInFunctions.Random)
+            }
+            else if (expression.Function == BuiltInFunctions.Random)
             {
-                int max = (int)(EvaluateExpression(expression.Arguments[0]) ?? 1);
+                int max = (int)(arguments[0] ?? 1);
                 if (random == null)
                     random = new Random();
                 return random.Next(max);
-            } else
+            }
+            else
             {
                 throw new Exception($"Unexpected function {expression.Function}");
             }
@@ -160,7 +163,8 @@ namespace MiniCompiler.CodeAnalysis
             {
                 if (expression.Type == TypeSymbol.String)
                     return Convert.ToString(toConvert);
-            } else if (expression.Expression.Type == TypeSymbol.Int)
+            }
+            else if (expression.Expression.Type == TypeSymbol.Int)
             {
                 if (expression.Type == TypeSymbol.String)
                     return Convert.ToString(toConvert);

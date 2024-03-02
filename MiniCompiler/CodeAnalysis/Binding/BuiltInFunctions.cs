@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using MiniCompiler.CodeAnalysis.Symbols;
+﻿using MiniCompiler.CodeAnalysis.Symbols;
+using System.Reflection;
 
 namespace MiniCompiler.CodeAnalysis.Binding
 {

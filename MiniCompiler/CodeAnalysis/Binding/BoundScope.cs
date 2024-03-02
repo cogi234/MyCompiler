@@ -5,7 +5,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 {
     internal sealed class BoundScope
     {
-        private Dictionary<string, Symbol> symbols = new Dictionary<string, Symbol>();
+        private readonly Dictionary<string, Symbol> symbols = new Dictionary<string, Symbol>();
 
         public BoundScope(BoundScope? parent)
         {
@@ -28,7 +28,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         public bool TryLookupSymbol<TSymbol>(string name, out TSymbol? symbol) where TSymbol : Symbol
         {
             symbol = null;
-            if (symbols.TryGetValue(name, out var declaredSymbol))
+            if (symbols.TryGetValue(name, out Symbol? declaredSymbol))
             {
                 if (declaredSymbol is TSymbol matchingSymbol)
                 {

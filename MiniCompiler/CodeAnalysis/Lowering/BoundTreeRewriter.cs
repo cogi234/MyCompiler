@@ -153,8 +153,7 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                     }
                 }
 
-                if (builder != null)
-                    builder.Add(newStatement);
+                builder?.Add(newStatement);
             }
 
             if (builder == null)
@@ -230,8 +229,7 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                     }
                 }
 
-                if (builder != null)
-                    builder.Add(newExpression);
+                builder?.Add(newExpression);
             }
 
             if (builder == null)

@@ -1,5 +1,4 @@
-﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
-using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+﻿using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniCompiler.CodeAnalysis.Text;
 using System.Collections.Immutable;
 
@@ -318,7 +317,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         private ExpressionNode ParseNameOrCallExpression()
         {
-            if ((Current.Type == TokenType.Identifier || Current.Type == TokenType.Type) 
+            if ((Current.Type == TokenType.Identifier || Current.Type == TokenType.Type)
                 && Peek(1).Type == TokenType.OpenParenthesis)
                 return ParseCallExpression();
 
