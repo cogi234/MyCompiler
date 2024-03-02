@@ -102,6 +102,8 @@ namespace MyCompiler
                     Console.ForegroundColor = ConsoleColor.Gray;
                 else if (token.Type == TokenType.Number)
                     Console.ForegroundColor = ConsoleColor.Cyan;
+                else if (token.Type == TokenType.String)
+                    Console.ForegroundColor = ConsoleColor.White;
                 else if (token.Type == TokenType.Identifier)
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                 else
