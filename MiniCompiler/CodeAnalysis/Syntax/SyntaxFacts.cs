@@ -67,6 +67,8 @@
                     return TokenType.IfKeyword;
                 case "else":
                     return TokenType.ElseKeyword;
+                case "do":
+                    return TokenType.DoKeyword;
                 case "while":
                     return TokenType.WhileKeyword;
                 case "for":
@@ -164,6 +166,8 @@
                     return "if";
                 case TokenType.ElseKeyword:
                     return "else";
+                case TokenType.DoKeyword:
+                    return "do";
                 case TokenType.WhileKeyword:
                     return "while";
                 case TokenType.ForKeyword:

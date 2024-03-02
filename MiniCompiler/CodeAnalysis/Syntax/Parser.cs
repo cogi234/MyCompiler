@@ -66,6 +66,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return ParseIfStatement();
                 case TokenType.WhileKeyword:
                     return ParseWhileStatement();
+                case TokenType.DoKeyword:
+                    return ParseDoWhileStatement();
                 case TokenType.ForKeyword:
                     return ParseForStatement();
                 default:
@@ -110,6 +112,18 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 return new ForStatementNode(forKeyword, openParenthesis, declaration, condition, increment, closeParenthesis, statement);
             else
                 return statement;
+        }
+
+        private DoWhileStatementNode ParseDoWhileStatement()
+        {
+            Token doKeyword = ExpectToken(TokenType.DoKeyword);
+            StatementNode statement = ParseStatement();
+            Token whileKeyword = ExpectToken(TokenType.WhileKeyword);
+            Token openParenthesis = ExpectToken(TokenType.OpenParenthesis);
+            ExpressionNode condition = ParseExpression();
+            Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
+            Token semicolon = ExpectToken(TokenType.Semicolon);
+            return new DoWhileStatementNode(doKeyword, statement, whileKeyword, openParenthesis, condition, closeParenthesis, semicolon);
         }
 
         private WhileStatementNode ParseWhileStatement()

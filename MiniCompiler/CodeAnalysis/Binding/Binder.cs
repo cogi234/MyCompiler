@@ -96,6 +96,8 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     return BindIfStatement((IfStatementNode)node);
                 case NodeType.WhileStatement:
                     return BindWhileStatement((WhileStatementNode)node);
+                case NodeType.DoWhileStatement:
+                    return BindDoWhileStatement((DoWhileStatementNode)node);
                 case NodeType.ForStatement:
                     return BindForStatement((ForStatementNode)node);
                 default:
@@ -122,6 +124,16 @@ namespace MiniCompiler.CodeAnalysis.Binding
             scope = scope.Parent!;
 
             return new BoundForStatement(declaration, condition, increment, statement);
+        }
+
+        private BoundDoWhileStatement BindDoWhileStatement(DoWhileStatementNode node)
+        {
+            scope = new BoundScope(scope);
+            BoundStatement statement = BindStatement(node.Statement);
+            scope = scope.Parent!;
+            BoundExpression condition = BindExpression(node.Condition, TypeSymbol.Bool);
+
+            return new BoundDoWhileStatement(statement, condition);
         }
 
         private BoundWhileStatement BindWhileStatement(WhileStatementNode node)

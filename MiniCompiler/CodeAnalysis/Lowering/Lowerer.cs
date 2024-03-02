@@ -137,6 +137,23 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             return new BoundBlockStatement(builder.ToImmutable());
         }
 
+        protected override BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
+        {
+            ImmutableArray<BoundStatement>.Builder builder = ImmutableArray.CreateBuilder<BoundStatement>();
+            BoundLabel continueLabel = GenerateLabel();
+            BoundLabel endLabel = GenerateLabel();
+            //continue:
+            builder.Add(new BoundLabelStatement(continueLabel));
+            //body
+            builder.Add(node.Body);
+            //gotoTrue <condition> continue
+            builder.Add(new BoundConditionalGotoStatement(continueLabel, node.Condition, true));
+            //end:
+            builder.Add(new BoundLabelStatement(endLabel));
+
+            return new BoundBlockStatement(builder.ToImmutable());
+        }
+
         private BoundLabel GenerateLabel()
         {
             string name = $"Label{labelCount}";

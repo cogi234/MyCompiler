@@ -26,6 +26,8 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                     return RewriteIfStatement((BoundIfStatement)node);
                 case BoundNodeType.WhileStatement:
                     return RewriteWhileStatement((BoundWhileStatement)node);
+                case BoundNodeType.DoWhileStatement:
+                    return RewriteDoWhileStatement((BoundDoWhileStatement)node);
                 case BoundNodeType.ForStatement:
                     return RewriteForStatement((BoundForStatement)node);
                 default:
@@ -49,6 +51,17 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                 return node;
 
             return new BoundForStatement(declaration, condition, increment, body);
+        }
+
+        protected virtual BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
+        {
+            BoundStatement body = RewriteStatement(node.Body);
+            BoundExpression condition = RewriteExpression(node.Condition);
+
+            if (condition == node.Condition && body == node.Body)
+                return node;
+
+            return new BoundDoWhileStatement(body, condition);
         }
 
         protected virtual BoundStatement RewriteWhileStatement(BoundWhileStatement node)

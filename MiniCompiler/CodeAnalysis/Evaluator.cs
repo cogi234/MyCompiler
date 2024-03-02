@@ -155,11 +155,11 @@ namespace MiniCompiler.CodeAnalysis
             if (expression.Expression.Type == TypeSymbol.Bool)
             {
                 if (expression.Type == TypeSymbol.String)
-                    return ((bool)toConvert).ToString();
+                    return Convert.ToString(toConvert);
             } else if (expression.Expression.Type == TypeSymbol.Int)
             {
                 if (expression.Type == TypeSymbol.String)
-                    return ((int)toConvert).ToString();
+                    return Convert.ToString(toConvert);
             }
             else if (expression.Expression.Type == TypeSymbol.String)
             {

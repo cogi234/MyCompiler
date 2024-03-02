@@ -11,6 +11,7 @@
         ConditionalGotoStatement,
         IfStatement,
         WhileStatement,
+        DoWhileStatement,
         ForStatement,
 
         //Expressions

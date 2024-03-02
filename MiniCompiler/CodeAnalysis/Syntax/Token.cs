@@ -47,6 +47,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         LetKeyword,
         IfKeyword,
         ElseKeyword,
+        DoKeyword,
         WhileKeyword,
         ForKeyword,
     }
