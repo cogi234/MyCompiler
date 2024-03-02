@@ -166,6 +166,9 @@ namespace MiniCompiler.CodeAnalysis
                     return (bool)left && (bool)right;
                 case BoundBinaryOperationType.LogicalOr:
                     return (bool)left || (bool)right;
+                //Strings
+                case BoundBinaryOperationType.Concatenation:
+                    return (string)left + (string)right;
                 //Comparisons
                 case BoundBinaryOperationType.Equality:
                     return Equals(left, right);

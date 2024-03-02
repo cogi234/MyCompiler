@@ -40,6 +40,8 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
             new BoundBinaryOperator(BoundBinaryOperationType.BitwiseAnd, TokenType.Ampersand, TypeSymbol.Bool),
             new BoundBinaryOperator(BoundBinaryOperationType.BitwiseOr, TokenType.Pipe, TypeSymbol.Bool),
             new BoundBinaryOperator(BoundBinaryOperationType.BitwiseXor, TokenType.Caret, TypeSymbol.Bool),
+            //Strings
+            new BoundBinaryOperator(BoundBinaryOperationType.Concatenation, TokenType.Plus, TypeSymbol.String),
             //Comparisons
             new BoundBinaryOperator(BoundBinaryOperationType.Equality, TokenType.EqualEqual, TypeSymbol.Bool),
             new BoundBinaryOperator(BoundBinaryOperationType.Unequality, TokenType.BangEqual, TypeSymbol.Bool),
@@ -49,6 +51,8 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
             new BoundBinaryOperator(BoundBinaryOperationType.LesserThanOrEqual, TokenType.LessThanEqual, TypeSymbol.Int, TypeSymbol.Bool),
             new BoundBinaryOperator(BoundBinaryOperationType.GreaterThan, TokenType.GreaterThan, TypeSymbol.Int, TypeSymbol.Bool),
             new BoundBinaryOperator(BoundBinaryOperationType.GreaterThanOrEqual, TokenType.GreaterThanEqual, TypeSymbol.Int, TypeSymbol.Bool),
+            new BoundBinaryOperator(BoundBinaryOperationType.Equality, TokenType.EqualEqual, TypeSymbol.String, TypeSymbol.Bool),
+            new BoundBinaryOperator(BoundBinaryOperationType.Unequality, TokenType.BangEqual, TypeSymbol.String, TypeSymbol.Bool),
         };
 
         public static BoundBinaryOperator? Bind(TokenType tokenType, TypeSymbol leftType, TypeSymbol rightType)

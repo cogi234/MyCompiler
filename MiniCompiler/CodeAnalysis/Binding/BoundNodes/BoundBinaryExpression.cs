@@ -21,6 +21,8 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
         GreaterThanOrEqual,
         LesserThan,
         LesserThanOrEqual,
+
+        Concatenation,
     }
     internal sealed class BoundBinaryExpression : BoundExpression
     {
