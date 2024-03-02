@@ -101,11 +101,11 @@ namespace MyCompiler
                 else if (isOperator)
                     Console.ForegroundColor = ConsoleColor.Gray;
                 else if (token.Type == TokenType.Number)
-                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
                 else if (token.Type == TokenType.String)
-                    Console.ForegroundColor = ConsoleColor.White;
-                else if (token.Type == TokenType.Identifier)
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
+                else if (token.Type == TokenType.Identifier)
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                 else
                     Console.ForegroundColor = ConsoleColor.DarkGray;
 
