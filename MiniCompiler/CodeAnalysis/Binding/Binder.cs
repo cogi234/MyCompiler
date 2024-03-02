@@ -207,7 +207,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundExpression BindExpression(ExpressionNode node, TypeSymbol expectedType)
         {
             BoundExpression boundExpression = BindExpression(node);
-            if (boundExpression.Type == TypeSymbol.Error)
+            if (boundExpression.Type == TypeSymbol.Error || expectedType == TypeSymbol.Error)
                 return new BoundErrorExpression();
 
             //If there's no implicit conversion to the expected type, we throw an error
@@ -333,6 +333,10 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundExpression BindConversion(TypeSymbol toType, ExpressionNode node)
         {
             BoundExpression expression = BindExpression(node);
+
+            if (expression.Type == TypeSymbol.Error || toType == TypeSymbol.Error)
+                return new BoundErrorExpression();
+
             Conversion conversion = Conversion.Classify(expression.Type, toType);
 
             if (!conversion.Exists)

@@ -4,6 +4,7 @@
     {
         public static readonly TypeSymbol Error = new TypeSymbol("?");
         public static readonly TypeSymbol Void = new TypeSymbol("void");
+        public static readonly TypeSymbol Null = new TypeSymbol("null");
         public static readonly TypeSymbol Bool = new TypeSymbol("bool");
         public static readonly TypeSymbol Int = new TypeSymbol("int");
         public static readonly TypeSymbol String = new TypeSymbol("string");
@@ -19,6 +20,7 @@
             switch (name)
             {
                 case "void": return Void;
+                case "null": return Null;
                 case "bool": return Bool;
                 case "int": return Int;
                 case "string": return String;
