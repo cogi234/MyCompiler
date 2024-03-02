@@ -357,7 +357,7 @@ namespace MyCompiler
                 {
                     string line = submissionDocument[lineCount];
 
-                    Console.SetCursorPosition(0, cursorTop + lineCount);
+                    Console.SetCursorPosition(0, Math.Min(cursorTop + lineCount, Console.WindowHeight - 2));
 
                     Console.ForegroundColor = ConsoleColor.Green;
                     if (lineCount == 0)
@@ -380,7 +380,7 @@ namespace MyCompiler
                     string blankLine = new string(' ', Console.WindowWidth);
                     for (int i = 0; i < numberOfBlankLines; i++)
                     {
-                        Console.SetCursorPosition(0, cursorTop + lineCount + i);
+                        Console.SetCursorPosition(0, Math.Min(cursorTop + lineCount + i, Console.WindowHeight - 2));
                         Console.WriteLine(blankLine);
                     }
                 }
@@ -392,7 +392,7 @@ namespace MyCompiler
 
             private void UpdateCursorPosition()
             {
-                Console.CursorTop = cursorTop + currentLine;
+                Console.CursorTop = Math.Min(cursorTop + currentLine, Console.WindowHeight - 2);
                 Console.CursorLeft = 2 + currentColumn;
             }
 
