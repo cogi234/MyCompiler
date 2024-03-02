@@ -134,6 +134,12 @@ namespace MiniCompiler.CodeAnalysis
             string message = $"Function '{name}' doesn't handle {count} arguments";
             Report(span, message);
         }
+
+        public void ReportNullExpression(TextSpan span)
+        {
+            string message = "Expression must have a non-null value.";
+            Report(span, message);
+        }
         #endregion
     }
 }

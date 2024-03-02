@@ -325,10 +325,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             return new SeparatedNodeList<ExpressionNode>(arguments.ToImmutable(), separators.ToImmutable());
         }
 
-        private NameExpressionNode ParseNameExpression()
+        private VariableExpressionNode ParseNameExpression()
         {
             Token identifier = ExpectToken(TokenType.Identifier);
-            return new NameExpressionNode(identifier);
+            return new VariableExpressionNode(identifier);
         }
         #endregion Expressions
 

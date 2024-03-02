@@ -2,9 +2,9 @@
 
 namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
-    public sealed class NameExpressionNode : ExpressionNode
+    public sealed class VariableExpressionNode : ExpressionNode
     {
-        public NameExpressionNode(Token identifier)
+        public VariableExpressionNode(Token identifier)
         {
             Identifier = identifier;
         }

@@ -74,7 +74,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
                     writer.Write($" {((AssignmentExpressionNode)this).Identifier.Text}");
                     break;
                 case NodeType.NameExpression:
-                    writer.Write($" {((NameExpressionNode)this).Identifier.Text}");
+                    writer.Write($" {((VariableExpressionNode)this).Identifier.Text}");
                     break;
                 case NodeType.VariableDeclarationStatement:
                     writer.Write($" {((VariableDeclarationStatementNode)this).Identifier.Text}");

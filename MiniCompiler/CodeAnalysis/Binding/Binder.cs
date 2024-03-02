@@ -142,6 +142,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             bool isReadOnly = node.Keyword.Type == TokenType.LetKeyword;
             //For now, we don't handle declarations without initializer
             BoundExpression initializer = BindExpression(node.Initializer);
+
             VariableSymbol variable = BindVariable(node.Identifier, isReadOnly, initializer.Type);
 
             return new BoundVariableDeclarationStatement(variable, initializer);
@@ -164,13 +165,37 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpressionStatement BindExpressionStatement(ExpressionStatementNode node)
         {
-            BoundExpression expression = BindExpression(node.Expression);
+            BoundExpression expression = BindExpression(node.Expression, true);
             return new BoundExpressionStatement(expression);
         }
         #endregion Statements
 
         #region Expressions
-        private BoundExpression BindExpression(ExpressionNode node)
+        private BoundExpression BindExpression(ExpressionNode node, bool canBeVoid = false)
+        {
+            BoundExpression result = BindExpressionInternal(node);
+            if (!canBeVoid && result.Type == TypeSymbol.Void)
+            {
+                diagnostics.ReportNullExpression(node.Span);
+                return new BoundErrorExpression();
+            }
+            return result;
+        }
+
+        private BoundExpression BindExpression(ExpressionNode node, TypeSymbol expectedType)
+        {
+            BoundExpression boundExpression = BindExpression(node);
+            if (boundExpression.Type == TypeSymbol.Error)
+                return new BoundErrorExpression();
+            if (boundExpression.Type != expectedType)
+            {
+                diagnostics.ReportCannotConvert(node.Span, boundExpression.Type, expectedType);
+                return new BoundErrorExpression();
+            }
+            return boundExpression;
+        }
+
+        private BoundExpression BindExpressionInternal(ExpressionNode node)
         {
             switch (node.Type)
             {
@@ -179,7 +204,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 case NodeType.LiteralExpression:
                     return BindLiteralExpression((LiteralExpressionNode)node);
                 case NodeType.NameExpression:
-                    return BindNameExpression((NameExpressionNode)node);
+                    return BindVariableExpression((VariableExpressionNode)node);
                 case NodeType.AssignmentExpression:
                     return BindAssignmentExpression((AssignmentExpressionNode)node);
                 case NodeType.CallExpression:
@@ -194,24 +219,13 @@ namespace MiniCompiler.CodeAnalysis.Binding
             }
         }
 
-        private BoundExpression BindExpression(ExpressionNode node, TypeSymbol expectedType)
-        {
-            BoundExpression boundExpression = BindExpression(node);
-            if (boundExpression.Type != expectedType)
-            {
-                diagnostics.ReportCannotConvert(node.Span, boundExpression.Type, expectedType);
-                return new BoundErrorExpression();
-            }
-            return boundExpression;
-        }
-
         private BoundLiteralExpression BindLiteralExpression(LiteralExpressionNode node)
         {
             object value = node.Value;
             return new BoundLiteralExpression(value);
         }
 
-        private BoundExpression BindNameExpression(NameExpressionNode node)
+        private BoundExpression BindVariableExpression(VariableExpressionNode node)
         {
             string? name = node.Identifier.Text;
             if (node.Identifier.IsFake)
@@ -229,7 +243,6 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundExpression BindAssignmentExpression(AssignmentExpressionNode node)
         {
             string name = node.Identifier.Text!;
-            BoundExpression boundExpression = BindExpression(node.Expression);
 
             if (!scope.TryLookup(name, out VariableSymbol? variable))
             {
@@ -237,14 +250,10 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 return new BoundErrorExpression();
             }
 
+            BoundExpression boundExpression = BindExpression(node.Expression, variable!.Type);
+
             if (boundExpression.Type == TypeSymbol.Error || variable!.Type == TypeSymbol.Error)
                 return new BoundErrorExpression();
-
-            if (variable!.Type != boundExpression.Type)
-            {
-                diagnostics.ReportCannotConvert(node.Expression.Span, boundExpression.Type, variable.Type);
-                return new BoundErrorExpression();
-            }
 
             if (variable.IsReadOnly)
             {
@@ -259,7 +268,6 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             IEnumerable<FunctionSymbol> functions = BuiltInFunctions.GetAll();
 
-            ImmutableArray<BoundExpression> arguments = BindArguments(node.Arguments);
 
             FunctionSymbol? function = functions.SingleOrDefault(f => f.Name == node.Identifier.Text);
             if (function == null)
@@ -273,26 +281,20 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     function.Name, node.Arguments.Count);
                 return new BoundErrorExpression();
             }
-            for (int i = 0; i < function.Parameters.Length; i++)
-            {
-                if (arguments[i].BoundNodeType == BoundNodeType.ErrorExpression)
-                    return new BoundErrorExpression();
-                if (function.Parameters[i].Type != arguments[i].Type)
-                {
-                    diagnostics.ReportCannotConvert(node.Arguments[i].Span, arguments[i].Type, function.Parameters[i].Type);
-                    return new BoundErrorExpression();
-                }
-            }
+
+            ImmutableArray<BoundExpression> arguments = BindArguments(node.Arguments, function.Parameters);
 
             return new BoundCallExpression(function, arguments);
         }
 
-        private ImmutableArray<BoundExpression> BindArguments(SeparatedNodeList<ExpressionNode> arguments)
+        private ImmutableArray<BoundExpression> BindArguments(SeparatedNodeList<ExpressionNode> arguments, ImmutableArray<ParameterSymbol> parameters)
         {
             ImmutableArray<BoundExpression>.Builder boundArguments = ImmutableArray.CreateBuilder<BoundExpression>();
 
-            foreach (ExpressionNode argument in arguments)
-                boundArguments.Add(BindExpression(argument));
+            for (int i = 0; i < arguments.Count; i++)
+            {
+                boundArguments.Add(BindExpression(arguments[i], parameters[i].Type));
+            }
 
             return boundArguments.ToImmutable();
         }
@@ -343,7 +345,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             string name = identifier.Text ?? "?";
             VariableSymbol variable = new VariableSymbol(name, isReadOnly, type);
 
-            if (!identifier.IsFake && !scope.TryDeclare(variable))
+            if (type != TypeSymbol.Error && !identifier.IsFake && !scope.TryDeclare(variable))
                 diagnostics.ReportAlreadyExistingVariable(identifier.Span, name);
 
             return variable;

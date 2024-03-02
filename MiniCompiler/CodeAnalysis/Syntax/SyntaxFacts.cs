@@ -116,6 +116,12 @@
                     return "{";
                 case TokenType.CloseBrace:
                     return "}";
+                case TokenType.Period:
+                    return ".";
+                case TokenType.Comma:
+                    return ",";
+                case TokenType.Colon:
+                    return ":";
                 case TokenType.Semicolon:
                     return ";";
                 case TokenType.Bang:
