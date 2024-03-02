@@ -45,7 +45,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         FalseKeyword,
         TrueKeyword,
         VarKeyword,
-        LetKeyword,
         IfKeyword,
         ElseKeyword,
         DoKeyword,

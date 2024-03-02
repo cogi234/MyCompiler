@@ -161,11 +161,20 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundVariableDeclarationStatement BindVariableDeclarationStatement(VariableDeclarationStatementNode node)
         {
-            bool isReadOnly = node.Keyword.Type == TokenType.LetKeyword;
-            //For now, we don't handle declarations without initializer
-            BoundExpression initializer = BindExpression(node.Initializer);
+            bool isReadOnly = false;
 
-            VariableSymbol variable = BindVariable(node.Identifier, isReadOnly, initializer.Type);
+            BoundExpression? initializer = null;
+            if (node.Initializer != null)
+                initializer = BindExpression(node.Initializer);
+
+            VariableSymbol variable;
+            if (node.Keyword.Type == TokenType.Type)
+            {
+                TypeSymbol type = TypeSymbol.Lookup(node.Keyword.Text!)!;
+                variable = BindVariable(node.Identifier, isReadOnly, type);
+            }
+            else
+                variable = BindVariable(node.Identifier, isReadOnly, initializer!.Type);
 
             return new BoundVariableDeclarationStatement(variable, initializer);
         }

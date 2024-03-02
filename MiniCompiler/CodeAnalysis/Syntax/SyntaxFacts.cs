@@ -63,8 +63,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return TokenType.TrueKeyword;
                 case "var":
                     return TokenType.VarKeyword;
-                case "let":
-                    return TokenType.LetKeyword;
                 case "if":
                     return TokenType.IfKeyword;
                 case "else":
@@ -164,8 +162,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return "true";
                 case TokenType.VarKeyword:
                     return "var";
-                case TokenType.LetKeyword:
-                    return "let";
                 case TokenType.IfKeyword:
                     return "if";
                 case TokenType.ElseKeyword:

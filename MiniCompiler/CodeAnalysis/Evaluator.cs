@@ -69,7 +69,11 @@ namespace MiniCompiler.CodeAnalysis
 
         private void EvaluateVariableDeclarationStatement(BoundVariableDeclarationStatement statement)
         {
-            object? value = EvaluateExpression(statement.Initializer);
+            object? value;
+            if (statement.Initializer == null)
+                value = statement.Variable.Type.DefaultValue;
+            else
+                value = EvaluateExpression(statement.Initializer);
             variables[statement.Variable] = value;
             lastValue = value;
         }

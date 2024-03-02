@@ -59,7 +59,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             {
                 case TokenType.OpenBrace:
                     return ParseBlockStatement();
-                case TokenType.LetKeyword:
+                case TokenType.Type:
+                    return ParseTypedStatement();
                 case TokenType.VarKeyword:
                     return ParseVariableDeclarationStatement();
                 case TokenType.IfKeyword:
@@ -156,19 +157,34 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             return new IfStatementNode(ifKeyword, openParenthesis, condition, closeParenthesis, ifStatement, elseStatement);
         }
 
+        private StatementNode ParseTypedStatement()
+        {
+            if (Peek(1).Type == TokenType.Identifier)
+                if (Peek(2).Type == TokenType.OpenParenthesis)
+                    return ParseFunctionDeclarationStatement();
+                else
+                    return ParseVariableDeclarationStatement();
+            return ParseExpressionStatement();
+        }
+
+        private StatementNode ParseFunctionDeclarationStatement()
+        {
+            throw new NotImplementedException();
+        }
+
         private VariableDeclarationStatementNode ParseVariableDeclarationStatement(bool takeSemicolon = true)
         {
-            Token keyword = ExpectTokens(TokenType.VarKeyword, TokenType.LetKeyword);
+            Token keyword = ExpectTokens(TokenType.VarKeyword, TokenType.Type);
             Token identifier = ExpectToken(TokenType.Identifier);
 
             //The initializer is optional
             Token? equal = null;
             ExpressionNode? initializer = null;
-            //if (Current.Type == TokenType.Equal)
-            //{   Commented until typed variable declaration is implemented
-            equal = ExpectToken(TokenType.Equal);
-            initializer = ParseExpression();
-            //}
+            if (Current.Type == TokenType.Equal || keyword.Type == TokenType.VarKeyword)
+            {
+                equal = ExpectToken(TokenType.Equal);
+                initializer = ParseExpression();
+            }
 
             Token? semicolon = takeSemicolon ? ExpectToken(TokenType.Semicolon) : null;
             return new VariableDeclarationStatementNode(keyword, identifier, equal, initializer, semicolon);
