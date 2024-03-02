@@ -44,7 +44,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 previous = previous.Previous;
             }
 
-            BoundScope createdScope = new BoundScope(null);
+            BoundScope createdScope = CreateRootScope();
 
             while (stack.Count > 0)
             {
@@ -52,12 +52,22 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 BoundScope scope = new BoundScope(createdScope);
 
                 foreach (VariableSymbol v in current.Variables)
-                    scope.TryDeclare(v);
+                    scope.TryDeclareVariable(v);
 
                 createdScope = scope;
             }
 
             return createdScope;
+        }
+
+        private static BoundScope CreateRootScope()
+        {
+            BoundScope rootScope = new BoundScope(null);
+
+            foreach (FunctionSymbol f in BuiltInFunctions.GetAll())
+                rootScope.TryDeclareFunction(f);
+
+            return rootScope;
         }
 
         #region Statements
@@ -231,7 +241,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             if (node.Identifier.IsFake)
                 return new BoundErrorExpression();
 
-            if (!scope.TryLookup(name!, out VariableSymbol? variable))
+            if (!scope.TryLookupVariable(name!, out VariableSymbol? variable))
             {
                 diagnostics.ReportUndefinedVariable(node.Identifier.Span, name!);
                 return new BoundErrorExpression();
@@ -244,7 +254,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             string name = node.Identifier.Text!;
 
-            if (!scope.TryLookup(name, out VariableSymbol? variable))
+            if (!scope.TryLookupVariable(name, out VariableSymbol? variable))
             {
                 diagnostics.ReportUndefinedVariable(node.Identifier.Span, name);
                 return new BoundErrorExpression();
@@ -266,16 +276,12 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindCallExpression(CallExpressionNode node)
         {
-            IEnumerable<FunctionSymbol> functions = BuiltInFunctions.GetAll();
-
-
-            FunctionSymbol? function = functions.SingleOrDefault(f => f.Name == node.Identifier.Text);
-            if (function == null)
+            if (!scope.TryLookupFunction(node.Identifier.Text!, out FunctionSymbol? function))
             {
                 diagnostics.ReportUndefinedFunction(node.Identifier.Span, node.Identifier.Text);
                 return new BoundErrorExpression();
             }
-            if (node.Arguments.Count != function.Parameters.Length)
+            if (node.Arguments.Count != function!.Parameters.Length)
             {
                 diagnostics.ReportWrongArgumentCount(TextSpan.FromBounds(node.OpenParenthesis.Span.Start, node.CloseParenthesis.Span.End),
                     function.Name, node.Arguments.Count);
@@ -345,7 +351,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             string name = identifier.Text ?? "?";
             VariableSymbol variable = new VariableSymbol(name, isReadOnly, type);
 
-            if (type != TypeSymbol.Error && !identifier.IsFake && !scope.TryDeclare(variable))
+            if (type != TypeSymbol.Error && !identifier.IsFake && !scope.TryDeclareVariable(variable))
                 diagnostics.ReportAlreadyExistingVariable(identifier.Span, name);
 
             return variable;
