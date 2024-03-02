@@ -1,4 +1,5 @@
-﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
+﻿using MiniCompiler.CodeAnalysis.Binding;
+using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
 using MiniCompiler.CodeAnalysis.Symbols;
 using System.Collections.Immutable;
 
@@ -91,6 +92,8 @@ namespace MiniCompiler.CodeAnalysis
                     return EvaluateAssignmentExpression((BoundAssignmentExpression)expression);
                 case BoundNodeType.CallExpression:
                     return EvaluateCallExpression((BoundCallExpression)expression);
+                case BoundNodeType.ConversionExpression:
+                    return EvaluateConversionExpression((BoundConversionExpression)expression);
                 case BoundNodeType.UnaryExpression:
                     return EvaluateUnaryExpression((BoundUnaryExpression)expression);
                 case BoundNodeType.BinaryExpression:
@@ -143,7 +146,30 @@ namespace MiniCompiler.CodeAnalysis
             {
                 throw new Exception($"Unexpected function {expression.Function}");
             }
+        }
 
+        private object? EvaluateConversionExpression(BoundConversionExpression expression)
+        {
+            object toConvert = EvaluateExpression(expression.Expression)!;
+
+            if (expression.Expression.Type == TypeSymbol.Bool)
+            {
+                if (expression.Type == TypeSymbol.String)
+                    return ((bool)toConvert).ToString();
+            } else if (expression.Expression.Type == TypeSymbol.Int)
+            {
+                if (expression.Type == TypeSymbol.String)
+                    return ((int)toConvert).ToString();
+            }
+            else if (expression.Expression.Type == TypeSymbol.String)
+            {
+                if (expression.Type == TypeSymbol.Int)
+                    return int.Parse((string)toConvert);
+                if (expression.Type == TypeSymbol.Bool)
+                    return bool.Parse((string)toConvert);
+            }
+
+            throw new Exception($"Can't convert {expression.Expression.Type} to {expression.Type}");
         }
 
         private object EvaluateUnaryExpression(BoundUnaryExpression expression)

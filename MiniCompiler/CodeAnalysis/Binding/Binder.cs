@@ -197,12 +197,16 @@ namespace MiniCompiler.CodeAnalysis.Binding
             BoundExpression boundExpression = BindExpression(node);
             if (boundExpression.Type == TypeSymbol.Error)
                 return new BoundErrorExpression();
-            if (boundExpression.Type != expectedType)
+
+            //If there's no implicit conversion to the expected type, we throw an error
+            Conversion conversion = Conversion.Classify(boundExpression.Type, expectedType);
+            if (!conversion.Exists || !conversion.IsImplicit)
             {
                 diagnostics.ReportCannotConvert(node.Span, boundExpression.Type, expectedType);
                 return new BoundErrorExpression();
             }
-            return boundExpression;
+
+            return BindConversion(expectedType, node);
         }
 
         private BoundExpression BindExpressionInternal(ExpressionNode node)
@@ -276,21 +280,31 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindCallExpression(CallExpressionNode node)
         {
-            if (!scope.TryLookupFunction(node.Identifier.Text!, out FunctionSymbol? function))
-            {
-                diagnostics.ReportUndefinedFunction(node.Identifier.Span, node.Identifier.Text);
-                return new BoundErrorExpression();
-            }
-            if (node.Arguments.Count != function!.Parameters.Length)
-            {
-                diagnostics.ReportWrongArgumentCount(TextSpan.FromBounds(node.OpenParenthesis.Span.Start, node.CloseParenthesis.Span.End),
-                    function.Name, node.Arguments.Count);
-                return new BoundErrorExpression();
-            }
+            string name = node.Identifier.Text!;
 
-            ImmutableArray<BoundExpression> arguments = BindArguments(node.Arguments, function.Parameters);
+            FunctionSymbol? function = null;
 
-            return new BoundCallExpression(function, arguments);
+            TypeSymbol? conversionType = TypeSymbol.Lookup(name);
+            if (node.Arguments.Count == 1 && conversionType != null)
+                return BindConversion(conversionType, node.Arguments[0]);
+            else
+            {
+                if (!scope.TryLookupFunction(name, out function))
+                {
+                    diagnostics.ReportUndefinedFunction(node.Identifier.Span, name);
+                    return new BoundErrorExpression();
+                }
+                if (node.Arguments.Count != function!.Parameters.Length)
+                {
+                    diagnostics.ReportWrongArgumentCount(TextSpan.FromBounds(node.OpenParenthesis.Span.Start, node.CloseParenthesis.Span.End),
+                        function.Name, node.Arguments.Count);
+                    return new BoundErrorExpression();
+                }
+
+                ImmutableArray<BoundExpression> arguments = BindArguments(node.Arguments, function!.Parameters);
+
+                return new BoundCallExpression(function, arguments);
+            }
         }
 
         private ImmutableArray<BoundExpression> BindArguments(SeparatedNodeList<ExpressionNode> arguments, ImmutableArray<ParameterSymbol> parameters)
@@ -303,6 +317,23 @@ namespace MiniCompiler.CodeAnalysis.Binding
             }
 
             return boundArguments.ToImmutable();
+        }
+
+        private BoundExpression BindConversion(TypeSymbol toType, ExpressionNode node)
+        {
+            BoundExpression expression = BindExpression(node);
+            Conversion conversion = Conversion.Classify(expression.Type, toType);
+
+            if (!conversion.Exists)
+            {
+                diagnostics.ReportCannotConvert(node.Span, expression.Type, toType);
+                return new BoundErrorExpression();
+            }
+
+            if (conversion.IsIdentity)
+                return expression;
+
+            return new BoundConversionExpression(toType, expression);
         }
 
         private BoundExpression BindUnaryExpression(UnaryExpressionNode node)

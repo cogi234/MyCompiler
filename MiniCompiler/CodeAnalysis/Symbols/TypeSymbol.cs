@@ -13,5 +13,18 @@
         }
 
         public override SymbolType SymbolType => SymbolType.Type;
+
+        public static TypeSymbol? Lookup(string name)
+        {
+            switch (name)
+            {
+                case "void": return Void;
+                case "bool": return Bool;
+                case "int": return Int;
+                case "string": return String;
+                default:
+                    return null;
+            }
+        }
     }
 }

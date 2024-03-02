@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using MiniCompiler.CodeAnalysis.Symbols;
 
-namespace MiniCompiler.CodeAnalysis
+namespace MiniCompiler.CodeAnalysis.Binding
 {
     internal sealed class BuiltInFunctions
     {

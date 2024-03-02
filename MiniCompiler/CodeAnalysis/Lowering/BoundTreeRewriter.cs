@@ -166,6 +166,8 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                     return RewriteAssignmentExpression((BoundAssignmentExpression)node);
                 case BoundNodeType.CallExpression:
                     return RewriteCallExpression((BoundCallExpression)node);
+                case BoundNodeType.ConversionExpression:
+                    return RewriteConversionExpression((BoundConversionExpression)node);
                 case BoundNodeType.UnaryExpression:
                     return RewriteUnaryExpression((BoundUnaryExpression)node);
                 case BoundNodeType.BinaryExpression:
@@ -223,6 +225,16 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                 return node;
 
             return new BoundCallExpression(node.Function, builder.ToImmutable());
+        }
+
+        protected BoundExpression RewriteConversionExpression(BoundConversionExpression node)
+        {
+            BoundExpression expression = RewriteExpression(node.Expression);
+
+            if (expression == node.Expression)
+                return node;
+
+            return new BoundConversionExpression(node.Type, expression);
         }
 
         protected virtual BoundExpression RewriteAssignmentExpression(BoundAssignmentExpression node)

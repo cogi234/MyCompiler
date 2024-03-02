@@ -36,7 +36,6 @@ namespace MyCompiler
 
             if (syntaxTreeOutput)
             {
-                Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.DarkGray;
 
                 syntaxTree.Root.PrettyPrint(Console.Out);
@@ -46,7 +45,6 @@ namespace MyCompiler
 
             if (boundTreeOutput)
             {
-                Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.DarkGray;
 
                 compilation.EmitTree(Console.Out);
