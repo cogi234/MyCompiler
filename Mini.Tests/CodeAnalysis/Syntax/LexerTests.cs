@@ -101,6 +101,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
                 (TokenType.Identifier,"abcdefghijklmnopqrstuvwxyz"),
                 (TokenType.String,"\"Test\""),
                 (TokenType.String,"\"Te\"\"st\""),
+                (TokenType.Type,"bool"),
+                (TokenType.Type,"int"),
             ];
 
             return staticTokens.Concat(dynamicTokens);
@@ -120,8 +122,8 @@ namespace Mini.Tests.CodeAnalysis.Syntax
 
         private static bool RequiresSeparator(TokenType t1, TokenType t2)
         {
-            bool t1IsWord = t1.ToString().EndsWith("Keyword") || t1 == TokenType.Identifier;
-            bool t2IsWord = t2.ToString().EndsWith("Keyword") || t2 == TokenType.Identifier;
+            bool t1IsWord = t1.ToString().EndsWith("Keyword") || t1 == TokenType.Identifier || t1 == TokenType.Type;
+            bool t2IsWord = t2.ToString().EndsWith("Keyword") || t2 == TokenType.Identifier || t2 == TokenType.Type;
 
             if (t1IsWord && t2IsWord)
                 return true;
