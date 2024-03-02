@@ -267,6 +267,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 case TokenType.String:
                     return ParseStringLiteral();
                 case TokenType.Identifier:
+                case TokenType.Type:
                 default:
                     return ParseNameOrCallExpression();
             }
@@ -301,7 +302,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         private ExpressionNode ParseNameOrCallExpression()
         {
-            if (Current.Type == TokenType.Identifier && Peek(1).Type == TokenType.OpenParenthesis)
+            if ((Current.Type == TokenType.Identifier || Current.Type == TokenType.Type) 
+                && Peek(1).Type == TokenType.OpenParenthesis)
                 return ParseCallExpression();
 
             return ParseNameExpression();
@@ -309,7 +311,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         private CallExpressionNode ParseCallExpression()
         {
-            Token identifier = ExpectToken(TokenType.Identifier);
+            Token identifier = ExpectTokens(TokenType.Identifier, TokenType.Type);
             Token openParenthesis = ExpectToken(TokenType.OpenParenthesis);
             SeparatedNodeList<ExpressionNode> arguments = ParseArguments();
             Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);

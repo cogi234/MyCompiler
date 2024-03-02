@@ -77,7 +77,7 @@ namespace Mini.Tests.CodeAnalysis
         {
             SyntaxTree syntaxTree = SyntaxTree.Parse(text);
             Compilation compilation = new Compilation(syntaxTree);
-            Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
+            Dictionary<VariableSymbol, object?> variables = new Dictionary<VariableSymbol, object?>();
             EvaluationResult result = compilation.Evaluate(variables);
 
             Assert.Empty(result.Diagnostics);
@@ -203,7 +203,7 @@ namespace Mini.Tests.CodeAnalysis
             AnnotatedText annotatedText = AnnotatedText.Parse(text);
             SyntaxTree syntaxTree = SyntaxTree.Parse(annotatedText.Text);
             Compilation compilation = new Compilation(syntaxTree);
-            EvaluationResult result = compilation.Evaluate(new Dictionary<VariableSymbol, object>());
+            EvaluationResult result = compilation.Evaluate(new Dictionary<VariableSymbol, object?>());
 
             string[] expectedDiagnostics = AnnotatedText.UnindentLines(diagnosticText);
 

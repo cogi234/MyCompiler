@@ -13,6 +13,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         Number,
         String,
         Identifier,
+        Type,
         Plus,
         Minus,
         Star,

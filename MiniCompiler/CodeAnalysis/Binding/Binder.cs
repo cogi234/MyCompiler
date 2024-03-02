@@ -294,13 +294,12 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             string name = node.Identifier.Text!;
 
-            FunctionSymbol? function = null;
-
-            TypeSymbol? conversionType = TypeSymbol.Lookup(name);
-            if (node.Arguments.Count == 1 && conversionType != null)
-                return BindConversion(conversionType, node.Arguments[0]);
+            if (node.Arguments.Count == 1 && node.Identifier.Type == TokenType.Type)
+                return BindConversion(TypeSymbol.Lookup(name)!, node.Arguments[0]);
             else
             {
+
+                FunctionSymbol? function;
                 if (!scope.TryLookupFunction(name, out function))
                 {
                     diagnostics.ReportUndefinedFunction(node.Identifier.Span, name);

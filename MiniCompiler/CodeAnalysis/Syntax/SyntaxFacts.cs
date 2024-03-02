@@ -1,4 +1,6 @@
-﻿namespace MiniCompiler.CodeAnalysis.Syntax
+﻿using MiniCompiler.CodeAnalysis.Symbols;
+
+namespace MiniCompiler.CodeAnalysis.Syntax
 {
     public static class SyntaxFacts
     {
@@ -74,7 +76,9 @@
                 case "for":
                     return TokenType.ForKeyword;
                 default:
-                    return TokenType.Identifier;
+                    if (TypeSymbol.Lookup(text) == null)
+                        return TokenType.Identifier;
+                    return TokenType.Type;
             }
         }
 
