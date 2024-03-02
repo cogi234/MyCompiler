@@ -218,7 +218,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 return new BoundErrorExpression();
             }
 
-            return BindConversion(expectedType, node);
+            return BindConversion(node, expectedType);
         }
 
         private BoundExpression BindExpressionInternal(ExpressionNode node)
@@ -295,7 +295,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             string name = node.Identifier.Text!;
 
             if (node.Arguments.Count == 1 && node.Identifier.Type == TokenType.Type)
-                return BindConversion(TypeSymbol.Lookup(name)!, node.Arguments[0]);
+                return BindConversion(node.Arguments[0], TypeSymbol.Lookup(name)!);
             else
             {
 
@@ -330,7 +330,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             return boundArguments.ToImmutable();
         }
 
-        private BoundExpression BindConversion(TypeSymbol toType, ExpressionNode node)
+        private BoundExpression BindConversion(ExpressionNode node, TypeSymbol toType)
         {
             BoundExpression expression = BindExpression(node);
 
