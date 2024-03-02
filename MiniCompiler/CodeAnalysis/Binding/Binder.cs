@@ -395,7 +395,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             VariableSymbol variable = new VariableSymbol(name, isReadOnly, type);
 
             if (type != TypeSymbol.Error && !identifier.IsFake && !scope.TryDeclareVariable(variable))
-                diagnostics.ReportAlreadyExistingVariable(identifier.Span, name);
+                diagnostics.ReportAlreadyDeclared(identifier.Span, name);
 
             return variable;
         }

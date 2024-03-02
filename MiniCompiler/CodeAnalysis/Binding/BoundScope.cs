@@ -5,8 +5,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 {
     internal sealed class BoundScope
     {
-        private Dictionary<string, VariableSymbol> variables = new Dictionary<string, VariableSymbol>();
-        private Dictionary<string, FunctionSymbol> functions = new Dictionary<string, FunctionSymbol>();
+        private Dictionary<string, Symbol> symbols = new Dictionary<string, Symbol>();
 
         public BoundScope(BoundScope? parent)
         {
@@ -15,46 +14,44 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         public BoundScope? Parent { get; }
 
-        public bool TryDeclareVariable(VariableSymbol variable)
+        public bool TryDeclareSymbol<TSymbol>(TSymbol symbol) where TSymbol : Symbol
         {
-            if (variables.ContainsKey(variable.Name))
+            if (symbols.ContainsKey(symbol.Name))
                 return false;
 
-            variables.Add(variable.Name, variable);
+            symbols.Add(symbol.Name, symbol);
             return true;
         }
-        public bool TryLookupVariable(string name, out VariableSymbol? variable)
+        public bool TryDeclareVariable(VariableSymbol variable) => TryDeclareSymbol(variable);
+        public bool TryDeclareFunction(FunctionSymbol function) => TryDeclareSymbol(function);
+
+        public bool TryLookupSymbol<TSymbol>(string name, out TSymbol? symbol) where TSymbol : Symbol
         {
-            if (variables.TryGetValue(name, out variable))
-                return true;
+            symbol = null;
+            if (symbols.TryGetValue(name, out var declaredSymbol))
+            {
+                if (declaredSymbol is TSymbol matchingSymbol)
+                {
+                    symbol = matchingSymbol;
+                    return true;
+                }
+            }
+
             if (Parent != null)
-                return Parent.TryLookupVariable(name, out variable);
+                return Parent.TryLookupSymbol(name, out symbol);
+
             return false;
+        }
+        public bool TryLookupVariable(string name, out VariableSymbol? variable) => TryLookupSymbol(name, out variable);
+        public bool TryLookupFunction(string name, out FunctionSymbol? function) => TryLookupSymbol(name, out function);
+
+        public ImmutableArray<TSymbol> GetDeclaredSymbols<TSymbol>() where TSymbol : Symbol
+        {
+            return symbols.Values.OfType<TSymbol>().ToImmutableArray();
         }
         public ImmutableArray<VariableSymbol> GetDeclaredVariables()
-        {
-            return variables.Values.ToImmutableArray();
-        }
-
-        public bool TryDeclareFunction(FunctionSymbol function)
-        {
-            if (functions.ContainsKey(function.Name))
-                return false;
-
-            functions.Add(function.Name, function);
-            return true;
-        }
-        public bool TryLookupFunction(string name, out FunctionSymbol? function)
-        {
-            if (functions.TryGetValue(name, out function))
-                return true;
-            if (Parent != null)
-                return Parent.TryLookupFunction(name, out function);
-            return false;
-        }
+            => GetDeclaredSymbols<VariableSymbol>();
         public ImmutableArray<FunctionSymbol> GetDeclaredFunctions()
-        {
-            return functions.Values.ToImmutableArray();
-        }
+            => GetDeclaredSymbols<FunctionSymbol>();
     }
 }

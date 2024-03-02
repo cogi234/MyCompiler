@@ -107,14 +107,15 @@ namespace MiniCompiler.CodeAnalysis
             Report(span, message);
         }
 
+        public void ReportAlreadyDeclared(TextSpan span, string name)
+        {
+            string message = $"'{name}' already exists.";
+            Report(span, message);
+        }
+
         public void ReportUndefinedVariable(TextSpan span, string name)
         {
             string message = $"Variable '{name}' doesn't exist.";
-            Report(span, message);
-        }
-        public void ReportAlreadyExistingVariable(TextSpan span, string name)
-        {
-            string message = $"Variable '{name}' already exists.";
             Report(span, message);
         }
         public void ReportCannotAssign(TextSpan span, string name)
@@ -128,7 +129,6 @@ namespace MiniCompiler.CodeAnalysis
             string message = $"Function '{name}' doesn't exist.";
             Report(span, message);
         }
-
         public void ReportWrongArgumentCount(TextSpan span, string name, int count)
         {
             string message = $"Function '{name}' doesn't handle {count} arguments";

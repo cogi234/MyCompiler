@@ -97,7 +97,7 @@ namespace Mini.Tests.CodeAnalysis
                     var [x] = 5;
                 }
             ", @"
-                Variable 'x' already exists.
+                'x' already exists.
             ");
         }
         [Fact]
