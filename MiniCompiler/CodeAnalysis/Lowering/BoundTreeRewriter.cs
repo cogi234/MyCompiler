@@ -164,6 +164,8 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                     return RewriteVariableExpression((BoundVariableExpression)node);
                 case BoundNodeType.AssignmentExpression:
                     return RewriteAssignmentExpression((BoundAssignmentExpression)node);
+                case BoundNodeType.CallExpression:
+                    return RewriteCallExpression((BoundCallExpression)node);
                 case BoundNodeType.UnaryExpression:
                     return RewriteUnaryExpression((BoundUnaryExpression)node);
                 case BoundNodeType.BinaryExpression:
@@ -194,6 +196,35 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             return new BoundUnaryExpression(node.UnaryOperator, operand);
         }
 
+        protected virtual BoundExpression RewriteCallExpression(BoundCallExpression node)
+        {
+            ImmutableArray<BoundExpression>.Builder? builder = null;
+
+            for (int i = 0; i < node.Arguments.Length; i++)
+            {
+                BoundExpression oldExpression = node.Arguments[i];
+                BoundExpression newExpression = RewriteExpression(oldExpression);
+                if (oldExpression != newExpression)
+                {
+                    if (builder == null)
+                    {
+                        builder = ImmutableArray.CreateBuilder<BoundExpression>(node.Arguments.Length);
+
+                        for (int j = 0; j < i; j++)
+                            builder.Add(node.Arguments[j]);
+                    }
+                }
+
+                if (builder != null)
+                    builder.Add(newExpression);
+            }
+
+            if (builder == null)
+                return node;
+
+            return new BoundCallExpression(node.Function, builder.ToImmutable());
+        }
+
         protected virtual BoundExpression RewriteAssignmentExpression(BoundAssignmentExpression node)
         {
             BoundExpression expression = RewriteExpression(node.Expression);
@@ -203,7 +234,6 @@ namespace MiniCompiler.CodeAnalysis.Lowering
 
             return new BoundAssignmentExpression(node.Variable, expression);
         }
-
         protected virtual BoundExpression RewriteVariableExpression(BoundVariableExpression node)
         {
             return node;

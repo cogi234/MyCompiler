@@ -64,6 +64,18 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     position++;
                     tokenType = TokenType.CloseBrace;
                     break;
+                case '.':
+                    position++;
+                    tokenType = TokenType.Period;
+                    break;
+                case ',':
+                    position++;
+                    tokenType = TokenType.Comma;
+                    break;
+                case ':':
+                    position++;
+                    tokenType = TokenType.Colon;
+                    break;
                 case ';':
                     position++;
                     tokenType = TokenType.Semicolon;

@@ -95,7 +95,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 ExpressionNode expression = ParseAssignmentExpression();
                 if (expression.Type != NodeType.AssignmentExpression)
                 {
-                    diagnostics.ReportUnexpectedNode(expression.Span, NodeType.AssignmentExpression, expression.Type);
+                    diagnostics.ReportUnexpectedNode(expression.Span, expression.Type, NodeType.AssignmentExpression);
                     isValid = false;
                 }
                 else
@@ -254,7 +254,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return ParseStringLiteral();
                 case TokenType.Identifier:
                 default:
-                    return ParseNameExpression();
+                    return ParseNameOrCallExpression();
             }
         }
 
@@ -285,10 +285,50 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             return new LiteralExpressionNode(stringToken, stringToken.Value ?? "");
         }
 
+        private ExpressionNode ParseNameOrCallExpression()
+        {
+            if (Current.Type == TokenType.Identifier && Peek(1).Type == TokenType.OpenParenthesis)
+                return ParseCallExpression();
+
+            return ParseNameExpression();
+        }
+
+        private CallExpressionNode ParseCallExpression()
+        {
+            Token identifier = ExpectToken(TokenType.Identifier);
+            Token openParenthesis = ExpectToken(TokenType.OpenParenthesis);
+            SeparatedNodeList<ExpressionNode> arguments = ParseArguments();
+            Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
+
+            return new CallExpressionNode(identifier, openParenthesis, arguments, closeParenthesis);
+        }
+
+        private SeparatedNodeList<ExpressionNode> ParseArguments()
+        {
+            ImmutableArray<SyntaxNode>.Builder arguments = ImmutableArray.CreateBuilder<SyntaxNode>();
+            ImmutableArray<Token>.Builder separators = ImmutableArray.CreateBuilder<Token>();
+            while (Current.Type != TokenType.CloseParenthesis && Current.Type != TokenType.Semicolon && Current.Type != TokenType.EndOfFile)
+            {
+                Token startToken = Current;
+
+                arguments.Add(ParseExpression());
+                //If we're not at the end, we want a comma to separate the arguments.
+                if (Current.Type != TokenType.CloseParenthesis && Current.Type != TokenType.Semicolon && Current.Type != TokenType.EndOfFile)
+                    separators.Add(ExpectToken(TokenType.Comma));
+                else
+                    break;
+
+                //If we didn't consume any tokens, we skip this one
+                if (Current == startToken)
+                    NextToken();
+            }
+            return new SeparatedNodeList<ExpressionNode>(arguments.ToImmutable(), separators.ToImmutable());
+        }
+
         private NameExpressionNode ParseNameExpression()
         {
-            Token token = ExpectToken(TokenType.Identifier);
-            return new NameExpressionNode(token);
+            Token identifier = ExpectToken(TokenType.Identifier);
+            return new NameExpressionNode(identifier);
         }
         #endregion Expressions
 

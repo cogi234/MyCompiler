@@ -2,7 +2,10 @@
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniCompiler.CodeAnalysis.Text;
+using System;
 using System.Collections;
+using System.Text;
+using System.Xml.Linq;
 
 namespace MiniCompiler.CodeAnalysis
 {
@@ -61,13 +64,38 @@ namespace MiniCompiler.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportUnexpectedNode(TextSpan span, NodeType expectedNode, NodeType actualNode)
+        public void ReportUnexpectedNode(TextSpan span, NodeType actualNode, params NodeType[] expectedNode)
         {
-            string message = $"Expected <{expectedNode}>, got <{actualNode}>.";
-            Report(span, message);
+            StringBuilder message = new StringBuilder($"Unexpected node <{actualNode}>.");
+            
+            if (expectedNode.Length > 0)
+            {
+                message.Append(" Expected");
+
+                for (int i = 0; i < expectedNode.Length; i++)
+                {
+                    if (i == expectedNode.Length - 1 && i != 0)
+                        message.Append(" or");
+                    else if (i != 0)
+                        message.Append(",");
+
+                    message.Append($" <{expectedNode[i]}>");
+                }
+
+                message.Append(".");
+            }
+
+            Report(span, message.ToString());
         }
         #endregion
         #region BinderErrors
+
+        public void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
+        {
+            string message = $"Cannot convert type {fromType} to {toType}.";
+            Report(span, message);
+        }
+
         public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, TypeSymbol operandType)
         {
             string message = $"Unary operator '{operatorText}' is not defined for type {operandType}.";
@@ -79,27 +107,31 @@ namespace MiniCompiler.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportUndefinedName(TextSpan span, string name)
+        public void ReportUndefinedVariable(TextSpan span, string name)
         {
             string message = $"Variable '{name}' doesn't exist.";
             Report(span, message);
         }
-
-        public void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
-        {
-            string message = $"Cannot convert type {fromType} to {toType}.";
-            Report(span, message);
-        }
-
         public void ReportAlreadyExistingVariable(TextSpan span, string name)
         {
             string message = $"Variable '{name}' already exists.";
             Report(span, message);
         }
-
         public void ReportCannotAssign(TextSpan span, string name)
         {
             string message = $"Cannot assign to variable '{name}', it is read only.";
+            Report(span, message);
+        }
+
+        public void ReportUndefinedFunction(TextSpan span,  string? name)
+        {
+            string message = $"Function '{name}' doesn't exist.";
+            Report(span, message);
+        }
+
+        public void ReportWrongArgumentCount(TextSpan span, string name, int count)
+        {
+            string message = $"Function '{name}' doesn't handle {count} arguments";
             Report(span, message);
         }
         #endregion

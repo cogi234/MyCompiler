@@ -1,16 +1,19 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
 using MiniCompiler.CodeAnalysis.Symbols;
+using System.Collections.Immutable;
 
 namespace MiniCompiler.CodeAnalysis
 {
     internal sealed class Evaluator
     {
         private BoundBlockStatement root;
-        private readonly Dictionary<VariableSymbol, object> variables;
+        private readonly Dictionary<VariableSymbol, object?> variables;
 
         private object? lastValue = null;
 
-        public Evaluator(BoundBlockStatement root, Dictionary<VariableSymbol, object> variables)
+        private Random? random;
+
+        public Evaluator(BoundBlockStatement root, Dictionary<VariableSymbol, object?> variables)
         {
             this.root = root;
             this.variables = variables;
@@ -49,7 +52,7 @@ namespace MiniCompiler.CodeAnalysis
                         break;
                     case BoundNodeType.ConditionalGotoStatement:
                         BoundConditionalGotoStatement conditionalGotoStatement = (BoundConditionalGotoStatement)statement;
-                        bool condition = (bool)EvaluateExpression(conditionalGotoStatement.Condition);
+                        bool condition = (bool)EvaluateExpression(conditionalGotoStatement.Condition)!;
                         if (condition == conditionalGotoStatement.JumpIfTrue)
                             index = labelIndex[conditionalGotoStatement.Label];
                         else
@@ -65,7 +68,7 @@ namespace MiniCompiler.CodeAnalysis
 
         private void EvaluateVariableDeclarationStatement(BoundVariableDeclarationStatement statement)
         {
-            object value = EvaluateExpression(statement.Initializer);
+            object? value = EvaluateExpression(statement.Initializer);
             variables[statement.Variable] = value;
             lastValue = value;
         }
@@ -76,7 +79,7 @@ namespace MiniCompiler.CodeAnalysis
         }
 
         #region Expressions
-        private object EvaluateExpression(BoundExpression expression)
+        private object? EvaluateExpression(BoundExpression expression)
         {
             switch (expression.BoundNodeType)
             {
@@ -86,6 +89,8 @@ namespace MiniCompiler.CodeAnalysis
                     return EvaluateVariableExpression((BoundVariableExpression)expression);
                 case BoundNodeType.AssignmentExpression:
                     return EvaluateAssignmentExpression((BoundAssignmentExpression)expression);
+                case BoundNodeType.CallExpression:
+                    return EvaluateCallExpression((BoundCallExpression)expression);
                 case BoundNodeType.UnaryExpression:
                     return EvaluateUnaryExpression((BoundUnaryExpression)expression);
                 case BoundNodeType.BinaryExpression:
@@ -100,22 +105,50 @@ namespace MiniCompiler.CodeAnalysis
             return expression.Value;
         }
 
-        private object EvaluateVariableExpression(BoundVariableExpression expression)
+        private object? EvaluateVariableExpression(BoundVariableExpression expression)
         {
-            object value = variables[expression.Variable];
+            object? value = variables[expression.Variable];
             return value;
         }
 
-        private object EvaluateAssignmentExpression(BoundAssignmentExpression expression)
+        private object? EvaluateAssignmentExpression(BoundAssignmentExpression expression)
         {
-            object value = EvaluateExpression(expression.Expression);
+            object? value = EvaluateExpression(expression.Expression);
             variables[expression.Variable] = value;
             return value;
         }
 
+        private object? EvaluateCallExpression(BoundCallExpression expression)
+        {
+            ImmutableArray<object?>.Builder argumentBuilder = ImmutableArray.CreateBuilder<object?>();
+            foreach (var argument in expression.Arguments)
+                argumentBuilder.Add(EvaluateExpression(argument));
+            ImmutableArray<object?> arguments = argumentBuilder.ToImmutable();
+
+            if (expression.Function == BuiltInFunctions.Input)
+            {
+                return Console.ReadLine();
+            } else if (expression.Function == BuiltInFunctions.Print)
+            {
+                string? message = (string?)EvaluateExpression(expression.Arguments[0]);
+                Console.WriteLine(message);
+                return null;
+            } else if (expression.Function == BuiltInFunctions.Random)
+            {
+                int max = (int)(EvaluateExpression(expression.Arguments[0]) ?? 1);
+                if (random == null)
+                    random = new Random();
+                return random.Next(max);
+            } else
+            {
+                throw new Exception($"Unexpected function {expression.Function}");
+            }
+
+        }
+
         private object EvaluateUnaryExpression(BoundUnaryExpression expression)
         {
-            object operand = EvaluateExpression(expression.Operand);
+            object operand = EvaluateExpression(expression.Operand)!;
             switch (expression.UnaryOperator.OperationType)
             {
                 case BoundUnaryOperationType.Identity:
@@ -133,8 +166,8 @@ namespace MiniCompiler.CodeAnalysis
 
         private object EvaluateBinaryExpression(BoundBinaryExpression expression)
         {
-            object left = EvaluateExpression(expression.Left);
-            object right = EvaluateExpression(expression.Right);
+            object left = EvaluateExpression(expression.Left)!;
+            object right = EvaluateExpression(expression.Right)!;
             switch (expression.BinaryOperator.OperationType)
             {
                 //Numbers

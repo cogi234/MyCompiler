@@ -8,7 +8,7 @@ namespace MyCompiler
     internal sealed class MiniRepl : Repl
     {
         private Compilation? previousCompilation = null;
-        private Dictionary<VariableSymbol, object> variables = new Dictionary<VariableSymbol, object>();
+        private Dictionary<VariableSymbol, object?> variables = new Dictionary<VariableSymbol, object?>();
 
         private bool tokenOutput = false;
         private bool syntaxTreeOutput = false;
@@ -59,13 +59,7 @@ namespace MyCompiler
             if (result.Diagnostics.Any())
                 PrintDiagnostics(result.Diagnostics, syntaxTree);
             else
-            {
-                Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.WriteLine(result.Value);
-                Console.ResetColor();
-
                 previousCompilation = compilation;
-            }
         }
 
         protected override bool IsCompleteSubmission(string text)
@@ -137,7 +131,7 @@ namespace MyCompiler
                     break;
                 case "#reset":
                     previousCompilation = null;
-                    variables = new Dictionary<VariableSymbol, object>();
+                    variables = new Dictionary<VariableSymbol, object?>();
                     Console.WriteLine("Reset the context");
                     break;
                 case "#help":

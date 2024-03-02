@@ -22,6 +22,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         BinaryExpression,
         ParenthesizedExpression,
         AssignmentExpression,
+        CallExpression,
     }
 
     public abstract class SyntaxNode

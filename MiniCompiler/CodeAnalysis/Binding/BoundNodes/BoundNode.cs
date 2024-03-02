@@ -18,6 +18,7 @@
         LiteralExpression,
         VariableExpression,
         AssignmentExpression,
+        CallExpression,
         UnaryExpression,
         BinaryExpression,
     }

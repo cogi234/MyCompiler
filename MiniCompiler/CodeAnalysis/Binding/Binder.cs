@@ -2,6 +2,7 @@
 using MiniCompiler.CodeAnalysis.Symbols;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+using MiniCompiler.CodeAnalysis.Text;
 using System.Collections.Immutable;
 
 namespace MiniCompiler.CodeAnalysis.Binding
@@ -181,12 +182,15 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     return BindNameExpression((NameExpressionNode)node);
                 case NodeType.AssignmentExpression:
                     return BindAssignmentExpression((AssignmentExpressionNode)node);
+                case NodeType.CallExpression:
+                    return BindCallExpression((CallExpressionNode)node);
                 case NodeType.UnaryExpression:
                     return BindUnaryExpression((UnaryExpressionNode)node);
                 case NodeType.BinaryExpression:
                     return BindBinaryExpression((BinaryExpressionNode)node);
                 default:
-                    throw new Exception($"Unexpected syntax node {node.Type}");
+                    diagnostics.ReportUnexpectedNode(node.Span, node.Type);
+                    return new BoundErrorExpression();
             }
         }
 
@@ -215,7 +219,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             if (!scope.TryLookup(name!, out VariableSymbol? variable))
             {
-                diagnostics.ReportUndefinedName(node.Identifier.Span, name!);
+                diagnostics.ReportUndefinedVariable(node.Identifier.Span, name!);
                 return new BoundErrorExpression();
             }
 
@@ -224,16 +228,16 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindAssignmentExpression(AssignmentExpressionNode node)
         {
-            string? name = node.Identifier.Text;
+            string name = node.Identifier.Text!;
             BoundExpression boundExpression = BindExpression(node.Expression);
 
             if (!scope.TryLookup(name, out VariableSymbol? variable))
             {
-                diagnostics.ReportUndefinedName(node.Identifier.Span, name);
+                diagnostics.ReportUndefinedVariable(node.Identifier.Span, name);
                 return new BoundErrorExpression();
             }
 
-            if (boundExpression.Type == TypeSymbol.Error || variable.Type == TypeSymbol.Error)
+            if (boundExpression.Type == TypeSymbol.Error || variable!.Type == TypeSymbol.Error)
                 return new BoundErrorExpression();
 
             if (variable!.Type != boundExpression.Type)
@@ -249,6 +253,48 @@ namespace MiniCompiler.CodeAnalysis.Binding
             }
 
             return new BoundAssignmentExpression(variable, boundExpression);
+        }
+
+        private BoundExpression BindCallExpression(CallExpressionNode node)
+        {
+            IEnumerable<FunctionSymbol> functions = BuiltInFunctions.GetAll();
+
+            ImmutableArray<BoundExpression> arguments = BindArguments(node.Arguments);
+
+            FunctionSymbol? function = functions.SingleOrDefault(f => f.Name == node.Identifier.Text);
+            if (function == null)
+            {
+                diagnostics.ReportUndefinedFunction(node.Identifier.Span, node.Identifier.Text);
+                return new BoundErrorExpression();
+            }
+            if (node.Arguments.Count != function.Parameters.Length)
+            {
+                diagnostics.ReportWrongArgumentCount(TextSpan.FromBounds(node.OpenParenthesis.Span.Start, node.CloseParenthesis.Span.End),
+                    function.Name, node.Arguments.Count);
+                return new BoundErrorExpression();
+            }
+            for (int i = 0; i < function.Parameters.Length; i++)
+            {
+                if (arguments[i].BoundNodeType == BoundNodeType.ErrorExpression)
+                    return new BoundErrorExpression();
+                if (function.Parameters[i].Type != arguments[i].Type)
+                {
+                    diagnostics.ReportCannotConvert(node.Arguments[i].Span, arguments[i].Type, function.Parameters[i].Type);
+                    return new BoundErrorExpression();
+                }
+            }
+
+            return new BoundCallExpression(function, arguments);
+        }
+
+        private ImmutableArray<BoundExpression> BindArguments(SeparatedNodeList<ExpressionNode> arguments)
+        {
+            ImmutableArray<BoundExpression>.Builder boundArguments = ImmutableArray.CreateBuilder<BoundExpression>();
+
+            foreach (ExpressionNode argument in arguments)
+                boundArguments.Add(BindExpression(argument));
+
+            return boundArguments.ToImmutable();
         }
 
         private BoundExpression BindUnaryExpression(UnaryExpressionNode node)

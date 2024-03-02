@@ -4,6 +4,8 @@
     {
         Variable,
         Type,
+        Function,
+        Parameter,
     }
     public abstract class Symbol
     {
