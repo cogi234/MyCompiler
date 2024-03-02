@@ -9,17 +9,23 @@ namespace Mini.Tests.CodeAnalysis
     {
         [Theory]
         #region InlineData
+        //Ints
         [InlineData("1;", 1)]
         [InlineData("+1;", 1)]
         [InlineData("-1;", -1)]
         [InlineData("~1;", -2)]
         [InlineData("(10);", 10)]
-
         [InlineData("1 + 2;", 3)]
         [InlineData("1 - 2;", -1)]
         [InlineData("2 * 3;", 6)]
         [InlineData("6 / 2;", 3)]
-
+        [InlineData("1 | 2;", 3)]
+        [InlineData("1 | 0;", 1)]
+        [InlineData("3 & 2;", 2)]
+        [InlineData("3 & 0;", 0)]
+        [InlineData("1 ^ 0;", 1)]
+        [InlineData("1 ^ 3;", 2)]
+        //Bools
         [InlineData("false;", false)]
         [InlineData("true;", true)]
         [InlineData("!true;", false)]
@@ -28,7 +34,6 @@ namespace Mini.Tests.CodeAnalysis
         [InlineData("false || false;", false)]
         [InlineData("true && false;", false)]
         [InlineData("true && true;", true)]
-
         [InlineData("true | false;", true)]
         [InlineData("false | false;", false)]
         [InlineData("true & false;", false)]
@@ -36,14 +41,9 @@ namespace Mini.Tests.CodeAnalysis
         [InlineData("true ^ false;", true)]
         [InlineData("true ^ true;", false)]
         [InlineData("false ^ false;", false)]
-
-        [InlineData("1 | 2;", 3)]
-        [InlineData("1 | 0;", 1)]
-        [InlineData("3 & 2;", 2)]
-        [InlineData("3 & 0;", 0)]
-        [InlineData("1 ^ 0;", 1)]
-        [InlineData("1 ^ 3;", 2)]
-
+        //Strings
+        [InlineData("\"Hello\" + \" World!\";", "Hello World!")]
+        //Comparisons
         [InlineData("1 == 1;", true)]
         [InlineData("2 == 10;", false)]
         [InlineData("1 != 1;", false)]
