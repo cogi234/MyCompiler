@@ -5,11 +5,14 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
     public enum NodeType
     {
         CompilationUnit,
+        GlobalStatement,
+        FunctionDeclaration,
 
         //Statements
         BlockStatement,
         ExpressionStatement,
         VariableDeclarationStatement,
+        Parameter,
         IfStatement,
         ElseClause,
         WhileStatement,

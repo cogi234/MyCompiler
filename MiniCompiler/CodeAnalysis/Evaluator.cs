@@ -7,33 +7,40 @@ namespace MiniCompiler.CodeAnalysis
 {
     internal sealed class Evaluator
     {
-        private BoundBlockStatement root;
-        private readonly Dictionary<VariableSymbol, object?> variables;
+        private readonly BoundProgram program;
+        private readonly Dictionary<VariableSymbol, object?> globals;
+        private readonly Stack<Dictionary<VariableSymbol, object?>> locals = 
+            new Stack<Dictionary<VariableSymbol, object?>>();
+        private Random? random;
 
         private object? lastValue = null;
 
-        private Random? random;
-
-        public Evaluator(BoundBlockStatement root, Dictionary<VariableSymbol, object?> variables)
+        public Evaluator(BoundProgram program, Dictionary<VariableSymbol, object?> variables)
         {
-            this.root = root;
-            this.variables = variables;
+            this.program = program;
+            globals = variables;
+            locals.Push(new Dictionary<VariableSymbol, object?>());
         }
 
         public object? Evaluate()
         {
+            return EvaluateStatement(program.Statement);
+        }
+
+        public object? EvaluateStatement(BoundBlockStatement body)
+        {
             Dictionary<BoundLabel, int> labelIndex = new Dictionary<BoundLabel, int>();
 
-            for (int i = 0; i < root.Statements.Length; i++)
+            for (int i = 0; i < body.Statements.Length; i++)
             {
-                if (root.Statements[i].BoundNodeType == BoundNodeType.LabelStatement)
-                    labelIndex.Add(((BoundLabelStatement)root.Statements[i]).Label, i);
+                if (body.Statements[i].BoundNodeType == BoundNodeType.LabelStatement)
+                    labelIndex.Add(((BoundLabelStatement)body.Statements[i]).Label, i);
             }
 
             int index = 0;
-            while (index < root.Statements.Length)
+            while (index < body.Statements.Length)
             {
-                BoundStatement statement = root.Statements[index];
+                BoundStatement statement = body.Statements[index];
                 switch (statement.BoundNodeType)
                 {
                     case BoundNodeType.ExpressionStatement:
@@ -74,8 +81,10 @@ namespace MiniCompiler.CodeAnalysis
                 value = statement.Variable.Type.DefaultValue;
             else
                 value = EvaluateExpression(statement.Initializer);
-            variables[statement.Variable] = value;
+
             lastValue = value;
+
+            Assign(statement.Variable, value);
         }
 
         private void EvaluateExpressionStatement(BoundExpressionStatement statement)
@@ -114,14 +123,20 @@ namespace MiniCompiler.CodeAnalysis
 
         private object? EvaluateVariableExpression(BoundVariableExpression expression)
         {
-            object? value = variables[expression.Variable];
-            return value;
+            if (expression.Variable.SymbolType == SymbolType.GlobalVariable)
+            {
+                return globals[expression.Variable];
+            } else
+            {
+                var local = locals.Peek();
+                return local[expression.Variable];
+            }
         }
 
         private object? EvaluateAssignmentExpression(BoundAssignmentExpression expression)
         {
             object? value = EvaluateExpression(expression.Expression);
-            variables[expression.Variable] = value;
+            Assign(expression.Variable, value);
             return value;
         }
 
@@ -151,7 +166,21 @@ namespace MiniCompiler.CodeAnalysis
             }
             else
             {
-                throw new Exception($"Unexpected function {expression.Function}");
+                var local = new Dictionary<VariableSymbol, object?>();
+                for (int i = 0; i < expression.Arguments.Length; i++)
+                {
+                    ParameterSymbol parameter = expression.Function.Parameters[i];
+                    object? value = EvaluateExpression(expression.Arguments[i]);
+                    local.Add(parameter, value);
+                }
+                locals.Push(local);
+
+                BoundBlockStatement statement = program.Functions[expression.Function];
+                object? result = EvaluateStatement(statement);
+
+                locals.Pop();
+
+                return result;
             }
         }
 
@@ -254,5 +283,13 @@ namespace MiniCompiler.CodeAnalysis
             }
         }
         #endregion Expressions
+
+        private void Assign(VariableSymbol variable, object? value)
+        {
+            if (variable.SymbolType == SymbolType.GlobalVariable)
+                globals[variable] = value;
+            else
+                locals.Peek()[variable] = value;
+        }
     }
 }

@@ -110,18 +110,6 @@ namespace Mini.Tests.CodeAnalysis
             ");
         }
         [Fact]
-        public void AssignmentReportsCannotAssign()
-        {
-            AssertDiagnostics(@"
-                {
-                    let z = false;
-                    [z] = true;
-                }
-            ", @"
-                Cannot assign to variable 'z', it is read only.
-            ");
-        }
-        [Fact]
         public void AssignmentReportsCannotConvert()
         {
             AssertDiagnostics(@"

@@ -99,7 +99,7 @@ namespace MyCompiler
                 else if (token.Type == TokenType.Identifier)
                     Console.ForegroundColor = ConsoleColor.Cyan;
                 else if (token.Type == TokenType.Type)
-                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                 else
                     Console.ForegroundColor = ConsoleColor.DarkGray;
 

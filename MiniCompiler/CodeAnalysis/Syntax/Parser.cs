@@ -35,22 +35,84 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         public CompilationUnit ParseCompilationUnit()
         {
-            ImmutableArray<StatementNode>.Builder statements = ImmutableArray.CreateBuilder<StatementNode>();
-            while (Current.Type != TokenType.EndOfFile)
+            ImmutableArray<MemberNode> members = ParseMembers();
+            ExpectToken(TokenType.EndOfFile);
+            return new CompilationUnit(members);
+        }
+
+        #region Members
+        private ImmutableArray<MemberNode> ParseMembers()
+        {
+            ImmutableArray<MemberNode>.Builder members = ImmutableArray.CreateBuilder<MemberNode>();
+
+            while(Current.Type != TokenType.EndOfFile)
             {
                 Token startToken = Current;
-                statements.Add(ParseStatement());
+
+                members.Add(ParseMember());
+
+                if (Current == startToken)
+                    NextToken();
+            }
+
+            return members.ToImmutable();
+        }
+
+        private MemberNode ParseMember()
+        {
+            if (Current.Type == TokenType.Type && Peek(1).Type == TokenType.Identifier && Peek(2).Type == TokenType.OpenParenthesis)
+                return ParseFunctionDeclaration();
+            return ParseGlobalStatement();
+        }
+
+        private FunctionDeclarationNode ParseFunctionDeclaration()
+        {
+            Token typeKeyword = ExpectToken(TokenType.Type);
+            Token identifier = ExpectToken(TokenType.Identifier);
+            Token openParenthesis = ExpectToken(TokenType.OpenParenthesis);
+
+            SeparatedNodeList<ParameterNode> parameters = ParseParameters();
+
+            Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
+            StatementNode body = ParseStatement();
+
+            return new FunctionDeclarationNode(typeKeyword, identifier, openParenthesis,
+                parameters, closeParenthesis, body);
+        }
+        private SeparatedNodeList<ParameterNode> ParseParameters()
+        {
+            ImmutableArray<SyntaxNode>.Builder parameters = ImmutableArray.CreateBuilder<SyntaxNode>();
+            ImmutableArray<Token>.Builder separators = ImmutableArray.CreateBuilder<Token>();
+            while (Current.Type != TokenType.CloseParenthesis && Current.Type != TokenType.Semicolon && Current.Type != TokenType.EndOfFile)
+            {
+                Token startToken = Current;
+
+                parameters.Add(ParseParameter());
+                //If we're not at the end, we want a comma to separate the parameters.
+                if (Current.Type != TokenType.CloseParenthesis && Current.Type != TokenType.Semicolon && Current.Type != TokenType.EndOfFile)
+                    separators.Add(ExpectToken(TokenType.Comma));
+                else
+                    break;
 
                 //If we didn't consume any tokens, we skip this one
                 if (Current == startToken)
                     NextToken();
             }
-
-            ExpectToken(TokenType.EndOfFile);
-
-            return new CompilationUnit(statements.ToImmutable());
+            return new SeparatedNodeList<ParameterNode>(parameters.ToImmutable(), separators.ToImmutable());
+        }
+        private ParameterNode ParseParameter()
+        {
+            Token typeKeyword = ExpectToken(TokenType.Type);
+            Token identifier = ExpectToken(TokenType.Identifier);
+            return new ParameterNode(typeKeyword, identifier);
         }
 
+        private GlobalStatementNode ParseGlobalStatement()
+        {
+            StatementNode statement = ParseStatement();
+            return new GlobalStatementNode(statement);
+        }
+        #endregion
         #region Statements
         private StatementNode ParseStatement()
         {
@@ -59,7 +121,6 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                 case TokenType.OpenBrace:
                     return ParseBlockStatement();
                 case TokenType.Type:
-                    return ParseTypedStatement();
                 case TokenType.VarKeyword:
                     return ParseVariableDeclarationStatement();
                 case TokenType.IfKeyword:
@@ -84,7 +145,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
             VariableDeclarationStatementNode? declaration = null;
             if (Current.Type != TokenType.Semicolon)
-                declaration = ParseVariableDeclarationStatement(false);
+                declaration = ParseVariableDeclarationStatement(true, false);
 
             ExpectToken(TokenType.Semicolon);
 
@@ -156,22 +217,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             return new IfStatementNode(ifKeyword, openParenthesis, condition, closeParenthesis, ifStatement, elseStatement);
         }
 
-        private StatementNode ParseTypedStatement()
-        {
-            if (Peek(1).Type == TokenType.Identifier)
-                if (Peek(2).Type == TokenType.OpenParenthesis)
-                    return ParseFunctionDeclarationStatement();
-                else
-                    return ParseVariableDeclarationStatement();
-            return ParseExpressionStatement();
-        }
-
-        private StatementNode ParseFunctionDeclarationStatement()
-        {
-            throw new NotImplementedException();
-        }
-
-        private VariableDeclarationStatementNode ParseVariableDeclarationStatement(bool takeSemicolon = true)
+        private VariableDeclarationStatementNode ParseVariableDeclarationStatement(bool obligatoryInitializer = false, bool takeSemicolon = true)
         {
             Token keyword = ExpectTokens(TokenType.VarKeyword, TokenType.Type);
             Token identifier = ExpectToken(TokenType.Identifier);
@@ -179,7 +225,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
             //The initializer is optional
             Token? equal = null;
             ExpressionNode? initializer = null;
-            if (Current.Type == TokenType.Equal || keyword.Type == TokenType.VarKeyword)
+            if (Current.Type == TokenType.Equal || keyword.Type == TokenType.VarKeyword || obligatoryInitializer)
             {
                 equal = ExpectToken(TokenType.Equal);
                 initializer = ParseExpression();

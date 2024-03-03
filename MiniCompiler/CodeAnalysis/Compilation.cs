@@ -47,27 +47,22 @@ namespace MiniCompiler.CodeAnalysis
             ImmutableArray<Diagnostic> diagnostics = SyntaxTree.Diagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
 
             if (diagnostics.Any())
-            {
                 return new EvaluationResult(diagnostics, null);
-            }
-            else
-            {
-                Evaluator evaluator = new Evaluator(GetStatement(), variables);
-                object? value = evaluator.Evaluate();
 
-                return new EvaluationResult(diagnostics.ToImmutableArray(), value);
-            }
+            BoundProgram program = Binder.BindProgram(GlobalScope);
+            if (program.Diagnostics.Any())
+                return new EvaluationResult(program.Diagnostics.ToImmutableArray(), null);
+
+            Evaluator evaluator = new Evaluator(program, variables);
+            object? value = evaluator.Evaluate();
+
+            return new EvaluationResult(diagnostics.ToImmutableArray(), value);
         }
 
         public void EmitTree(TextWriter writer)
         {
-            GetStatement().PrettyPrint(writer);
-        }
-
-        private BoundBlockStatement GetStatement()
-        {
-            BoundStatement initialStatement = GlobalScope.Statement;
-            return Lowerer.Lower(initialStatement);
+            BoundProgram program = Binder.BindProgram(GlobalScope);
+            program.Statement.PrettyPrint(writer);
         }
     }
 }

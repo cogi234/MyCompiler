@@ -105,7 +105,7 @@ namespace MiniCompiler.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportAlreadyDeclared(TextSpan span, string name)
+        public void ReportSymbolAlreadyDeclared(TextSpan span, string name)
         {
             string message = $"'{name}' already exists.";
             Report(span, message);
@@ -130,6 +130,11 @@ namespace MiniCompiler.CodeAnalysis
         public void ReportWrongArgumentCount(TextSpan span, string name, int count)
         {
             string message = $"Function '{name}' doesn't handle {count} arguments";
+            Report(span, message);
+        }
+        public void ReportParameterAlreadyDeclared(TextSpan span, string name)
+        {
+            string message = $"A parameter with the name '{name}' already exists.";
             Report(span, message);
         }
 

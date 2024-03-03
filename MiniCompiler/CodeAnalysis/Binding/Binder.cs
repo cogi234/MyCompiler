@@ -1,4 +1,5 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
+using MiniCompiler.CodeAnalysis.Lowering;
 using MiniCompiler.CodeAnalysis.Symbols;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
@@ -10,29 +11,21 @@ namespace MiniCompiler.CodeAnalysis.Binding
     internal sealed class Binder
     {
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
-
-        private BoundScope scope;
-
         public DiagnosticBag Diagnostics => diagnostics;
 
+        private BoundScope scope;
+        private FunctionSymbol? function;
 
-        public Binder(BoundScope? parent)
+        public Binder(BoundScope? parent, FunctionSymbol? function)
         {
             scope = new BoundScope(parent);
-        }
+            this.function = function;
 
-        public static BoundGlobalScope BindGlobalScope(BoundGlobalScope? previousGlobalScope, CompilationUnit compilationUnit)
-        {
-            BoundScope parentScope = CreateParentScope(previousGlobalScope);
-            Binder binder = new Binder(parentScope);
-            BoundStatement statement = binder.BindCompilationUnit(compilationUnit);
-            ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
-            ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
-
-            if (previousGlobalScope != null)
-                diagnostics = diagnostics.InsertRange(0, previousGlobalScope.Diagnostics);
-
-            return new BoundGlobalScope(previousGlobalScope, diagnostics, variables, statement);
+            if (function != null)
+            {
+                foreach (var parameter in function.Parameters)
+                    scope.TryDeclareVariable(parameter);
+            }
         }
 
         private static BoundScope CreateParentScope(BoundGlobalScope? previous)
@@ -51,6 +44,9 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 BoundGlobalScope current = stack.Pop();
                 BoundScope scope = new BoundScope(createdScope);
 
+                foreach (FunctionSymbol v in current.Functions)
+                    scope.TryDeclareFunction(v);
+
                 foreach (VariableSymbol v in current.Variables)
                     scope.TryDeclareVariable(v);
 
@@ -59,7 +55,6 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             return createdScope;
         }
-
         private static BoundScope CreateRootScope()
         {
             BoundScope rootScope = new BoundScope(null);
@@ -70,18 +65,84 @@ namespace MiniCompiler.CodeAnalysis.Binding
             return rootScope;
         }
 
-        #region Statements
-        private BoundBlockStatement BindCompilationUnit(CompilationUnit node)
+        public static BoundGlobalScope BindGlobalScope(BoundGlobalScope? previousGlobalScope, CompilationUnit compilationUnit)
         {
-            ImmutableArray<BoundStatement>.Builder statements = ImmutableArray.CreateBuilder<BoundStatement>();
+            BoundScope parentScope = CreateParentScope(previousGlobalScope);
+            Binder binder = new Binder(parentScope, null);
 
-            foreach (StatementNode statement in node.Statements)
+            foreach (FunctionDeclarationNode function in compilationUnit.Members.OfType<FunctionDeclarationNode>())
+                binder.BindFunctionDeclaration(function);
+
+            ImmutableArray<BoundStatement>.Builder statements = ImmutableArray.CreateBuilder<BoundStatement>();
+            foreach (var globalStatement in compilationUnit.Members.OfType<GlobalStatementNode>())
             {
-                statements.Add(BindStatement(statement));
+                var statement = binder.BindStatement(globalStatement.Statement);
+                statements.Add(statement);
             }
 
-            return new BoundBlockStatement(statements.ToImmutable());
+            ImmutableArray<FunctionSymbol> functions = binder.scope.GetDeclaredFunctions();
+            ImmutableArray<VariableSymbol> variables = binder.scope.GetDeclaredVariables();
+            ImmutableArray<Diagnostic> diagnostics = binder.Diagnostics.ToImmutableArray();
+
+            if (previousGlobalScope != null)
+                diagnostics = diagnostics.InsertRange(0, previousGlobalScope.Diagnostics);
+
+            return new BoundGlobalScope(previousGlobalScope, diagnostics, functions, variables, statements.ToImmutable());
         }
+
+        public static BoundProgram BindProgram(BoundGlobalScope globalScope)
+        {
+            BoundScope parentScope = CreateParentScope(globalScope);
+            ImmutableDictionary<FunctionSymbol, BoundBlockStatement>.Builder functionBodies = ImmutableDictionary.CreateBuilder<FunctionSymbol, BoundBlockStatement>();
+            ImmutableArray<Diagnostic>.Builder diagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
+            BoundGlobalScope? scope = globalScope;
+
+            while (scope != null)
+            {
+                foreach (var function in scope.Functions)
+                {
+                    Binder binder = new Binder(parentScope, function);
+                    BoundStatement body = binder.BindStatement(function.Declaration!.Body);
+                    BoundBlockStatement loweredBody = Lowerer.Lower(body);
+                    functionBodies.Add(function, loweredBody);
+
+                    diagnostics.AddRange(binder.diagnostics);
+                }
+                scope = scope.Previous;
+            }
+
+            var statement = Lowerer.Lower(new BoundBlockStatement(globalScope.Statements));
+
+            return new BoundProgram(diagnostics.ToImmutable(), functionBodies.ToImmutable(), statement);
+        }
+
+        private void BindFunctionDeclaration(FunctionDeclarationNode node)
+        {
+            scope = new BoundScope(scope);
+
+            TypeSymbol returnType = TypeSymbol.Lookup(node.TypeKeyword.Text!)!;
+
+            ImmutableArray<ParameterSymbol>.Builder parameters = ImmutableArray.CreateBuilder<ParameterSymbol>();
+            HashSet<string> seenParameterNames = new HashSet<string>();
+
+            foreach (ParameterNode parameter in node.Parameters)
+            {
+                string name = parameter.Identifier.Text!;
+                TypeSymbol type = TypeSymbol.Lookup(parameter.TypeKeyword.Text!)!;
+
+                if (!seenParameterNames.Add(name))
+                    diagnostics.ReportParameterAlreadyDeclared(parameter.Identifier.Span, name);
+                else
+                    parameters.Add(new ParameterSymbol(name, type));
+            }
+            ImmutableArray<ParameterSymbol> boundParameters = parameters.ToImmutable();
+
+            scope = scope.Parent!;
+
+            BindFunction(node.Identifier, boundParameters, returnType, node);
+        }
+
+        #region Statements
         private BoundStatement BindStatement(StatementNode node)
         {
             switch (node.Type)
@@ -150,7 +211,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             BoundExpression condition = BindExpression(node.Condition, TypeSymbol.Bool);
             scope = new BoundScope(scope);
-            BoundStatement ifStatement = BindStatement(node.Statement);
+            BoundStatement ifStatement = BindStatement(node.Body);
             scope = scope.Parent!;
 
             //The else is optional
@@ -159,22 +220,23 @@ namespace MiniCompiler.CodeAnalysis.Binding
             return new BoundIfStatement(condition, ifStatement, elseStatement);
         }
 
-        private BoundVariableDeclarationStatement BindVariableDeclarationStatement(VariableDeclarationStatementNode node)
+        private BoundVariableDeclarationStatement BindVariableDeclarationStatement(VariableDeclarationStatementNode node,
+            bool isReadOnly = false)
         {
-            bool isReadOnly = false;
-
-            BoundExpression? initializer = null;
-            if (node.Initializer != null)
-                initializer = BindExpression(node.Initializer);
-
             VariableSymbol variable;
+            BoundExpression? initializer = null;
             if (node.Keyword.Type == TokenType.Type)
             {
                 TypeSymbol type = TypeSymbol.Lookup(node.Keyword.Text!)!;
                 variable = BindVariable(node.Identifier, isReadOnly, type);
+                if (node.Initializer != null)
+                    initializer = BindExpression(node.Initializer, type);
             }
             else
+            {
+                initializer = BindExpression(node.Initializer!);
                 variable = BindVariable(node.Identifier, isReadOnly, initializer!.Type);
+            }
 
             return new BoundVariableDeclarationStatement(variable, initializer);
         }
@@ -205,7 +267,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundExpression BindExpression(ExpressionNode node, bool canBeVoid = false)
         {
             BoundExpression result = BindExpressionInternal(node);
-            if (!canBeVoid && result.Type == TypeSymbol.Void)
+            if (!canBeVoid && result.Type == TypeSymbol.Null)
             {
                 diagnostics.ReportNullExpression(node.Span);
                 return new BoundErrorExpression();
@@ -218,14 +280,6 @@ namespace MiniCompiler.CodeAnalysis.Binding
             BoundExpression boundExpression = BindExpression(node);
             if (boundExpression.Type == TypeSymbol.Error || expectedType == TypeSymbol.Error)
                 return new BoundErrorExpression();
-
-            //If there's no implicit conversion to the expected type, we throw an error
-            Conversion conversion = Conversion.Classify(boundExpression.Type, expectedType);
-            if (!conversion.Exists || !conversion.IsImplicit)
-            {
-                diagnostics.ReportCannotConvert(node.Span, boundExpression.Type, expectedType);
-                return new BoundErrorExpression();
-            }
 
             return BindConversion(node, expectedType);
         }
@@ -304,7 +358,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             string name = node.Identifier.Text!;
 
             if (node.Arguments.Count == 1 && node.Identifier.Type == TokenType.Type)
-                return BindConversion(node.Arguments[0], TypeSymbol.Lookup(name)!);
+                return BindConversion(node.Arguments[0], TypeSymbol.Lookup(name)!, true);
             else
             {
 
@@ -338,7 +392,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             return boundArguments.ToImmutable();
         }
 
-        private BoundExpression BindConversion(ExpressionNode node, TypeSymbol toType)
+        private BoundExpression BindConversion(ExpressionNode node, TypeSymbol toType, bool allowExplicit = false)
         {
             BoundExpression expression = BindExpression(node);
 
@@ -347,7 +401,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             Conversion conversion = Conversion.Classify(expression.Type, toType);
 
-            if (!conversion.Exists)
+            if (!conversion.Exists || (!allowExplicit && !conversion.IsImplicit))
             {
                 diagnostics.ReportCannotConvert(node.Span, expression.Type, toType);
                 return new BoundErrorExpression();
@@ -400,13 +454,26 @@ namespace MiniCompiler.CodeAnalysis.Binding
         }
         #endregion Expressions
 
+        private FunctionSymbol BindFunction(Token identifier, ImmutableArray<ParameterSymbol> parameters,
+            TypeSymbol returnType, FunctionDeclarationNode declaration)
+        {
+            string name = identifier.Text!;
+            FunctionSymbol function = new FunctionSymbol(name, parameters, returnType, declaration);
+
+            if (returnType != TypeSymbol.Error && !identifier.IsFake && !scope.TryDeclareFunction(function))
+                diagnostics.ReportSymbolAlreadyDeclared(identifier.Span, name);
+
+            return function;
+        }
         private VariableSymbol BindVariable(Token identifier, bool isReadOnly, TypeSymbol type)
         {
-            string name = identifier.Text ?? "?";
-            VariableSymbol variable = new VariableSymbol(name, isReadOnly, type);
+            string name = identifier.Text!;
+            VariableSymbol variable = function == null
+                ? new GlobalVariableSymbol(name, isReadOnly, type)
+                : new LocalVariableSymbol(name, isReadOnly, type);
 
             if (type != TypeSymbol.Error && !identifier.IsFake && !scope.TryDeclareVariable(variable))
-                diagnostics.ReportAlreadyDeclared(identifier.Span, name);
+                diagnostics.ReportSymbolAlreadyDeclared(identifier.Span, name);
 
             return variable;
         }

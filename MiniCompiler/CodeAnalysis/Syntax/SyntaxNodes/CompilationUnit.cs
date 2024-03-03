@@ -5,29 +5,29 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class CompilationUnit : SyntaxNode
     {
-        public CompilationUnit(ImmutableArray<StatementNode> statements)
+        public CompilationUnit(ImmutableArray<MemberNode> members)
         {
-            Statements = statements;
+            Members = members;
         }
 
-        public ImmutableArray<StatementNode> Statements { get; }
+        public ImmutableArray<MemberNode> Members { get; }
 
         public override NodeType Type => NodeType.CompilationUnit;
 
-        public override TextSpan Span => TextSpan.FromBounds(Statements.First().Span.Start, Statements.Last().Span.End);
+        public override TextSpan Span => TextSpan.FromBounds(Members.First().Span.Start, Members.Last().Span.End);
 
 
         public override IEnumerable<SyntaxNode> GetChildren()
         {
-            foreach (StatementNode statement in Statements)
+            foreach (MemberNode member in Members)
             {
-                yield return statement;
+                yield return member;
             }
         }
 
         public override Token GetLastToken()
         {
-            return Statements.Last().GetLastToken();
+            return Members.Last().GetLastToken();
         }
     }
 }

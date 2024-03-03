@@ -3,7 +3,6 @@
     public sealed class TypeSymbol : Symbol
     {
         public static readonly TypeSymbol Error = new TypeSymbol("?", null);
-        public static readonly TypeSymbol Void = new TypeSymbol("void", null);
         public static readonly TypeSymbol Null = new TypeSymbol("null", null);
         public static readonly TypeSymbol Bool = new TypeSymbol("bool", false);
         public static readonly TypeSymbol Int = new TypeSymbol("int", 0);
@@ -22,7 +21,6 @@
         {
             switch (name)
             {
-                case "void": return Void;
                 case "null": return Null;
                 case "bool": return Bool;
                 case "int": return Int;
