@@ -123,8 +123,10 @@ namespace MyCompiler
 
         private void HandleEscape(ObservableCollection<string> document, SubmissionView view)
         {
-            document[view.CurrentLine] = string.Empty;
+            document.Clear();
+            document.Add("");
             view.CurrentColumn = 0;
+            view.CurrentLine = 0;
         }
 
         private void HandleEnter(ObservableCollection<string> document, SubmissionView view)
