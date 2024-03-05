@@ -8,7 +8,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         public static readonly FunctionSymbol Print = new FunctionSymbol(
             "print",
             [new ParameterSymbol("text", TypeSymbol.String)],
-            TypeSymbol.Null);
+            TypeSymbol.Void);
         public static readonly FunctionSymbol Input = new FunctionSymbol(
             "input",
             [],

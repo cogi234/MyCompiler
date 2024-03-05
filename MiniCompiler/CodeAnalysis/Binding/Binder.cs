@@ -267,7 +267,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private BoundExpression BindExpression(ExpressionNode node, bool canBeVoid = false)
         {
             BoundExpression result = BindExpressionInternal(node);
-            if (!canBeVoid && result.Type == TypeSymbol.Null)
+            if (!canBeVoid && result.Type == TypeSymbol.Void)
             {
                 diagnostics.ReportNullExpression(node.Span);
                 return new BoundErrorExpression();
