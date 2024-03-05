@@ -66,22 +66,25 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
             switch (Type)
             {
                 case NodeType.LiteralExpression:
-                    writer.Write($" {((LiteralExpressionNode)this).Value}");
+                    writer.Write($" Value:{((LiteralExpressionNode)this).Value}");
                     break;
                 case NodeType.BinaryExpression:
-                    writer.Write($" {((BinaryExpressionNode)this).OperatorToken.Text}");
+                    writer.Write($" Operator:{((BinaryExpressionNode)this).OperatorToken.Text}");
                     break;
                 case NodeType.UnaryExpression:
-                    writer.Write($" {((UnaryExpressionNode)this).OperatorToken.Text}");
+                    writer.Write($" Operator:{((UnaryExpressionNode)this).OperatorToken.Text}");
                     break;
                 case NodeType.AssignmentExpression:
-                    writer.Write($" {((AssignmentExpressionNode)this).Identifier.Text}");
+                    writer.Write($" Identifier:{((AssignmentExpressionNode)this).Identifier.Text}");
                     break;
                 case NodeType.NameExpression:
-                    writer.Write($" {((VariableExpressionNode)this).Identifier.Text}");
+                    writer.Write($" Identifier:{((VariableExpressionNode)this).Identifier.Text}");
                     break;
                 case NodeType.VariableDeclarationStatement:
-                    writer.Write($" {((VariableDeclarationStatementNode)this).Identifier.Text}");
+                    writer.Write($" Identifier::{((VariableDeclarationStatementNode)this).Identifier.Text} Type:{((VariableDeclarationStatementNode)this).Keyword.Text}");
+                    break;
+                case NodeType.CallExpression:
+                    writer.Write($" {((CallExpressionNode)this).Identifier.Text}");
                     break;
             }
             Console.ResetColor();

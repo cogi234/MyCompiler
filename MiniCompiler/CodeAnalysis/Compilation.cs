@@ -3,6 +3,7 @@ using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
 using MiniCompiler.CodeAnalysis.Lowering;
 using MiniCompiler.CodeAnalysis.Symbols;
 using MiniCompiler.CodeAnalysis.Syntax;
+using MiniCompiler.IO;
 using System.Collections.Immutable;
 
 namespace MiniCompiler.CodeAnalysis
@@ -62,7 +63,19 @@ namespace MiniCompiler.CodeAnalysis
         public void EmitTree(TextWriter writer)
         {
             BoundProgram program = Binder.BindProgram(GlobalScope);
-            program.Statement.PrettyPrint(writer);
+
+            if (program.Statement.Statements.Any())
+                program.Statement.WriteTo(writer);
+            else
+            {
+                foreach (KeyValuePair<FunctionSymbol, BoundBlockStatement> function in program.Functions)
+                {
+                    if (!GlobalScope.Functions.Contains(function.Key))
+                        continue;
+                    function.Key.WriteTo(writer);
+                    function.Value.WriteTo(writer);
+                }
+            }
         }
     }
 }
