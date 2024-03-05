@@ -55,7 +55,7 @@ namespace MyCompiler
             EvaluationResult result = compilation.Evaluate(variables);
 
             if (result.Diagnostics.Any())
-                PrintDiagnostics(result.Diagnostics, syntaxTree);
+                PrintDiagnostics(result.Diagnostics.OrderBy(d => d.Span, new TextSpanComparer()), syntaxTree);
             else
                 previousCompilation = compilation;
         }
@@ -154,7 +154,7 @@ namespace MyCompiler
             Console.WriteLine("#reset: reset the context");
         }
 
-        protected void PrintDiagnostics(IReadOnlyList<Diagnostic> diagnostics, SyntaxTree syntaxTree)
+        protected void PrintDiagnostics(IEnumerable<Diagnostic> diagnostics, SyntaxTree syntaxTree)
         {
             foreach (Diagnostic diag in diagnostics)
             {

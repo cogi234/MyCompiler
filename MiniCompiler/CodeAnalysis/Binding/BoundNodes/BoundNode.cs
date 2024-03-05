@@ -58,35 +58,35 @@
 
             Console.ForegroundColor = ConsoleColor.Blue;
             if (this is BoundExpression expression)
-                writer.Write($" {expression.Type}");
+                writer.Write($" Type:<{expression.Type}>");
             switch (BoundNodeType)
             {
                 case BoundNodeType.LiteralExpression:
-                    writer.Write($" {((BoundLiteralExpression)this).Value}");
+                    writer.Write($" Value:{((BoundLiteralExpression)this).Value}");
                     break;
                 case BoundNodeType.BinaryExpression:
-                    writer.Write($" {((BoundBinaryExpression)this).BinaryOperator.OperationType}");
+                    writer.Write($" Operation:{((BoundBinaryExpression)this).BinaryOperator.OperationType}");
                     break;
                 case BoundNodeType.UnaryExpression:
-                    writer.Write($" {((BoundUnaryExpression)this).UnaryOperator.OperationType}");
-                    break;
-                case BoundNodeType.VariableDeclarationStatement:
-                    writer.Write($" {((BoundVariableDeclarationStatement)this).Variable}");
-                    break;
-                case BoundNodeType.AssignmentExpression:
-                    writer.Write($" {((BoundAssignmentExpression)this).Variable}");
+                    writer.Write($" Operation:{((BoundUnaryExpression)this).UnaryOperator.OperationType}");
                     break;
                 case BoundNodeType.VariableExpression:
-                    writer.Write($" {((BoundVariableExpression)this).Variable}");
+                    writer.Write($" Variable:{((BoundVariableExpression)this).Variable}");
+                    break;
+                case BoundNodeType.AssignmentExpression:
+                    writer.Write($" Variable:{((BoundAssignmentExpression)this).Variable}");
+                    break;
+                case BoundNodeType.VariableDeclarationStatement:
+                    writer.Write($" Type:{((BoundVariableDeclarationStatement)this).Variable.Type} Variable:{((BoundVariableDeclarationStatement)this).Variable}");
                     break;
                 case BoundNodeType.LabelStatement:
-                    writer.Write($" {((BoundLabelStatement)this).Label}");
+                    writer.Write($" Label:{((BoundLabelStatement)this).Label}");
                     break;
                 case BoundNodeType.GotoStatement:
-                    writer.Write($" {((BoundGotoStatement)this).Label}");
+                    writer.Write($" Label:{((BoundGotoStatement)this).Label}");
                     break;
                 case BoundNodeType.ConditionalGotoStatement:
-                    writer.Write($" on {!((BoundConditionalGotoStatement)this).JumpIfTrue} {((BoundConditionalGotoStatement)this).Label} ");
+                    writer.Write($" on {((BoundConditionalGotoStatement)this).JumpIfTrue}, go to {((BoundConditionalGotoStatement)this).Label} ");
                     break;
             }
             Console.ResetColor();
