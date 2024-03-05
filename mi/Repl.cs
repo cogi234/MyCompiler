@@ -331,7 +331,7 @@ namespace MyCompiler
         {
             private readonly Action<string> lineRenderer;
             private readonly ObservableCollection<string> submissionDocument;
-            private readonly int cursorTop;
+            private int cursorTop;
             private int renderedLineCount;
             private int currentLine;
             private int currentColumn;
@@ -359,7 +359,15 @@ namespace MyCompiler
                 {
                     string line = submissionDocument[lineCount];
 
-                    Console.SetCursorPosition(0, Math.Min(cursorTop + lineCount, Console.WindowHeight - 2));
+                    if (cursorTop + lineCount >= Console.WindowHeight - 1)
+                    {
+                        Console.SetCursorPosition(0, Math.Min(cursorTop + lineCount, Console.WindowHeight - 1));
+                        Console.WriteLine(line);
+                        if (cursorTop > 0)
+                            cursorTop--;
+                    }
+
+                    Console.SetCursorPosition(0, cursorTop + lineCount);
 
                     Console.ForegroundColor = ConsoleColor.Green;
                     if (lineCount == 0)
@@ -372,8 +380,7 @@ namespace MyCompiler
 
                     lineRenderer(line);
 
-                    int remainder = Console.WindowWidth - line.Length - 2;
-                    Console.WriteLine(new string(' ', remainder));
+                    Console.WriteLine(new string(' ', Console.WindowWidth - line.Length - 2));
                 }
 
                 int numberOfBlankLines = renderedLineCount - lineCount;
@@ -382,7 +389,7 @@ namespace MyCompiler
                     string blankLine = new string(' ', Console.WindowWidth);
                     for (int i = 0; i < numberOfBlankLines; i++)
                     {
-                        Console.SetCursorPosition(0, Math.Min(cursorTop + lineCount + i, Console.WindowHeight - 2));
+                        Console.SetCursorPosition(0, cursorTop + lineCount + i);
                         Console.WriteLine(blankLine);
                     }
                 }
@@ -394,7 +401,7 @@ namespace MyCompiler
 
             private void UpdateCursorPosition()
             {
-                Console.CursorTop = Math.Min(cursorTop + currentLine, Console.WindowHeight - 2);
+                Console.CursorTop = cursorTop + currentLine;
                 Console.CursorLeft = 2 + currentColumn;
             }
 
