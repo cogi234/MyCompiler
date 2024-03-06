@@ -149,8 +149,8 @@ namespace MyCompiler
             Console.WriteLine("#help: view this");
             Console.WriteLine("#clear: clear the screen");
             Console.WriteLine("#token: toggle token display");
-            Console.WriteLine("#showTree: toggle syntax tree");
-            Console.WriteLine("#showProgram: toggle bound tree");
+            Console.WriteLine("#showTree: toggle syntax tree display");
+            Console.WriteLine("#showProgram: toggle bound tree display");
             Console.WriteLine("#reset: reset the context");
         }
 

@@ -2,7 +2,7 @@
 
 namespace MyCompiler
 {
-    internal class TextSpanComparer : IComparer<TextSpan>
+    public class TextSpanComparer : IComparer<TextSpan>
     {
         public int Compare(TextSpan x, TextSpan y)
         {
