@@ -18,6 +18,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         WhileStatement,
         DoWhileStatement,
         ForStatement,
+        BreakStatement,
+        ContinueStatement,
 
         //Expressions
         LiteralExpression,

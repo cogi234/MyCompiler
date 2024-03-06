@@ -40,48 +40,6 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             return new BoundBlockStatement(builder.ToImmutable());
         }
 
-        protected override BoundStatement RewriteForStatement(BoundForStatement node)
-        {
-            // for (<declaration> <condition> <increment>)
-            //      <body>
-            // ---->
-            // {
-            //      <declaration>
-            //      while (<condition>)
-            //      {
-            //          <body>
-            //          <increment>
-            //      }
-            // }
-
-            //Generate the while statement
-            BoundWhileStatement whileStatement;
-            if (node.Increment == null)
-                whileStatement = new BoundWhileStatement(node.Condition, node.Body);
-            else
-            {
-                BoundBlockStatement whileBody;
-                //If the body is already a block, we just add the increment at the end of the block
-                if (node.Body.BoundNodeType == BoundNodeType.BlockStatement)
-                    whileBody = new BoundBlockStatement(((BoundBlockStatement)node.Body).Statements.Concat([new BoundExpressionStatement(node.Increment)]).ToImmutableArray());
-                else
-                    whileBody = new BoundBlockStatement([node.Body, new BoundExpressionStatement(node.Increment)]);
-                whileStatement = new BoundWhileStatement(node.Condition, whileBody);
-            }
-
-            //Generate an enclosing block for the declaration if there is one
-            BoundStatement result;
-            if (node.Declaration == null)
-                result = whileStatement;
-            else
-            {
-                BoundBlockStatement enclosingBlock = new BoundBlockStatement([node.Declaration, whileStatement]);
-                result = enclosingBlock;
-            }
-
-            return RewriteStatement(result);
-        }
-
         protected override BoundStatement RewriteIfStatement(BoundIfStatement node)
         {
             ImmutableArray<BoundStatement>.Builder builder = ImmutableArray.CreateBuilder<BoundStatement>();
@@ -118,9 +76,9 @@ namespace MiniCompiler.CodeAnalysis.Lowering
         protected override BoundStatement RewriteWhileStatement(BoundWhileStatement node)
         {
             ImmutableArray<BoundStatement>.Builder builder = ImmutableArray.CreateBuilder<BoundStatement>();
-            BoundLabel continueLabel = GenerateLabel();
+            BoundLabel continueLabel = node.ContinueLabel;
             BoundLabel checkLabel = GenerateLabel();
-            BoundLabel endLabel = GenerateLabel();
+            BoundLabel breakLabel = node.BreakLabel;
             //goto check
             builder.Add(new BoundGotoStatement(checkLabel));
             //continue:
@@ -132,16 +90,16 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             //gotoTrue <condition> continue
             builder.Add(new BoundConditionalGotoStatement(continueLabel, node.Condition, true));
             //end:
-            builder.Add(new BoundLabelStatement(endLabel));
+            builder.Add(new BoundLabelStatement(breakLabel));
 
-            return new BoundBlockStatement(builder.ToImmutable());
+            return RewriteStatement(new BoundBlockStatement(builder.ToImmutable()));
         }
 
         protected override BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
         {
             ImmutableArray<BoundStatement>.Builder builder = ImmutableArray.CreateBuilder<BoundStatement>();
-            BoundLabel continueLabel = GenerateLabel();
-            BoundLabel endLabel = GenerateLabel();
+            BoundLabel continueLabel = node.ContinueLabel;
+            BoundLabel breakLabel = node.BreakLabel;
             //continue:
             builder.Add(new BoundLabelStatement(continueLabel));
             //body
@@ -149,9 +107,53 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             //gotoTrue <condition> continue
             builder.Add(new BoundConditionalGotoStatement(continueLabel, node.Condition, true));
             //end:
-            builder.Add(new BoundLabelStatement(endLabel));
+            builder.Add(new BoundLabelStatement(breakLabel));
 
-            return new BoundBlockStatement(builder.ToImmutable());
+            return RewriteStatement(new BoundBlockStatement(builder.ToImmutable()));
+        }
+
+        protected override BoundStatement RewriteForStatement(BoundForStatement node)
+        {
+            // for (<declaration> <condition> <increment>)
+            //      <body>
+            // ---->
+            // {
+            //      <declaration>
+            //      while (<condition>)
+            //      {
+            //          <body>
+            //          <increment>
+            //      }
+            // }
+
+            //Generate the while statement
+            BoundWhileStatement whileStatement;
+            if (node.Increment == null)
+                whileStatement = new BoundWhileStatement(node.Condition, node.Body, node.BreakLabel, node.ContinueLabel);
+            else
+            {
+                BoundBlockStatement whileBody;
+                //If the body is already a block, we just add the increment at the end of the block
+                if (node.Body.BoundNodeType == BoundNodeType.BlockStatement)
+                    whileBody = new BoundBlockStatement(((BoundBlockStatement)node.Body).Statements.
+                        Concat([new BoundLabelStatement(node.ContinueLabel), new BoundExpressionStatement(node.Increment)]).ToImmutableArray());
+                else
+                    whileBody = new BoundBlockStatement([node.Body, new BoundLabelStatement(node.ContinueLabel),
+                        new BoundExpressionStatement(node.Increment)]);
+                whileStatement = new BoundWhileStatement(node.Condition, whileBody, node.BreakLabel, GenerateLabel());
+            }
+
+            //Generate an enclosing block for the declaration if there is one
+            BoundStatement result;
+            if (node.Declaration == null)
+                result = whileStatement;
+            else
+            {
+                BoundBlockStatement enclosingBlock = new BoundBlockStatement([node.Declaration, whileStatement]);
+                result = enclosingBlock;
+            }
+
+            return RewriteStatement(result);
         }
 
         private BoundLabel GenerateLabel()

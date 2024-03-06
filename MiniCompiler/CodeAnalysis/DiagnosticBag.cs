@@ -143,6 +143,12 @@ namespace MiniCompiler.CodeAnalysis
             string message = "Expression must have a non-null value.";
             Report(span, message);
         }
+
+        public void ReportInvalidBreakOrContinue(TextSpan span, string? text)
+        {
+            string message = $"{text} statement must be inside a loop.";
+            Report(span, message);
+        }
         #endregion
     }
 }

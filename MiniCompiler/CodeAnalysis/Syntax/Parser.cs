@@ -131,14 +131,32 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return ParseDoWhileStatement();
                 case TokenType.ForKeyword:
                     return ParseForStatement();
+                case TokenType.BreakKeyword:
+                    return ParseBreakStatement();
+                case TokenType.ContinueKeyword:
+                    return ParseContinueStatement();
                 default:
                     return ParseExpressionStatement();
             }
         }
 
-        // for (var i = 0; i < 10; i = i + 1)
+        private StatementNode ParseContinueStatement()
+        {
+            Token keyword = ExpectToken(TokenType.ContinueKeyword);
+            Token semicolon = ExpectToken(TokenType.Semicolon);
+            return new ContinueStatementNode(keyword, semicolon);
+        }
+
+        private StatementNode ParseBreakStatement()
+        {
+            Token keyword = ExpectToken(TokenType.BreakKeyword);
+            Token semicolon = ExpectToken(TokenType.Semicolon);
+            return new BreakStatementNode(keyword, semicolon);
+        }
+
         private StatementNode ParseForStatement()
         {
+            // for (var i = 0; i < 10; i = i + 1)
             bool isValid = true;
             Token forKeyword = ExpectToken(TokenType.ForKeyword);
             Token openParenthesis = ExpectToken(TokenType.OpenParenthesis);

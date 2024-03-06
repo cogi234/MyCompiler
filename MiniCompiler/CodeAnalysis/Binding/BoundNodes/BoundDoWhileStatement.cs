@@ -1,24 +1,24 @@
 ﻿
 namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
-    internal sealed class BoundWhileStatement : BoundLoopStatement
+    internal sealed class BoundDoWhileStatement : BoundLoopStatement
     {
-        public BoundWhileStatement(BoundExpression condition, BoundStatement body,
+        public BoundDoWhileStatement(BoundStatement body, BoundExpression condition,
             BoundLabel breakLabel, BoundLabel continueLabel) : base(breakLabel, continueLabel)
         {
-            Condition = condition;
             Body = body;
+            Condition = condition;
         }
 
-        public BoundExpression Condition { get; }
         public BoundStatement Body { get; }
+        public BoundExpression Condition { get; }
 
-        public override BoundNodeType BoundNodeType => BoundNodeType.WhileStatement;
+        public override BoundNodeType BoundNodeType => BoundNodeType.DoWhileStatement;
 
         public override IEnumerable<BoundNode> GetChildren()
         {
-            yield return Condition;
             yield return Body;
+            yield return Condition;
         }
     }
 }

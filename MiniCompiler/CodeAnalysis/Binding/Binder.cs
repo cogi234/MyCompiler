@@ -15,6 +15,9 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundScope scope;
         private FunctionSymbol? function;
+        private Stack<(BoundLabel BreakLabel, BoundLabel ContinueLabel)> loopStack =
+            new Stack<(BoundLabel BreakLabel, BoundLabel ContinueLabel)>();
+        private int labelCounter;
 
         public Binder(BoundScope? parent, FunctionSymbol? function)
         {
@@ -161,9 +164,35 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     return BindDoWhileStatement((DoWhileStatementNode)node);
                 case NodeType.ForStatement:
                     return BindForStatement((ForStatementNode)node);
+                case NodeType.BreakStatement:
+                    return BindBreakStatement((BreakStatementNode)node);
+                case NodeType.ContinueStatement:
+                    return BindContinueStatement((ContinueStatementNode)node);
                 default:
                     throw new Exception($"Unexpected syntax node {node.Type}");
             }
+        }
+
+        private BoundStatement BindContinueStatement(ContinueStatementNode node)
+        {
+            if (loopStack.Count == 0)
+            {
+                diagnostics.ReportInvalidBreakOrContinue(node.Keyword.Span, node.Keyword.Text);
+                return new BoundExpressionStatement(new BoundErrorExpression());
+            }
+            BoundLabel continueLabel = loopStack.Peek().ContinueLabel;
+            return new BoundGotoStatement(continueLabel);
+        }
+
+        private BoundStatement BindBreakStatement(BreakStatementNode node)
+        {
+            if (loopStack.Count == 0)
+            {
+                diagnostics.ReportInvalidBreakOrContinue(node.Keyword.Span, node.Keyword.Text);
+                return new BoundExpressionStatement(new BoundErrorExpression());
+            }
+            BoundLabel breakLabel = loopStack.Peek().BreakLabel;
+            return new BoundGotoStatement(breakLabel);
         }
 
         private BoundForStatement BindForStatement(ForStatementNode node)
@@ -180,31 +209,44 @@ namespace MiniCompiler.CodeAnalysis.Binding
             if (node.Increment != null)
                 increment = (BoundAssignmentExpression)BindAssignmentExpression(node.Increment);
 
-            BoundStatement statement = BindStatement(node.Statement);
+            BoundStatement statement = BindLoopBody(node.Statement, out BoundLabel breakLabel, out BoundLabel continueLabel);
 
             scope = scope.Parent!;
 
-            return new BoundForStatement(declaration, condition, increment, statement);
+            return new BoundForStatement(declaration, condition, increment, statement, breakLabel, continueLabel);
         }
 
         private BoundDoWhileStatement BindDoWhileStatement(DoWhileStatementNode node)
         {
             scope = new BoundScope(scope);
-            BoundStatement statement = BindStatement(node.Statement);
+            BoundStatement statement = BindLoopBody(node.Statement, out BoundLabel breakLabel, out BoundLabel continueLabel);
             scope = scope.Parent!;
             BoundExpression condition = BindExpression(node.Condition, TypeSymbol.Bool);
 
-            return new BoundDoWhileStatement(statement, condition);
+            return new BoundDoWhileStatement(statement, condition, breakLabel, continueLabel);
         }
 
         private BoundWhileStatement BindWhileStatement(WhileStatementNode node)
         {
             BoundExpression condition = BindExpression(node.Condition, TypeSymbol.Bool);
             scope = new BoundScope(scope);
-            BoundStatement statement = BindStatement(node.Statement);
+            BoundStatement statement = BindLoopBody(node.Statement, out BoundLabel breakLabel, out BoundLabel continueLabel);
             scope = scope.Parent!;
 
-            return new BoundWhileStatement(condition, statement);
+            return new BoundWhileStatement(condition, statement, breakLabel, continueLabel);
+        }
+
+        private BoundStatement BindLoopBody(StatementNode body, out BoundLabel breakLabel, out BoundLabel continueLabel)
+        {
+            labelCounter++;
+            breakLabel = new BoundLabel($"break{labelCounter}");
+            continueLabel = new BoundLabel($"continue{labelCounter}");
+
+            loopStack.Push((breakLabel, continueLabel));
+            BoundStatement boundBody = BindStatement(body);
+            loopStack.Pop();
+
+            return boundBody;
         }
 
         private BoundIfStatement BindIfStatement(IfStatementNode node)

@@ -50,7 +50,7 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                 increment == node.Increment && body == node.Body)
                 return node;
 
-            return new BoundForStatement(declaration, condition, increment, body);
+            return new BoundForStatement(declaration, condition, increment, body, node.BreakLabel, node.ContinueLabel);
         }
 
         protected virtual BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
@@ -61,7 +61,7 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             if (condition == node.Condition && body == node.Body)
                 return node;
 
-            return new BoundDoWhileStatement(body, condition);
+            return new BoundDoWhileStatement(body, condition, node.BreakLabel, node.ContinueLabel);
         }
 
         protected virtual BoundStatement RewriteWhileStatement(BoundWhileStatement node)
@@ -72,7 +72,7 @@ namespace MiniCompiler.CodeAnalysis.Lowering
             if (condition == node.Condition && body == node.Body)
                 return node;
 
-            return new BoundWhileStatement(condition, body);
+            return new BoundWhileStatement(condition, body, node.BreakLabel, node.ContinueLabel);
         }
 
         protected virtual BoundStatement RewriteIfStatement(BoundIfStatement node)

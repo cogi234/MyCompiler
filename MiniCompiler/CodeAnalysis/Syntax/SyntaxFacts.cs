@@ -73,6 +73,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return TokenType.WhileKeyword;
                 case "for":
                     return TokenType.ForKeyword;
+                case "continue":
+                    return TokenType.ContinueKeyword;
+                case "break":
+                    return TokenType.BreakKeyword;
                 default:
                     if (TypeSymbol.Lookup(text) == null)
                         return TokenType.Identifier;
@@ -172,6 +176,10 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return "while";
                 case TokenType.ForKeyword:
                     return "for";
+                case TokenType.ContinueKeyword:
+                    return "continue";
+                case TokenType.BreakKeyword:
+                    return "break";
                 default:
                     return null;
             }

@@ -1,11 +1,12 @@
 ﻿
 namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
 {
-    // for (var i = 0; i < 10; i = i + 1)
-    internal sealed class BoundForStatement : BoundStatement
+    internal sealed class BoundForStatement : BoundLoopStatement
     {
+        // for (var i = 0; i < 10; i = i + 1)
         public BoundForStatement(BoundVariableDeclarationStatement? declaration, BoundExpression condition,
-            BoundAssignmentExpression? increment, BoundStatement body)
+            BoundAssignmentExpression? increment, BoundStatement body, BoundLabel breakLabel, BoundLabel continueLabel)
+            : base(breakLabel, continueLabel)
         {
             Declaration = declaration;
             Condition = condition;

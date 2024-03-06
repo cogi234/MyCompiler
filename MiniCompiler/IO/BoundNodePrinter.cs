@@ -113,17 +113,14 @@ namespace MiniCompiler.IO
 
         private static void WriteLabelStatement(BoundLabelStatement node, IndentedTextWriter writer)
         {
-            bool unindent = writer.Indent > 0;
-
-            if (unindent)
-                writer.Indent--;
+            int previousIndent = writer.Indent;
+            writer.Indent = 0;
 
             writer.WritePunctuation(node.Label.Name);
             writer.WritePunctuation(":");
             writer.WriteLine();
 
-            if (unindent)
-                writer.Indent++;
+            writer.Indent = previousIndent;
         }
 
         private static void WriteGotoStatement(BoundGotoStatement node, IndentedTextWriter writer)
