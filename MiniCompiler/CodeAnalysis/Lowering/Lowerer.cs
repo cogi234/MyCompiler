@@ -158,7 +158,7 @@ namespace MiniCompiler.CodeAnalysis.Lowering
 
         private BoundLabel GenerateLabel()
         {
-            string name = $"Label{labelCount}";
+            string name = $"label{labelCount}";
             labelCount++;
             return new BoundLabel(name);
         }

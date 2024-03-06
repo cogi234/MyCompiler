@@ -17,7 +17,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         private FunctionSymbol? function;
         private Stack<(BoundLabel BreakLabel, BoundLabel ContinueLabel)> loopStack =
             new Stack<(BoundLabel BreakLabel, BoundLabel ContinueLabel)>();
-        private int labelCounter;
+        private int loopLabelCounter;
 
         public Binder(BoundScope? parent, FunctionSymbol? function)
         {
@@ -238,9 +238,9 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundStatement BindLoopBody(StatementNode body, out BoundLabel breakLabel, out BoundLabel continueLabel)
         {
-            labelCounter++;
-            breakLabel = new BoundLabel($"break{labelCounter}");
-            continueLabel = new BoundLabel($"continue{labelCounter}");
+            breakLabel = new BoundLabel($"break{loopLabelCounter}");
+            continueLabel = new BoundLabel($"continue{loopLabelCounter}");
+            loopLabelCounter++;
 
             loopStack.Push((breakLabel, continueLabel));
             BoundStatement boundBody = BindStatement(body);
