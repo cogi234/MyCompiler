@@ -5,7 +5,7 @@ namespace MiniCompiler.CodeAnalysis.Symbols
 {
     public sealed class FunctionSymbol : Symbol
     {
-        public FunctionSymbol(string name, ImmutableArray<ParameterSymbol> parameters, TypeSymbol returnType, FunctionDeclarationNode? declaration = null) 
+        public FunctionSymbol(string name, ImmutableArray<ParameterSymbol> parameters, TypeSymbol returnType, FunctionDeclarationNode? declaration = null)
             : base(name)
         {
             Parameters = parameters;

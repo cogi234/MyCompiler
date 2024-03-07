@@ -1,6 +1,4 @@
-﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
-
-namespace MiniCompiler.CodeAnalysis.Symbols
+﻿namespace MiniCompiler.CodeAnalysis.Symbols
 {
     public sealed class ParameterSymbol : LocalVariableSymbol
     {

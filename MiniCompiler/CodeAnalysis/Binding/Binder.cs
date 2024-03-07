@@ -26,7 +26,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             if (function != null)
             {
-                foreach (var parameter in function.Parameters)
+                foreach (ParameterSymbol parameter in function.Parameters)
                     scope.TryDeclareVariable(parameter);
             }
         }
@@ -77,9 +77,9 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 binder.BindFunctionDeclaration(function);
 
             ImmutableArray<BoundStatement>.Builder statements = ImmutableArray.CreateBuilder<BoundStatement>();
-            foreach (var globalStatement in compilationUnit.Members.OfType<GlobalStatementNode>())
+            foreach (GlobalStatementNode globalStatement in compilationUnit.Members.OfType<GlobalStatementNode>())
             {
-                var statement = binder.BindStatement(globalStatement.Statement);
+                BoundStatement statement = binder.BindStatement(globalStatement.Statement);
                 statements.Add(statement);
             }
 
@@ -102,7 +102,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             while (scope != null)
             {
-                foreach (var function in scope.Functions)
+                foreach (FunctionSymbol function in scope.Functions)
                 {
                     Binder binder = new Binder(parentScope, function);
                     BoundStatement body = binder.BindStatement(function.Declaration!.Body);
@@ -114,7 +114,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 scope = scope.Previous;
             }
 
-            var statement = Lowerer.Lower(new BoundBlockStatement(globalScope.Statements));
+            BoundBlockStatement statement = Lowerer.Lower(new BoundBlockStatement(globalScope.Statements));
 
             return new BoundProgram(diagnostics.ToImmutable(), functionBodies.ToImmutable(), statement);
         }

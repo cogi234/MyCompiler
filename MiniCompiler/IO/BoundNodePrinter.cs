@@ -232,7 +232,7 @@ namespace MiniCompiler.IO
             writer.WritePunctuation("(");
 
             bool isFirst = true;
-            foreach (var argument in node.Arguments)
+            foreach (BoundExpression argument in node.Arguments)
             {
                 if (isFirst)
                     isFirst = false;

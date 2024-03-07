@@ -7,7 +7,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
     internal sealed class BoundProgram
     {
         public BoundProgram(ImmutableArray<Diagnostic> diagnostics,
-            ImmutableDictionary<FunctionSymbol,BoundBlockStatement> functions, BoundBlockStatement statement)
+            ImmutableDictionary<FunctionSymbol, BoundBlockStatement> functions, BoundBlockStatement statement)
         {
             Diagnostics = diagnostics;
             Functions = functions;

@@ -1,6 +1,5 @@
 ﻿using MiniCompiler.CodeAnalysis.Binding;
 using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
-using MiniCompiler.CodeAnalysis.Lowering;
 using MiniCompiler.CodeAnalysis.Symbols;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.IO;

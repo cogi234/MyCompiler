@@ -45,7 +45,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         {
             ImmutableArray<MemberNode>.Builder members = ImmutableArray.CreateBuilder<MemberNode>();
 
-            while(Current.Type != TokenType.EndOfFile)
+            while (Current.Type != TokenType.EndOfFile)
             {
                 Token startToken = Current;
 

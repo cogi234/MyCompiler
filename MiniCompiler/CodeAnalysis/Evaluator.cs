@@ -9,7 +9,7 @@ namespace MiniCompiler.CodeAnalysis
     {
         private readonly BoundProgram program;
         private readonly Dictionary<VariableSymbol, object?> globals;
-        private readonly Stack<Dictionary<VariableSymbol, object?>> locals = 
+        private readonly Stack<Dictionary<VariableSymbol, object?>> locals =
             new Stack<Dictionary<VariableSymbol, object?>>();
         private Random? random;
 
@@ -126,9 +126,10 @@ namespace MiniCompiler.CodeAnalysis
             if (expression.Variable.SymbolType == SymbolType.GlobalVariable)
             {
                 return globals[expression.Variable];
-            } else
+            }
+            else
             {
-                var local = locals.Peek();
+                Dictionary<VariableSymbol, object?> local = locals.Peek();
                 return local[expression.Variable];
             }
         }
@@ -166,7 +167,7 @@ namespace MiniCompiler.CodeAnalysis
             }
             else
             {
-                var local = new Dictionary<VariableSymbol, object?>();
+                Dictionary<VariableSymbol, object?> local = new Dictionary<VariableSymbol, object?>();
                 for (int i = 0; i < expression.Arguments.Length; i++)
                 {
                     ParameterSymbol parameter = expression.Function.Parameters[i];
