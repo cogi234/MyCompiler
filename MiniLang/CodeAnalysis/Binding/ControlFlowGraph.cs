@@ -2,6 +2,7 @@
 using MiniCompiler.CodeAnalysis.Symbols;
 using MiniCompiler.CodeAnalysis.Syntax;
 using MiniCompiler.IO;
+using System.CodeDom.Compiler;
 
 namespace MiniCompiler.CodeAnalysis.Binding
 {
@@ -24,7 +25,8 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             string Quote(string text)
             {
-                return "\"" + text.Replace("\"", "\\\"") + "\"";
+                return "\"" + text.TrimEnd().Replace("\\", "\\\\").Replace("\"", "\\\"").
+                    Replace(Environment.NewLine, "\\l") + "\"";
             }
             Dictionary<BasicBlock, string> blockIds = new Dictionary<BasicBlock, string>();
 
@@ -39,7 +41,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             foreach (BasicBlock block in Blocks)
             {
                 string id = blockIds[block];
-                string label = Quote(block.ToString().Replace(Environment.NewLine, "\\l"));
+                string label = Quote(block.ToString());
                 writer.WriteLine($"    {id} [label = {label} shape = box]");
             }
 
@@ -68,8 +70,8 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             foreach (var branch in graph.End.Incoming)
             {
-                BoundStatement lastStatement = branch.From.Statements.Last();
-                if (lastStatement.BoundNodeType != BoundNodeType.ReturnStatement)
+                BoundStatement? lastStatement = branch.From.Statements.LastOrDefault();
+                if (lastStatement == null || lastStatement.BoundNodeType != BoundNodeType.ReturnStatement)
                     return false;
             }
 
@@ -102,9 +104,10 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     return "<End>";
 
                 using (StringWriter writer = new StringWriter())
+                using (IndentedTextWriter indentedWriter = new IndentedTextWriter(writer))
                 {
                     foreach (BoundStatement statement in Statements)
-                        statement.WriteTo(writer);
+                        statement.WriteTo(indentedWriter);
 
                     return writer.ToString();
                 }

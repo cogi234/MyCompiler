@@ -117,6 +117,11 @@ namespace MiniCompiler.CodeAnalysis
             string message = $"Variable '{name}' doesn't exist.";
             Report(span, message);
         }
+        public void ReportNotAVariable(TextSpan span, string name)
+        {
+            string message = $"'{name}' is not a variable.";
+            Report(span, message);
+        }
         public void ReportCannotAssign(TextSpan span, string name)
         {
             string message = $"Cannot assign to variable '{name}', it is read only.";
@@ -126,6 +131,11 @@ namespace MiniCompiler.CodeAnalysis
         public void ReportUndefinedFunction(TextSpan span, string? name)
         {
             string message = $"Function '{name}' doesn't exist.";
+            Report(span, message);
+        }
+        public void ReportNotAFunction(TextSpan span, string name)
+        {
+            string message = $"'{name}' is not a function.";
             Report(span, message);
         }
         public void ReportWrongArgumentCount(TextSpan span, string name, int count)

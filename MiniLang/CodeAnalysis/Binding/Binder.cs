@@ -146,7 +146,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             scope = scope.Parent!;
 
-            BindFunction(node.Identifier, boundParameters, returnType, node);
+            BindFunctionDeclaration(node.Identifier, boundParameters, returnType, node);
         }
 
         #region Statements
@@ -300,14 +300,14 @@ namespace MiniCompiler.CodeAnalysis.Binding
             if (node.Keyword.Type == TokenType.Type)
             {
                 TypeSymbol type = TypeSymbol.Lookup(node.Keyword.Text!)!;
-                variable = BindVariable(node.Identifier, isReadOnly, type);
+                variable = BindVariableDeclaration(node.Identifier, isReadOnly, type);
                 if (node.Initializer != null)
                     initializer = BindExpression(node.Initializer, type);
             }
             else
             {
                 initializer = BindExpression(node.Initializer!);
-                variable = BindVariable(node.Identifier, isReadOnly, initializer!.Type);
+                variable = BindVariableDeclaration(node.Identifier, isReadOnly, initializer!.Type);
             }
 
             return new BoundVariableDeclarationStatement(variable, initializer);
@@ -388,15 +388,14 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
         private BoundExpression BindVariableExpression(VariableExpressionNode node)
         {
-            string? name = node.Identifier.Text;
             if (node.Identifier.IsFake)
                 return new BoundErrorExpression();
 
-            if (!scope.TryLookupVariable(name!, out VariableSymbol? variable))
-            {
-                diagnostics.ReportUndefinedVariable(node.Identifier.Span, name!);
+            string name = node.Identifier.Text!;
+
+            VariableSymbol? variable = BindVariableReference(name, node.Identifier.Span);
+            if (variable == null)
                 return new BoundErrorExpression();
-            }
 
             return new BoundVariableExpression(variable!);
         }
@@ -405,11 +404,9 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             string name = node.Identifier.Text!;
 
-            if (!scope.TryLookupVariable(name, out VariableSymbol? variable))
-            {
-                diagnostics.ReportUndefinedVariable(node.Identifier.Span, name);
+            VariableSymbol? variable = BindVariableReference(name, node.Identifier.Span);
+            if (variable == null)
                 return new BoundErrorExpression();
-            }
 
             BoundExpression boundExpression = BindExpression(node.Expression, variable!.Type);
 
@@ -433,11 +430,10 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 return BindConversion(node.Arguments[0], TypeSymbol.Lookup(name)!, true);
             else
             {
-                if (!scope.TryLookupFunction(name, out FunctionSymbol? function))
-                {
-                    diagnostics.ReportUndefinedFunction(node.Identifier.Span, name);
+                FunctionSymbol? function = BindFunctionReference(name, node.Identifier.Span);
+                if (function == null)
                     return new BoundErrorExpression();
-                }
+
                 if (node.Arguments.Count != function!.Parameters.Length)
                 {
                     TextSpan span;
@@ -543,7 +539,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         }
         #endregion Expressions
 
-        private FunctionSymbol BindFunction(Token identifier, ImmutableArray<ParameterSymbol> parameters,
+        private FunctionSymbol BindFunctionDeclaration(Token identifier, ImmutableArray<ParameterSymbol> parameters,
             TypeSymbol returnType, FunctionDeclarationNode declaration)
         {
             string name = identifier.Text!;
@@ -554,7 +550,21 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
             return function;
         }
-        private VariableSymbol BindVariable(Token identifier, bool isReadOnly, TypeSymbol type)
+        private FunctionSymbol? BindFunctionReference(string name, TextSpan span)
+        {
+            switch (scope.TryLookupSymbol(name))
+            {
+                case FunctionSymbol function:
+                    return function;
+                case null:
+                    diagnostics.ReportUndefinedFunction(span, name);
+                    return null;
+                default:
+                    diagnostics.ReportNotAFunction(span, name);
+                    return null;
+            }
+        }
+        private VariableSymbol BindVariableDeclaration(Token identifier, bool isReadOnly, TypeSymbol type)
         {
             string name = identifier.Text!;
             VariableSymbol variable = function == null
@@ -565,6 +575,20 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 diagnostics.ReportSymbolAlreadyDeclared(identifier.Span, name);
 
             return variable;
+        }
+        private VariableSymbol? BindVariableReference(string name, TextSpan span)
+        {
+            switch (scope.TryLookupSymbol(name))
+            {
+                case VariableSymbol variable:
+                    return variable;
+                case null:
+                    diagnostics.ReportUndefinedVariable(span, name);
+                    return null;
+                default:
+                    diagnostics.ReportNotAVariable(span, name);
+                    return null;
+            }
         }
     }
 }

@@ -25,25 +25,12 @@ namespace MiniCompiler.CodeAnalysis.Binding
         public bool TryDeclareVariable(VariableSymbol variable) => TryDeclareSymbol(variable);
         public bool TryDeclareFunction(FunctionSymbol function) => TryDeclareSymbol(function);
 
-        public bool TryLookupSymbol<TSymbol>(string name, out TSymbol? symbol) where TSymbol : Symbol
+        public Symbol? TryLookupSymbol(string name)
         {
-            symbol = null;
-            if (symbols.TryGetValue(name, out Symbol? declaredSymbol))
-            {
-                if (declaredSymbol is TSymbol matchingSymbol)
-                {
-                    symbol = matchingSymbol;
-                    return true;
-                }
-            }
-
-            if (Parent != null)
-                return Parent.TryLookupSymbol(name, out symbol);
-
-            return false;
+            if (symbols.TryGetValue(name, out Symbol? symbol))
+                return symbol;
+            return Parent?.TryLookupSymbol(name);
         }
-        public bool TryLookupVariable(string name, out VariableSymbol? variable) => TryLookupSymbol(name, out variable);
-        public bool TryLookupFunction(string name, out FunctionSymbol? function) => TryLookupSymbol(name, out function);
 
         public ImmutableArray<TSymbol> GetDeclaredSymbols<TSymbol>() where TSymbol : Symbol
         {
