@@ -52,6 +52,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
         ForKeyword,
         ContinueKeyword,
         BreakKeyword,
+        ReturnKeyword,
     }
     public sealed class Token
     {

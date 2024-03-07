@@ -135,9 +135,21 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return ParseBreakStatement();
                 case TokenType.ContinueKeyword:
                     return ParseContinueStatement();
+                case TokenType.ReturnKeyword:
+                    return ParseReturnStatement();
                 default:
                     return ParseExpressionStatement();
             }
+        }
+
+        private StatementNode ParseReturnStatement()
+        {
+            Token keyword = ExpectToken(TokenType.ContinueKeyword);
+            ExpressionNode? expression = null;
+            if (Current.Type != TokenType.Semicolon && Current.Type != TokenType.EndOfFile)
+                expression = ParseExpression();
+            Token semicolon = ExpectToken(TokenType.Semicolon);
+            return new ReturnStatementNode(keyword, expression, semicolon);
         }
 
         private StatementNode ParseContinueStatement()

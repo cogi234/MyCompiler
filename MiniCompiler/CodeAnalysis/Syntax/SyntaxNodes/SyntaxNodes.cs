@@ -20,6 +20,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
         ForStatement,
         BreakStatement,
         ContinueStatement,
+        ReturnStatement,
 
         //Expressions
         LiteralExpression,

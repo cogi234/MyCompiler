@@ -77,6 +77,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return TokenType.ContinueKeyword;
                 case "break":
                     return TokenType.BreakKeyword;
+                case "return":
+                    return TokenType.ReturnKeyword;
                 default:
                     if (TypeSymbol.Lookup(text) == null)
                         return TokenType.Identifier;
@@ -180,6 +182,8 @@ namespace MiniCompiler.CodeAnalysis.Syntax
                     return "continue";
                 case TokenType.BreakKeyword:
                     return "break";
+                case TokenType.ReturnKeyword:
+                    return "return";
                 default:
                     return null;
             }
