@@ -403,7 +403,6 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 return BindConversion(node.Arguments[0], TypeSymbol.Lookup(name)!, true);
             else
             {
-
                 if (!scope.TryLookupFunction(name, out FunctionSymbol? function))
                 {
                     diagnostics.ReportUndefinedFunction(node.Identifier.Span, name);
@@ -411,12 +410,30 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 }
                 if (node.Arguments.Count != function!.Parameters.Length)
                 {
-                    diagnostics.ReportWrongArgumentCount(TextSpan.FromBounds(node.OpenParenthesis.Span.Start, node.CloseParenthesis.Span.End),
-                        function.Name, node.Arguments.Count);
+                    TextSpan span;
+
+                    if (node.Arguments.Count > function!.Parameters.Length)
+                    {
+                        TextSpan firstExceedingSpan;
+                        if (function.Parameters.Length > 0)
+                            firstExceedingSpan = node.Arguments.GetSeparator(function.Parameters.Length - 1).Span;
+                        else
+                            firstExceedingSpan = node.Arguments[0].Span;
+
+                        TextSpan lastExceedingSpan = node.Arguments[node.Arguments.Count - 1].Span;
+                        span = TextSpan.FromBounds(firstExceedingSpan.Start, lastExceedingSpan.End);
+                    } else
+                        span = node.CloseParenthesis.Span;
+
+                    diagnostics.ReportWrongArgumentCount(span, function.Name, node.Arguments.Count);
                     return new BoundErrorExpression();
                 }
 
                 ImmutableArray<BoundExpression> arguments = BindArguments(node.Arguments, function!.Parameters);
+
+                //If there's an error in the arguments, we return an error expression
+                if (arguments.Any(a => a.Type == TypeSymbol.Error))
+                    return new BoundErrorExpression();
 
                 return new BoundCallExpression(function, arguments);
             }
