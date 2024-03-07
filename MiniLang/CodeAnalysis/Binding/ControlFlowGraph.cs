@@ -68,7 +68,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
         {
             ControlFlowGraph graph = Create(body);
 
-            foreach (var branch in graph.End.Incoming)
+            foreach (BasicBlockBranch branch in graph.End.Incoming)
             {
                 BoundStatement? lastStatement = branch.From.Statements.LastOrDefault();
                 if (lastStatement == null || lastStatement.BoundNodeType != BoundNodeType.ReturnStatement)
@@ -178,7 +178,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             {
                 if (statements.Count > 0)
                 {
-                    var block = new BasicBlock();
+                    BasicBlock block = new BasicBlock();
                     block.Statements.AddRange(statements);
                     blocks.Add(block);
                     statements.Clear();
@@ -217,7 +217,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
                     foreach (BoundStatement statement in current.Statements)
                     {
-                        var isLastStatementInBlock = statement == current.Statements.Last();
+                        bool isLastStatementInBlock = statement == current.Statements.Last();
                         switch (statement.BoundNodeType)
                         {
                             case BoundNodeType.GotoStatement:
@@ -250,8 +250,8 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     }
                 }
 
-                ScanAgain:
-                foreach (var block in blocks)
+            ScanAgain:
+                foreach (BasicBlock block in blocks)
                 {
                     if (!block.Incoming.Any())
                     {
@@ -270,7 +270,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
             {
                 if (condition is BoundLiteralExpression l)
                 {
-                    var value = (bool)l.Value;
+                    bool value = (bool)l.Value;
                     if (value)
                         condition = null;
                     else
@@ -310,7 +310,8 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
                 BoundUnaryOperator op = BoundUnaryOperator.Bind(TokenType.Bang, TypeSymbol.Bool)!;
                 return new BoundUnaryExpression(op, condition);
-;            }
+                ;
+            }
         }
     }
 }

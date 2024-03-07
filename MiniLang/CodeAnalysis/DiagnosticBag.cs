@@ -4,7 +4,6 @@ using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniCompiler.CodeAnalysis.Text;
 using System.Collections;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace MiniCompiler.CodeAnalysis
 {

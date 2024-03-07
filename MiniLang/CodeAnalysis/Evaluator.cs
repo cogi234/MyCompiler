@@ -68,7 +68,7 @@ namespace MiniCompiler.CodeAnalysis
                         break;
                     case BoundNodeType.ReturnStatement:
                         BoundReturnStatement returnStatement = (BoundReturnStatement)statement;
-                        lastValue = returnStatement.Expression == null ? null 
+                        lastValue = returnStatement.Expression == null ? null
                             : EvaluateExpression(returnStatement.Expression);
                         return lastValue;
                     default:

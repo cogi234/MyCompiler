@@ -191,7 +191,8 @@ namespace MiniCompiler.CodeAnalysis.Binding
                 {
                     if (node.Expression != null)
                         diagnostics.ReportInvalidReturnExpression(node.Expression!.Span, function.Name);
-                } else
+                }
+                else
                 {
                     if (node.Expression == null)
                         diagnostics.ReportMissingReturnExpression(node.Keyword.Span, function.ReturnType);
@@ -448,7 +449,8 @@ namespace MiniCompiler.CodeAnalysis.Binding
 
                         TextSpan lastExceedingSpan = node.Arguments[node.Arguments.Count - 1].Span;
                         span = TextSpan.FromBounds(firstExceedingSpan.Start, lastExceedingSpan.End);
-                    } else
+                    }
+                    else
                         span = node.CloseParenthesis.Span;
 
                     diagnostics.ReportWrongArgumentCount(span, function.Name, node.Arguments.Count);

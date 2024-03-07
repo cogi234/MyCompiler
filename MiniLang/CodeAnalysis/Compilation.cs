@@ -58,7 +58,7 @@ namespace MiniCompiler.CodeAnalysis
                 ? program.Functions.Last().Value
                 : program.Statement;
             ControlFlowGraph cfg = ControlFlowGraph.Create(cfgStatement);
-            using (var streamWriter = new StreamWriter(cfgPath))
+            using (StreamWriter streamWriter = new StreamWriter(cfgPath))
                 cfg.WriteTo(streamWriter);
 
             if (program.Diagnostics.Any())
