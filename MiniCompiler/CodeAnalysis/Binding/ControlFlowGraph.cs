@@ -152,7 +152,7 @@ namespace MiniCompiler.CodeAnalysis.Binding
                             statements.Add(statement);
                             StartBLock();
                             break;
-                        case BoundNodeType.VariableExpression:
+                        case BoundNodeType.VariableDeclarationStatement:
                         case BoundNodeType.ExpressionStatement:
                             statements.Add(statement);
                             break;
