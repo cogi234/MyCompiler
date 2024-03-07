@@ -23,11 +23,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MiniCompiler\MiniCompiler.csproj" />
+    <Folder Include="CodeAnalysis\Binding\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="CodeAnalysis\Binding\" />
+    <ProjectReference Include="..\MiniLang\MiniLang.csproj" />
   </ItemGroup>
 
 </Project>

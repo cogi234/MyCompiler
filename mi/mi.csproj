@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MiniCompiler\MiniCompiler.csproj" />
+    <ProjectReference Include="..\MiniLang\MiniLang.csproj" />
   </ItemGroup>
 
 </Project>

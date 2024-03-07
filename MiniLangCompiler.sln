@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniCompiler", "MiniCompiler\MiniCompiler.csproj", "{C6DE1745-5BFA-4F66-94FE-CAFEFF56402F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniLang", "MiniLang\MiniLang.csproj", "{C6DE1745-5BFA-4F66-94FE-CAFEFF56402F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mi", "mi\mi.csproj", "{0F1E0618-5286-4A31-BEB5-CEC637CA47D1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mini.Tests", "Mini.Tests\Mini.Tests.csproj", "{740517F5-CB6A-4C2A-B957-850BE7C25827}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniLang.Tests", "MiniLang.Tests\MiniLang.Tests.csproj", "{740517F5-CB6A-4C2A-B957-850BE7C25827}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
