@@ -1,4 +1,5 @@
-﻿using System.CodeDom.Compiler;
+﻿using MiniCompiler.CodeAnalysis.Syntax;
+using System.CodeDom.Compiler;
 
 namespace MiniCompiler.IO
 {
@@ -15,13 +16,13 @@ namespace MiniCompiler.IO
             return false;
         }
 
-        public static void SetForeground(this TextWriter writer, ConsoleColor color)
+        private static void SetForeground(this TextWriter writer, ConsoleColor color)
         {
             if (writer.IsConsoleOut())
                 Console.ForegroundColor = color;
         }
 
-        public static void ResetColor(this TextWriter writer)
+        private static void ResetColor(this TextWriter writer)
         {
             if (writer.IsConsoleOut())
                 Console.ResetColor();
@@ -32,6 +33,10 @@ namespace MiniCompiler.IO
             writer.SetForeground(ConsoleColor.Blue);
             writer.Write(text);
             writer.ResetColor();
+        }
+        public static void WriteKeyword(this TextWriter writer, TokenType type)
+        {
+            writer.WriteKeyword(SyntaxFacts.GetText(type)!);
         }
 
         public static void WriteType(this TextWriter writer, string text)
@@ -67,6 +72,15 @@ namespace MiniCompiler.IO
             writer.SetForeground(ConsoleColor.DarkGray);
             writer.Write(text);
             writer.ResetColor();
+        }
+        public static void WritePunctuation(this TextWriter writer, TokenType type)
+        {
+            writer.WritePunctuation(SyntaxFacts.GetText(type)!);
+        }
+
+        public static void WriteSpace(this TextWriter writer)
+        {
+            writer.WritePunctuation(" ");
         }
     }
 }

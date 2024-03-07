@@ -1,4 +1,5 @@
 ﻿using MiniCompiler.CodeAnalysis.Symbols;
+using MiniCompiler.CodeAnalysis.Syntax;
 
 namespace MiniCompiler.IO
 {
@@ -36,40 +37,43 @@ namespace MiniCompiler.IO
         private static void WriteFunctionTo(FunctionSymbol symbol, TextWriter writer)
         {
             symbol.ReturnType.WriteTo(writer);
-            writer.Write(" ");
+            writer.WriteSpace();
             writer.WriteIdentifier(symbol.Name);
-            writer.WritePunctuation("(");
+            writer.WritePunctuation(TokenType.OpenParenthesis);
 
             for (int i = 0; i < symbol.Parameters.Length; i++)
             {
                 if (i > 0)
-                    writer.WritePunctuation(", ");
+                {
+                    writer.WritePunctuation(TokenType.Comma);
+                    writer.WriteSpace();
+                }
 
                 symbol.Parameters[i].WriteTo(writer);
             }
 
-            writer.WritePunctuation(")");
+            writer.WritePunctuation(TokenType.CloseParenthesis);
             writer.WriteLine();
         }
 
         private static void WriteParameterTo(ParameterSymbol symbol, TextWriter writer)
         {
             symbol.Type.WriteTo(writer);
-            writer.Write(" ");
+            writer.WriteSpace();
             writer.WriteIdentifier(symbol.Name);
         }
 
         private static void WriteGlobalTo(GlobalVariableSymbol symbol, TextWriter writer)
         {
             symbol.Type.WriteTo(writer);
-            writer.Write(" ");
+            writer.WriteSpace();
             writer.WriteIdentifier(symbol.Name);
         }
 
         private static void WriteLocalTo(LocalVariableSymbol symbol, TextWriter writer)
         {
             symbol.Type.WriteTo(writer);
-            writer.Write(" ");
+            writer.WriteSpace();
             writer.WriteIdentifier(symbol.Name);
         }
     }
