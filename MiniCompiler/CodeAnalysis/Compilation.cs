@@ -50,6 +50,17 @@ namespace MiniCompiler.CodeAnalysis
                 return new EvaluationResult(diagnostics, null);
 
             BoundProgram program = Binder.BindProgram(GlobalScope);
+
+            string appPath = Environment.GetCommandLineArgs()[0];
+            string? appDirectory = Path.GetDirectoryName(appPath);
+            string cfgPath = Path.Combine(appDirectory, "cfg.dot");
+            BoundBlockStatement cfgStatement = !program.Statement.Statements.Any() && program.Functions.Any()
+                ? program.Functions.Last().Value
+                : program.Statement;
+            ControlFlowGraph cfg = ControlFlowGraph.Create(cfgStatement);
+            using (var streamWriter = new StreamWriter(cfgPath))
+                cfg.WriteTo(streamWriter);
+
             if (program.Diagnostics.Any())
                 return new EvaluationResult(program.Diagnostics.ToImmutableArray(), null);
 

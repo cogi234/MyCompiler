@@ -167,6 +167,12 @@ namespace MiniCompiler.CodeAnalysis
             string message = $"An expression of type '{returnType}' expected.";
             Report(span, message);
         }
+
+        public void ReportAllPathsMustReturn(TextSpan span)
+        {
+            string message = "Not all code paths return a value.";
+            Report(span, message);
+        }
         #endregion
     }
 }
