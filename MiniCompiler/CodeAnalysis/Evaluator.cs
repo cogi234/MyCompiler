@@ -66,6 +66,11 @@ namespace MiniCompiler.CodeAnalysis
                         else
                             index++;
                         break;
+                    case BoundNodeType.ReturnStatement:
+                        BoundReturnStatement returnStatement = (BoundReturnStatement)statement;
+                        lastValue = returnStatement.Expression == null ? null 
+                            : EvaluateExpression(returnStatement.Expression);
+                        return lastValue;
                     default:
                         throw new Exception($"Unexpected node {statement.BoundNodeType}");
                 }

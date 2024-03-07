@@ -168,9 +168,35 @@ namespace MiniCompiler.CodeAnalysis.Binding
                     return BindBreakStatement((BreakStatementNode)node);
                 case NodeType.ContinueStatement:
                     return BindContinueStatement((ContinueStatementNode)node);
+                case NodeType.ReturnStatement:
+                    return BindReturnStatement((ReturnStatementNode)node);
                 default:
                     throw new Exception($"Unexpected syntax node {node.Type}");
             }
+        }
+
+        private BoundStatement BindReturnStatement(ReturnStatementNode node)
+        {
+            BoundExpression? expression = null;
+
+            if (function == null)
+                diagnostics.ReportInvalidReturn(node.Keyword.Span);
+            else
+            {
+                if (function.ReturnType == TypeSymbol.Void)
+                {
+                    if (node.Expression != null)
+                        diagnostics.ReportInvalidReturnExpression(node.Expression!.Span, function.Name);
+                } else
+                {
+                    if (node.Expression == null)
+                        diagnostics.ReportMissingReturnExpression(node.Keyword.Span, function.ReturnType);
+                    else
+                        expression = BindExpression(node.Expression, function.ReturnType);
+                }
+            }
+
+            return new BoundReturnStatement(expression);
         }
 
         private BoundStatement BindContinueStatement(ContinueStatementNode node)

@@ -49,6 +49,9 @@ namespace MiniCompiler.IO
                 case BoundNodeType.ForStatement:
                     WriteForStatement((BoundForStatement)node, writer);
                     break;
+                case BoundNodeType.ReturnStatement:
+                    WriteReturnStatement((BoundReturnStatement)node, writer);
+                    break;
                 case BoundNodeType.ErrorExpression:
                     WriteErrorExpression((BoundErrorExpression)node, writer);
                     break;
@@ -203,6 +206,17 @@ namespace MiniCompiler.IO
             node.Increment?.WriteTo(writer);
             writer.WritePunctuation(TokenType.CloseParenthesis);
             writer.WriteNestedStatement(node.Body);
+        }
+
+        private static void WriteReturnStatement(BoundReturnStatement node, IndentedTextWriter writer)
+        {
+            writer.WriteKeyword(TokenType.ReturnKeyword);
+            if (node.Expression != null)
+            {
+                writer.WriteSpace();
+                node.Expression.WriteTo(writer);
+            }
+            writer.WriteLine();
         }
         #endregion
         #region Expressions

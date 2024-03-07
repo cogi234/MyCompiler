@@ -144,7 +144,7 @@ namespace MiniCompiler.CodeAnalysis.Syntax
 
         private StatementNode ParseReturnStatement()
         {
-            Token keyword = ExpectToken(TokenType.ContinueKeyword);
+            Token keyword = ExpectToken(TokenType.ReturnKeyword);
             ExpressionNode? expression = null;
             if (Current.Type != TokenType.Semicolon && Current.Type != TokenType.EndOfFile)
                 expression = ParseExpression();

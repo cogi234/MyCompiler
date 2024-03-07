@@ -30,9 +30,23 @@ namespace MiniCompiler.CodeAnalysis.Lowering
                     return RewriteDoWhileStatement((BoundDoWhileStatement)node);
                 case BoundNodeType.ForStatement:
                     return RewriteForStatement((BoundForStatement)node);
+                case BoundNodeType.ReturnStatement:
+                    return RewriteReturnStatement((BoundReturnStatement)node);
                 default:
                     return node;
             }
+        }
+
+        protected virtual BoundStatement RewriteReturnStatement(BoundReturnStatement node)
+        {
+            BoundExpression? expression = null;
+            if (node.Expression != null)
+                expression = RewriteExpression(node.Expression);
+
+            if (expression == node.Expression)
+                return node;
+
+            return new BoundReturnStatement(expression);
         }
 
         protected virtual BoundStatement RewriteForStatement(BoundForStatement node)

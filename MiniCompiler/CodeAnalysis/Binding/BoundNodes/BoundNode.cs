@@ -15,6 +15,7 @@ namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
         WhileStatement,
         DoWhileStatement,
         ForStatement,
+        ReturnStatement,
 
         //Expressions
         ErrorExpression,
