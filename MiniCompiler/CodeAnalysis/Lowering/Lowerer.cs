@@ -76,20 +76,20 @@ namespace MiniCompiler.CodeAnalysis.Lowering
         protected override BoundStatement RewriteWhileStatement(BoundWhileStatement node)
         {
             ImmutableArray<BoundStatement>.Builder builder = ImmutableArray.CreateBuilder<BoundStatement>();
+            BoundLabel bodyLabel = GenerateLabel();
             BoundLabel continueLabel = node.ContinueLabel;
-            BoundLabel checkLabel = GenerateLabel();
             BoundLabel breakLabel = node.BreakLabel;
-            //goto check
-            builder.Add(new BoundGotoStatement(checkLabel));
-            //continue:
-            builder.Add(new BoundLabelStatement(continueLabel));
+            //goto continue
+            builder.Add(new BoundGotoStatement(continueLabel));
+            //body:
+            builder.Add(new BoundLabelStatement(bodyLabel));
             //body
             builder.Add(node.Body);
-            //check:
-            builder.Add(new BoundLabelStatement(checkLabel));
+            //continue:
+            builder.Add(new BoundLabelStatement(continueLabel));
             //gotoTrue <condition> continue
-            builder.Add(new BoundConditionalGotoStatement(continueLabel, node.Condition, true));
-            //end:
+            builder.Add(new BoundConditionalGotoStatement(bodyLabel, node.Condition, true));
+            //break:
             builder.Add(new BoundLabelStatement(breakLabel));
 
             return RewriteStatement(new BoundBlockStatement(builder.ToImmutable()));
@@ -98,15 +98,18 @@ namespace MiniCompiler.CodeAnalysis.Lowering
         protected override BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
         {
             ImmutableArray<BoundStatement>.Builder builder = ImmutableArray.CreateBuilder<BoundStatement>();
+            BoundLabel bodyLabel = GenerateLabel();
             BoundLabel continueLabel = node.ContinueLabel;
             BoundLabel breakLabel = node.BreakLabel;
-            //continue:
-            builder.Add(new BoundLabelStatement(continueLabel));
+            //body:
+            builder.Add(new BoundLabelStatement(bodyLabel));
             //body
             builder.Add(node.Body);
+            //continue:
+            builder.Add(new BoundLabelStatement(continueLabel));
             //gotoTrue <condition> continue
-            builder.Add(new BoundConditionalGotoStatement(continueLabel, node.Condition, true));
-            //end:
+            builder.Add(new BoundConditionalGotoStatement(bodyLabel, node.Condition, true));
+            //break:
             builder.Add(new BoundLabelStatement(breakLabel));
 
             return RewriteStatement(new BoundBlockStatement(builder.ToImmutable()));
