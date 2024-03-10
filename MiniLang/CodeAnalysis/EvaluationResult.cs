@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis
+namespace MiniLang.CodeAnalysis
 {
     public sealed class EvaluationResult
     {

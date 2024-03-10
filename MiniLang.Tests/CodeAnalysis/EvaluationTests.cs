@@ -1,6 +1,6 @@
-﻿using MiniCompiler.CodeAnalysis;
-using MiniCompiler.CodeAnalysis.Symbols;
-using MiniCompiler.CodeAnalysis.Syntax;
+﻿using MiniLang.CodeAnalysis;
+using MiniLang.CodeAnalysis.Symbols;
+using MiniLang.CodeAnalysis.Syntax;
 
 namespace Mini.Tests.CodeAnalysis
 {
@@ -206,8 +206,8 @@ namespace Mini.Tests.CodeAnalysis
                 string actualMessage = result.Diagnostics[i].Message;
                 Assert.Equal(expectedMessage, actualMessage);
 
-                MiniCompiler.CodeAnalysis.Text.TextSpan expectedSpan = annotatedText.Spans[i];
-                MiniCompiler.CodeAnalysis.Text.TextSpan actualSpan = result.Diagnostics[i].Span;
+                MiniLang.CodeAnalysis.Text.TextSpan expectedSpan = annotatedText.Spans[i];
+                MiniLang.CodeAnalysis.Text.TextSpan actualSpan = result.Diagnostics[i].Span;
                 Assert.Equal(expectedSpan, actualSpan);
             }
         }

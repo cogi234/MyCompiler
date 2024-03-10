@@ -1,7 +1,7 @@
-﻿using MiniCompiler.CodeAnalysis.Symbols;
+﻿using MiniLang.CodeAnalysis.Symbols;
 using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Binding
+namespace MiniLang.CodeAnalysis.Binding
 {
     internal sealed class BoundScope
     {

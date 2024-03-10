@@ -1,6 +1,6 @@
-﻿using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Text;
 
-namespace MyCompiler
+namespace mi
 {
     public class TextSpanComparer : IComparer<TextSpan>
     {

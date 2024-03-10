@@ -3,7 +3,7 @@ using MiniLang.CodeAnalysis.Symbols;
 using MiniLang.CodeAnalysis.Syntax;
 using MiniLang.CodeAnalysis.Text;
 
-namespace mi
+namespace mc
 {
     internal sealed class MiniRepl : Repl
     {

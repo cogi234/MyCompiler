@@ -1,8 +1,8 @@
-﻿using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
-using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Syntax.SyntaxNodes;
+using MiniLang.CodeAnalysis.Text;
 using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Syntax
+namespace MiniLang.CodeAnalysis.Syntax
 {
     internal sealed class Parser
     {

@@ -1,4 +1,4 @@
-﻿namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+﻿namespace MiniLang.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundLabelStatement : BoundStatement
     {

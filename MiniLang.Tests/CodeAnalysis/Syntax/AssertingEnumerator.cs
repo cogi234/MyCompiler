@@ -1,5 +1,5 @@
-﻿using MiniCompiler.CodeAnalysis.Syntax;
-using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+﻿using MiniLang.CodeAnalysis.Syntax;
+using MiniLang.CodeAnalysis.Syntax.SyntaxNodes;
 
 namespace Mini.Tests.CodeAnalysis.Syntax
 {

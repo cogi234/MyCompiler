@@ -1,4 +1,4 @@
-﻿namespace mi
+﻿namespace mc
 {
     internal class Program
     {

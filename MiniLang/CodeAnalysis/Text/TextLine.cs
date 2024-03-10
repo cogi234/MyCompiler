@@ -1,4 +1,4 @@
-﻿namespace MiniCompiler.CodeAnalysis.Text
+﻿namespace MiniLang.CodeAnalysis.Text
 {
     public sealed class TextLine
     {

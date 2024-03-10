@@ -1,6 +1,6 @@
-﻿using MiniCompiler.IO;
+﻿using MiniLang.IO;
 
-namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+namespace MiniLang.CodeAnalysis.Binding.BoundNodes
 {
     enum BoundNodeType
     {

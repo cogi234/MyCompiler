@@ -1,6 +1,6 @@
-﻿using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Text;
 
-namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
+namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class ParameterNode : SyntaxNode
     {

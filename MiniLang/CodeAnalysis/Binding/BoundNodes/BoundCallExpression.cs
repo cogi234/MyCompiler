@@ -1,7 +1,7 @@
-﻿using MiniCompiler.CodeAnalysis.Symbols;
+﻿using MiniLang.CodeAnalysis.Symbols;
 using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+namespace MiniLang.CodeAnalysis.Binding.BoundNodes
 {
     internal class BoundCallExpression : BoundExpression
     {

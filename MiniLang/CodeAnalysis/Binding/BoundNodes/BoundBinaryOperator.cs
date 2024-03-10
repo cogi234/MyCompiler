@@ -1,7 +1,7 @@
-﻿using MiniCompiler.CodeAnalysis.Symbols;
-using MiniCompiler.CodeAnalysis.Syntax;
+﻿using MiniLang.CodeAnalysis.Symbols;
+using MiniLang.CodeAnalysis.Syntax;
 
-namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+namespace MiniLang.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundBinaryOperator
     {

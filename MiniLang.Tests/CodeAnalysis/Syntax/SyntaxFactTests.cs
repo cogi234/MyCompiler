@@ -1,4 +1,4 @@
-﻿using MiniCompiler.CodeAnalysis.Syntax;
+﻿using MiniLang.CodeAnalysis.Syntax;
 
 namespace Mini.Tests.CodeAnalysis.Syntax
 {

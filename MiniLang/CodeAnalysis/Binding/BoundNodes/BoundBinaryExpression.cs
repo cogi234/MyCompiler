@@ -1,6 +1,6 @@
-﻿using MiniCompiler.CodeAnalysis.Symbols;
+﻿using MiniLang.CodeAnalysis.Symbols;
 
-namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+namespace MiniLang.CodeAnalysis.Binding.BoundNodes
 {
     internal enum BoundBinaryOperationType
     {

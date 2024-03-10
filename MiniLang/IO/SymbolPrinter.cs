@@ -1,7 +1,7 @@
-﻿using MiniCompiler.CodeAnalysis.Symbols;
-using MiniCompiler.CodeAnalysis.Syntax;
+﻿using MiniLang.CodeAnalysis.Symbols;
+using MiniLang.CodeAnalysis.Syntax;
 
-namespace MiniCompiler.IO
+namespace MiniLang.IO
 {
     internal static class SymbolPrinter
     {

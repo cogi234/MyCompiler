@@ -1,6 +1,6 @@
-﻿using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Text;
 
-namespace MiniCompiler.CodeAnalysis.Syntax
+namespace MiniLang.CodeAnalysis.Syntax
 {
     public enum TokenType
     {

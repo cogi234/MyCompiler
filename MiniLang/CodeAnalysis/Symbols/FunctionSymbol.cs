@@ -1,7 +1,7 @@
-﻿using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
+﻿using MiniLang.CodeAnalysis.Syntax.SyntaxNodes;
 using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Symbols
+namespace MiniLang.CodeAnalysis.Symbols
 {
     public sealed class FunctionSymbol : Symbol
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
+namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public abstract class SeparatedNodeList
     {

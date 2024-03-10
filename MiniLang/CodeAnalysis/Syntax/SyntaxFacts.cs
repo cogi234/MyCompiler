@@ -1,6 +1,6 @@
-﻿using MiniCompiler.CodeAnalysis.Symbols;
+﻿using MiniLang.CodeAnalysis.Symbols;
 
-namespace MiniCompiler.CodeAnalysis.Syntax
+namespace MiniLang.CodeAnalysis.Syntax
 {
     public static class SyntaxFacts
     {

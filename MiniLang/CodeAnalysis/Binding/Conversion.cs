@@ -1,6 +1,6 @@
-﻿using MiniCompiler.CodeAnalysis.Symbols;
+﻿using MiniLang.CodeAnalysis.Symbols;
 
-namespace MiniCompiler.CodeAnalysis.Binding
+namespace MiniLang.CodeAnalysis.Binding
 {
     internal sealed class Conversion
     {

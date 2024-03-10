@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Binding.BoundNodes
+namespace MiniLang.CodeAnalysis.Binding.BoundNodes
 {
     internal sealed class BoundBlockStatement : BoundStatement
     {

@@ -1,7 +1,7 @@
-﻿using MiniCompiler.CodeAnalysis.Syntax;
+﻿using MiniLang.CodeAnalysis.Syntax;
 using System.CodeDom.Compiler;
 
-namespace MiniCompiler.IO
+namespace MiniLang.IO
 {
     internal static class TextWriterExtensions
     {

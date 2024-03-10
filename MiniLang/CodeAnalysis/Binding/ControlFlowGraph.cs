@@ -1,10 +1,10 @@
-﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
-using MiniCompiler.CodeAnalysis.Symbols;
-using MiniCompiler.CodeAnalysis.Syntax;
-using MiniCompiler.IO;
+﻿using MiniLang.CodeAnalysis.Binding.BoundNodes;
+using MiniLang.CodeAnalysis.Symbols;
+using MiniLang.CodeAnalysis.Syntax;
+using MiniLang.IO;
 using System.CodeDom.Compiler;
 
-namespace MiniCompiler.CodeAnalysis.Binding
+namespace MiniLang.CodeAnalysis.Binding
 {
     internal sealed class ControlFlowGraph
     {

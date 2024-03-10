@@ -1,8 +1,8 @@
-﻿using MiniCompiler.CodeAnalysis.Symbols;
-using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Symbols;
+using MiniLang.CodeAnalysis.Text;
 using System.Text;
 
-namespace MiniCompiler.CodeAnalysis.Syntax
+namespace MiniLang.CodeAnalysis.Syntax
 {
     internal sealed class Lexer
     {

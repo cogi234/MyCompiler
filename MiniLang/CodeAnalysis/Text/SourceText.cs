@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Text
+namespace MiniLang.CodeAnalysis.Text
 {
     public sealed class SourceText
     {

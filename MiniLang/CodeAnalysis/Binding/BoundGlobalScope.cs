@@ -1,8 +1,8 @@
-﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
-using MiniCompiler.CodeAnalysis.Symbols;
+﻿using MiniLang.CodeAnalysis.Binding.BoundNodes;
+using MiniLang.CodeAnalysis.Symbols;
 using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Binding
+namespace MiniLang.CodeAnalysis.Binding
 {
     internal sealed class BoundGlobalScope
     {

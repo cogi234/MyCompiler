@@ -1,7 +1,7 @@
-﻿using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Text;
 using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
+namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class CompilationUnit : SyntaxNode
     {

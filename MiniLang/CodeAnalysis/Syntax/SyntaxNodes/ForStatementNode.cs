@@ -1,6 +1,6 @@
-﻿using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Text;
 
-namespace MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes
+namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     // for (var i = 0; i < 10; i = i + 1)
     public sealed class ForStatementNode : StatementNode

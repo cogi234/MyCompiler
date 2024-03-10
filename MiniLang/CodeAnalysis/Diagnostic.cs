@@ -1,6 +1,6 @@
-﻿using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Text;
 
-namespace MiniCompiler.CodeAnalysis
+namespace MiniLang.CodeAnalysis
 {
     public sealed class Diagnostic
     {

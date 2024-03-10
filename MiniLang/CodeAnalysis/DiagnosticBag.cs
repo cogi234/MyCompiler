@@ -1,11 +1,11 @@
-﻿using MiniCompiler.CodeAnalysis.Symbols;
-using MiniCompiler.CodeAnalysis.Syntax;
-using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
-using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Symbols;
+using MiniLang.CodeAnalysis.Syntax;
+using MiniLang.CodeAnalysis.Syntax.SyntaxNodes;
+using MiniLang.CodeAnalysis.Text;
 using System.Collections;
 using System.Text;
 
-namespace MiniCompiler.CodeAnalysis
+namespace MiniLang.CodeAnalysis
 {
     internal sealed class DiagnosticBag : IEnumerable<Diagnostic>
     {

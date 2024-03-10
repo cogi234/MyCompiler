@@ -1,9 +1,9 @@
-﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
-using MiniCompiler.CodeAnalysis.Symbols;
-using MiniCompiler.CodeAnalysis.Syntax;
+﻿using MiniLang.CodeAnalysis.Binding.BoundNodes;
+using MiniLang.CodeAnalysis.Symbols;
+using MiniLang.CodeAnalysis.Syntax;
 using System.CodeDom.Compiler;
 
-namespace MiniCompiler.IO
+namespace MiniLang.IO
 {
     internal static class BoundNodePrinter
     {

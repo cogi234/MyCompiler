@@ -1,12 +1,12 @@
-﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
-using MiniCompiler.CodeAnalysis.Lowering;
-using MiniCompiler.CodeAnalysis.Symbols;
-using MiniCompiler.CodeAnalysis.Syntax;
-using MiniCompiler.CodeAnalysis.Syntax.SyntaxNodes;
-using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Binding.BoundNodes;
+using MiniLang.CodeAnalysis.Lowering;
+using MiniLang.CodeAnalysis.Symbols;
+using MiniLang.CodeAnalysis.Syntax;
+using MiniLang.CodeAnalysis.Syntax.SyntaxNodes;
+using MiniLang.CodeAnalysis.Text;
 using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Binding
+namespace MiniLang.CodeAnalysis.Binding
 {
     internal sealed class Binder
     {

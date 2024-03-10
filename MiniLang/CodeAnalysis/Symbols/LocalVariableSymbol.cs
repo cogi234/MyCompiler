@@ -1,4 +1,4 @@
-﻿namespace MiniCompiler.CodeAnalysis.Symbols
+﻿namespace MiniLang.CodeAnalysis.Symbols
 {
     public class LocalVariableSymbol : VariableSymbol
     {

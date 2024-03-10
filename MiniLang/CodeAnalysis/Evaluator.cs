@@ -1,9 +1,9 @@
-﻿using MiniCompiler.CodeAnalysis.Binding;
-using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
-using MiniCompiler.CodeAnalysis.Symbols;
+﻿using MiniLang.CodeAnalysis.Binding;
+using MiniLang.CodeAnalysis.Binding.BoundNodes;
+using MiniLang.CodeAnalysis.Symbols;
 using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis
+namespace MiniLang.CodeAnalysis
 {
     internal sealed class Evaluator
     {

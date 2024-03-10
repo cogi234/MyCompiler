@@ -1,4 +1,4 @@
-﻿using MiniCompiler.CodeAnalysis.Text;
+﻿using MiniLang.CodeAnalysis.Text;
 using System.Collections.Immutable;
 using System.Text;
 

@@ -1,7 +1,7 @@
-﻿using MiniCompiler.CodeAnalysis.Binding.BoundNodes;
+﻿using MiniLang.CodeAnalysis.Binding.BoundNodes;
 using System.Collections.Immutable;
 
-namespace MiniCompiler.CodeAnalysis.Lowering
+namespace MiniLang.CodeAnalysis.Lowering
 {
     internal abstract class BoundTreeRewriter
     {
