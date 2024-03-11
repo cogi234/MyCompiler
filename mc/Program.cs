@@ -1,11 +1,65 @@
-﻿namespace mc
+﻿using MiniLang.CodeAnalysis;
+using MiniLang.CodeAnalysis.Symbols;
+using MiniLang.CodeAnalysis.Syntax;
+using MiniLang.IO;
+
+namespace mc
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            MiniRepl repl = new MiniRepl();
-            repl.Run();
+            if (args.Length == 0)
+            {
+                Console.Error.WriteLine("usage: mc <source-paths>");
+                return;
+            }
+
+            IEnumerable<string> paths = GetFilePaths(args);
+            List<SyntaxTree> syntaxTrees = new List<SyntaxTree>();
+            bool hasErrors = false;
+
+            foreach (string path in paths)
+            {
+                if (!File.Exists(path))
+                {
+                    Console.WriteLine($"error: file '{path}' doesn't exist");
+                    hasErrors = true;
+                    continue;
+                }
+
+                SyntaxTree syntaxTree = SyntaxTree.Load(path);
+                syntaxTrees.Add(syntaxTree);
+            }
+
+            if (hasErrors)
+                return;
+
+            Compilation compilation = new Compilation(syntaxTrees.ToArray());
+            EvaluationResult result = compilation.Evaluate(new Dictionary<VariableSymbol, object?>());
+
+            if (!result.Diagnostics.Any())
+            {
+                if (result.Value != null)
+                    Console.WriteLine(result.Value);
+            }
+            else
+                Console.Error.WriteDiagnostics(result.Diagnostics);
+        }
+
+        private static IEnumerable<string> GetFilePaths(IEnumerable<string> paths)
+        {
+            SortedSet<string> result = new SortedSet<string>();
+
+            foreach (string path in paths)
+            {
+                if (Directory.Exists(path))
+                    result.UnionWith(Directory.EnumerateFiles(path, "*.ml", SearchOption.AllDirectories));
+                else
+                    result.Add(path);
+            }
+
+            return result;
         }
     }
 }

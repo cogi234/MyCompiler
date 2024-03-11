@@ -4,7 +4,7 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class ContinueStatementNode : StatementNode
     {
-        public ContinueStatementNode(Token keyword, Token semicolon)
+        public ContinueStatementNode(SyntaxTree syntaxTree, Token keyword, Token semicolon) : base(syntaxTree)
         {
             Keyword = keyword;
             Semicolon = semicolon;

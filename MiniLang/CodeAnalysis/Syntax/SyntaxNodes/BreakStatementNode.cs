@@ -4,7 +4,7 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class BreakStatementNode : StatementNode
     {
-        public BreakStatementNode(Token keyword, Token semicolon)
+        public BreakStatementNode(SyntaxTree syntaxTree, Token keyword, Token semicolon) : base(syntaxTree)
         {
             Keyword = keyword;
             Semicolon = semicolon;

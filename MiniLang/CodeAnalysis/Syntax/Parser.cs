@@ -1,21 +1,24 @@
 ﻿using MiniLang.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniLang.CodeAnalysis.Text;
 using System.Collections.Immutable;
+using System.Reflection.Metadata;
 
 namespace MiniLang.CodeAnalysis.Syntax
 {
     internal sealed class Parser
     {
         private readonly ImmutableArray<Token> tokens;
+        private readonly SyntaxTree syntaxTree;
+        private readonly SourceText source;
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         public DiagnosticBag Diagnostics => diagnostics;
 
         private int position;
 
-        public Parser(SourceText text)
+        public Parser(SyntaxTree syntaxTree)
         {
             List<Token> tokens = new List<Token>();
-            Lexer lexer = new Lexer(text);
+            Lexer lexer = new Lexer(syntaxTree);
             Token token;
             do
             {
@@ -28,8 +31,9 @@ namespace MiniLang.CodeAnalysis.Syntax
                 }
             } while (token.Type != TokenType.EndOfFile);
 
+            this.syntaxTree = syntaxTree;
+            source = syntaxTree.SourceText;
             this.tokens = tokens.ToImmutableArray();
-
             diagnostics.AddRange(lexer.Diagnostics);
         }
 
@@ -37,7 +41,7 @@ namespace MiniLang.CodeAnalysis.Syntax
         {
             ImmutableArray<MemberNode> members = ParseMembers();
             ExpectToken(TokenType.EndOfFile);
-            return new CompilationUnit(members);
+            return new CompilationUnit(syntaxTree, members);
         }
 
         #region Members
@@ -76,7 +80,7 @@ namespace MiniLang.CodeAnalysis.Syntax
             Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
             StatementNode body = ParseStatement();
 
-            return new FunctionDeclarationNode(typeKeyword, identifier, openParenthesis,
+            return new FunctionDeclarationNode(syntaxTree, typeKeyword, identifier, openParenthesis,
                 parameters, closeParenthesis, body);
         }
         private SeparatedNodeList<ParameterNode> ParseParameters()
@@ -104,13 +108,13 @@ namespace MiniLang.CodeAnalysis.Syntax
         {
             Token typeKeyword = ExpectToken(TokenType.Type);
             Token identifier = ExpectToken(TokenType.Identifier);
-            return new ParameterNode(typeKeyword, identifier);
+            return new ParameterNode(syntaxTree, typeKeyword, identifier);
         }
 
         private GlobalStatementNode ParseGlobalStatement()
         {
             StatementNode statement = ParseStatement();
-            return new GlobalStatementNode(statement);
+            return new GlobalStatementNode(syntaxTree, statement);
         }
         #endregion
         #region Statements
@@ -149,21 +153,21 @@ namespace MiniLang.CodeAnalysis.Syntax
             if (Current.Type != TokenType.Semicolon && Current.Type != TokenType.EndOfFile)
                 expression = ParseExpression();
             Token semicolon = ExpectToken(TokenType.Semicolon);
-            return new ReturnStatementNode(keyword, expression, semicolon);
+            return new ReturnStatementNode(syntaxTree, keyword, expression, semicolon);
         }
 
         private StatementNode ParseContinueStatement()
         {
             Token keyword = ExpectToken(TokenType.ContinueKeyword);
             Token semicolon = ExpectToken(TokenType.Semicolon);
-            return new ContinueStatementNode(keyword, semicolon);
+            return new ContinueStatementNode(syntaxTree, keyword, semicolon);
         }
 
         private StatementNode ParseBreakStatement()
         {
             Token keyword = ExpectToken(TokenType.BreakKeyword);
             Token semicolon = ExpectToken(TokenType.Semicolon);
-            return new BreakStatementNode(keyword, semicolon);
+            return new BreakStatementNode(syntaxTree, keyword, semicolon);
         }
 
         private StatementNode ParseForStatement()
@@ -188,7 +192,8 @@ namespace MiniLang.CodeAnalysis.Syntax
                 ExpressionNode expression = ParseAssignmentExpression();
                 if (expression.Type != NodeType.AssignmentExpression)
                 {
-                    diagnostics.ReportUnexpectedNode(expression.Span, expression.Type, NodeType.AssignmentExpression);
+                    TextLocation location = new TextLocation(source, expression.Span);
+                    diagnostics.ReportUnexpectedNode(location, expression.Type, NodeType.AssignmentExpression);
                     isValid = false;
                 }
                 else
@@ -200,7 +205,7 @@ namespace MiniLang.CodeAnalysis.Syntax
             StatementNode statement = ParseStatement();
 
             if (isValid)
-                return new ForStatementNode(forKeyword, openParenthesis, declaration, condition, increment, closeParenthesis, statement);
+                return new ForStatementNode(syntaxTree, forKeyword, openParenthesis, declaration, condition, increment, closeParenthesis, statement);
             else
                 return statement;
         }
@@ -214,7 +219,7 @@ namespace MiniLang.CodeAnalysis.Syntax
             ExpressionNode condition = ParseExpression();
             Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
             Token semicolon = ExpectToken(TokenType.Semicolon);
-            return new DoWhileStatementNode(doKeyword, statement, whileKeyword, openParenthesis, condition, closeParenthesis, semicolon);
+            return new DoWhileStatementNode(syntaxTree, doKeyword, statement, whileKeyword, openParenthesis, condition, closeParenthesis, semicolon);
         }
 
         private WhileStatementNode ParseWhileStatement()
@@ -224,7 +229,7 @@ namespace MiniLang.CodeAnalysis.Syntax
             ExpressionNode condition = ParseExpression();
             Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
             StatementNode statement = ParseStatement();
-            return new WhileStatementNode(whileKeyword, openParenthesis, condition, closeParenthesis, statement);
+            return new WhileStatementNode(syntaxTree, whileKeyword, openParenthesis, condition, closeParenthesis, statement);
         }
 
         private IfStatementNode ParseIfStatement()
@@ -241,10 +246,10 @@ namespace MiniLang.CodeAnalysis.Syntax
             {
                 Token elseKeyword = ExpectToken(TokenType.ElseKeyword);
                 StatementNode statement = ParseStatement();
-                elseStatement = new ElseClauseNode(elseKeyword, statement);
+                elseStatement = new ElseClauseNode(syntaxTree, elseKeyword, statement);
             }
 
-            return new IfStatementNode(ifKeyword, openParenthesis, condition, closeParenthesis, ifStatement, elseStatement);
+            return new IfStatementNode(syntaxTree, ifKeyword, openParenthesis, condition, closeParenthesis, ifStatement, elseStatement);
         }
 
         private VariableDeclarationStatementNode ParseVariableDeclarationStatement(bool obligatoryInitializer = false, bool takeSemicolon = true)
@@ -262,14 +267,14 @@ namespace MiniLang.CodeAnalysis.Syntax
             }
 
             Token? semicolon = takeSemicolon ? ExpectToken(TokenType.Semicolon) : null;
-            return new VariableDeclarationStatementNode(keyword, identifier, equal, initializer, semicolon);
+            return new VariableDeclarationStatementNode(syntaxTree, keyword, identifier, equal, initializer, semicolon);
         }
 
         private ExpressionStatementNode ParseExpressionStatement()
         {
             ExpressionNode expression = ParseExpression();
             Token semicolon = ExpectToken(TokenType.Semicolon);
-            return new ExpressionStatementNode(expression, semicolon);
+            return new ExpressionStatementNode(syntaxTree, expression, semicolon);
         }
 
         private BlockStatementNode ParseBlockStatement()
@@ -288,10 +293,9 @@ namespace MiniLang.CodeAnalysis.Syntax
             }
 
             Token closeToken = ExpectToken(TokenType.CloseBrace);
-            return new BlockStatementNode(openToken, statements.ToImmutable(), closeToken);
+            return new BlockStatementNode(syntaxTree, openToken, statements.ToImmutable(), closeToken);
         }
         #endregion Statements
-
         #region Expressions
         private ExpressionNode ParseExpression(int parentPrecedence = 0)
         {
@@ -306,7 +310,7 @@ namespace MiniLang.CodeAnalysis.Syntax
                 Token identifierToken = ExpectToken(TokenType.Identifier);
                 Token operatorToken = ExpectToken(TokenType.Equal);
                 ExpressionNode right = ParseExpression(parentPrecedence);
-                return new AssignmentExpressionNode(identifierToken, operatorToken, right);
+                return new AssignmentExpressionNode(syntaxTree, identifierToken, operatorToken, right);
             }
 
             return ParseMathematicalExpression(parentPrecedence);
@@ -322,7 +326,7 @@ namespace MiniLang.CodeAnalysis.Syntax
             {
                 Token operatorToken = ExpectTokens(SyntaxFacts.GetUnaryOperatorTypes().ToArray());
                 ExpressionNode expression = ParseExpression(unaryOperatorPrecedence);
-                left = new UnaryExpressionNode(operatorToken, expression);
+                left = new UnaryExpressionNode(syntaxTree, operatorToken, expression);
             }
             else
             {
@@ -338,7 +342,7 @@ namespace MiniLang.CodeAnalysis.Syntax
 
                 Token operatorToken = ExpectTokens(SyntaxFacts.GetBinaryOperatorTypes().ToArray());
                 ExpressionNode right = ParseExpression(precedence);
-                left = new BinaryExpressionNode(left, operatorToken, right);
+                left = new BinaryExpressionNode(syntaxTree, left, operatorToken, right);
             }
 
             return left;
@@ -369,26 +373,26 @@ namespace MiniLang.CodeAnalysis.Syntax
             Token openToken = ExpectToken(TokenType.OpenParenthesis);
             ExpressionNode expression = ParseExpression();
             Token closeToken = ExpectToken(TokenType.CloseParenthesis);
-            return new ParenthesizedExpressionNode(openToken, expression, closeToken);
+            return new ParenthesizedExpressionNode(syntaxTree, openToken, expression, closeToken);
         }
 
         private LiteralExpressionNode ParseBooleanLiteral()
         {
             Token token = ExpectTokens(TokenType.TrueKeyword, TokenType.FalseKeyword);
             bool value = token.Type == TokenType.TrueKeyword;
-            return new LiteralExpressionNode(token, value);
+            return new LiteralExpressionNode(syntaxTree, token, value);
         }
 
         private LiteralExpressionNode ParseNumberLiteral()
         {
             Token numberToken = ExpectToken(TokenType.Number);
-            return new LiteralExpressionNode(numberToken, numberToken.Value ?? 0);
+            return new LiteralExpressionNode(syntaxTree, numberToken, numberToken.Value ?? 0);
         }
 
         private LiteralExpressionNode ParseStringLiteral()
         {
             Token stringToken = ExpectToken(TokenType.String);
-            return new LiteralExpressionNode(stringToken, stringToken.Value ?? "");
+            return new LiteralExpressionNode(syntaxTree, stringToken, stringToken.Value ?? "");
         }
 
         private ExpressionNode ParseNameOrCallExpression()
@@ -407,7 +411,7 @@ namespace MiniLang.CodeAnalysis.Syntax
             SeparatedNodeList<ExpressionNode> arguments = ParseArguments();
             Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
 
-            return new CallExpressionNode(identifier, openParenthesis, arguments, closeParenthesis);
+            return new CallExpressionNode(syntaxTree, identifier, openParenthesis, arguments, closeParenthesis);
         }
 
         private SeparatedNodeList<ExpressionNode> ParseArguments()
@@ -435,7 +439,7 @@ namespace MiniLang.CodeAnalysis.Syntax
         private VariableExpressionNode ParseNameExpression()
         {
             Token identifier = ExpectToken(TokenType.Identifier);
-            return new VariableExpressionNode(identifier);
+            return new VariableExpressionNode(syntaxTree, identifier);
         }
         #endregion Expressions
 
@@ -457,8 +461,9 @@ namespace MiniLang.CodeAnalysis.Syntax
             if (Current.Type == expectedType)
                 return NextToken();
 
-            diagnostics.ReportUnexpectedToken(Current.Span, Current.Type, expectedType);
-            return new Token(expectedType, new TextSpan(Current.Span.Start, 0), null, null, true);
+            TextLocation location = new TextLocation(source, Current.Span);
+            diagnostics.ReportUnexpectedToken(location, Current.Type, expectedType);
+            return new Token(syntaxTree, expectedType, new TextSpan(Current.Span.Start, 0), null, null, true);
         }
 
         private Token ExpectTokens(params TokenType[] expectedTypes)
@@ -466,9 +471,9 @@ namespace MiniLang.CodeAnalysis.Syntax
             if (expectedTypes.Contains(Current.Type))
                 return NextToken();
 
-
-            diagnostics.ReportUnexpectedToken(Current.Span, Current.Type, expectedTypes);
-            return new Token(expectedTypes[0], new TextSpan(Current.Span.Start, 0), null, null, true);
+            TextLocation location = new TextLocation(source, Current.Span);
+            diagnostics.ReportUnexpectedToken(location, Current.Type, expectedTypes);
+            return new Token(syntaxTree, expectedTypes[0], new TextSpan(Current.Span.Start, 0), null, null, true);
         }
     }
 }

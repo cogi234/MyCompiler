@@ -4,7 +4,7 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class ExpressionStatementNode : StatementNode
     {
-        public ExpressionStatementNode(ExpressionNode expression, Token semicolon)
+        public ExpressionStatementNode(SyntaxTree syntaxTree, ExpressionNode expression, Token semicolon) : base(syntaxTree)
         {
             Expression = expression;
             Semicolon = semicolon;

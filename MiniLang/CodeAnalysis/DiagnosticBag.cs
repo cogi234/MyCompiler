@@ -20,33 +20,33 @@ namespace MiniLang.CodeAnalysis
             this.diagnostics.AddRange(diagnostics);
         }
 
-        private void Report(TextSpan span, string message)
+        private void Report(TextLocation location, string message)
         {
-            Diagnostic diagnostic = new Diagnostic(span, message);
+            Diagnostic diagnostic = new Diagnostic(location, message);
             diagnostics.Add(diagnostic);
         }
 
         #region LexerErrors
-        public void ReportInvalidNumber(TextSpan span, string text, TypeSymbol type)
+        public void ReportInvalidNumber(TextLocation location, string text, TypeSymbol type)
         {
             string message = $"The number {text} isn't a valid {type}.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportBadCharacter(TextSpan span, char character)
+        public void ReportBadCharacter(TextLocation location, char character)
         {
             string message = $"Bad character input: '{character}'.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportUnterminatedString(TextSpan span)
+        public void ReportUnterminatedString(TextLocation location)
         {
             string message = $"Unterminated string literal.";
-            Report(span, message);
+            Report(location, message);
         }
         #endregion
         #region ParserErrors
-        public void ReportUnexpectedToken(TextSpan span, TokenType found, params TokenType[] expected)
+        public void ReportUnexpectedToken(TextLocation location, TokenType found, params TokenType[] expected)
         {
             string message = $"Unexpected token. Expected ";
             for (int i = 0; i < expected.Length; i++)
@@ -59,10 +59,10 @@ namespace MiniLang.CodeAnalysis
                     message += ", ";
             }
             message += $"found <{found}>.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportUnexpectedNode(TextSpan span, NodeType actualNode, params NodeType[] expectedNode)
+        public void ReportUnexpectedNode(TextLocation location, NodeType actualNode, params NodeType[] expectedNode)
         {
             StringBuilder message = new StringBuilder($"Unexpected node <{actualNode}>.");
 
@@ -83,104 +83,104 @@ namespace MiniLang.CodeAnalysis
                 message.Append(".");
             }
 
-            Report(span, message.ToString());
+            Report(location, message.ToString());
         }
         #endregion
         #region BinderErrors
 
-        public void ReportCannotConvert(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
+        public void ReportCannotConvert(TextLocation location, TypeSymbol fromType, TypeSymbol toType)
         {
             string message = $"Cannot convert type {fromType} to {toType}.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportUndefinedUnaryOperator(TextSpan span, string operatorText, TypeSymbol operandType)
+        public void ReportUndefinedUnaryOperator(TextLocation location, string operatorText, TypeSymbol operandType)
         {
             string message = $"Unary operator '{operatorText}' is not defined for type {operandType}.";
-            Report(span, message);
+            Report(location, message);
         }
-        public void ReportUndefinedBinaryOperator(TextSpan span, string operatorText, TypeSymbol leftType, TypeSymbol rightType)
+        public void ReportUndefinedBinaryOperator(TextLocation location, string operatorText, TypeSymbol leftType, TypeSymbol rightType)
         {
             string message = $"Binary operator '{operatorText}' is not defined for types {leftType} and {rightType}.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportSymbolAlreadyDeclared(TextSpan span, string name)
+        public void ReportSymbolAlreadyDeclared(TextLocation location, string name)
         {
             string message = $"'{name}' already exists.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportUndefinedVariable(TextSpan span, string name)
+        public void ReportUndefinedVariable(TextLocation location, string name)
         {
             string message = $"Variable '{name}' doesn't exist.";
-            Report(span, message);
+            Report(location, message);
         }
-        public void ReportNotAVariable(TextSpan span, string name)
+        public void ReportNotAVariable(TextLocation location, string name)
         {
             string message = $"'{name}' is not a variable.";
-            Report(span, message);
+            Report(location, message);
         }
-        public void ReportCannotAssign(TextSpan span, string name)
+        public void ReportCannotAssign(TextLocation location, string name)
         {
             string message = $"Cannot assign to variable '{name}', it is read only.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportUndefinedFunction(TextSpan span, string? name)
+        public void ReportUndefinedFunction(TextLocation location, string? name)
         {
             string message = $"Function '{name}' doesn't exist.";
-            Report(span, message);
+            Report(location, message);
         }
-        public void ReportNotAFunction(TextSpan span, string name)
+        public void ReportNotAFunction(TextLocation location, string name)
         {
             string message = $"'{name}' is not a function.";
-            Report(span, message);
+            Report(location, message);
         }
-        public void ReportWrongArgumentCount(TextSpan span, string name, int count)
+        public void ReportWrongArgumentCount(TextLocation location, string name, int count)
         {
             string message = $"Function '{name}' doesn't handle {count} arguments";
-            Report(span, message);
+            Report(location, message);
         }
-        public void ReportParameterAlreadyDeclared(TextSpan span, string name)
+        public void ReportParameterAlreadyDeclared(TextLocation location, string name)
         {
             string message = $"A parameter with the name '{name}' already exists.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportNullExpression(TextSpan span)
+        public void ReportNullExpression(TextLocation location)
         {
             string message = "Expression must have a non-null value.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportInvalidBreakOrContinue(TextSpan span, string? text)
+        public void ReportInvalidBreakOrContinue(TextLocation location, string? text)
         {
             string message = $"{text} statement must be inside a loop.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportInvalidReturn(TextSpan span)
+        public void ReportInvalidReturn(TextLocation location)
         {
             string message = "The 'return' keyword can only be used inside a funtion.";
-            Report(span, message);
+            Report(location, message);
         }
-        public void ReportInvalidReturnExpression(TextSpan span, string functionName)
+        public void ReportInvalidReturnExpression(TextLocation location, string functionName)
         {
             string message = $"Since the function '{functionName}' does not return a value," +
                 " the 'return' keyword cannot be followed by an expression.";
-            Report(span, message);
+            Report(location, message);
         }
-        public void ReportMissingReturnExpression(TextSpan span, TypeSymbol returnType)
+        public void ReportMissingReturnExpression(TextLocation location, TypeSymbol returnType)
         {
             string message = $"An expression of type '{returnType}' expected.";
-            Report(span, message);
+            Report(location, message);
         }
 
-        public void ReportAllPathsMustReturn(TextSpan span)
+        public void ReportAllPathsMustReturn(TextLocation location)
         {
             string message = "Not all code paths return a value.";
-            Report(span, message);
+            Report(location, message);
         }
         #endregion
     }

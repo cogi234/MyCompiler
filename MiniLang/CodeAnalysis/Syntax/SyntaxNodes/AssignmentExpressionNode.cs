@@ -4,7 +4,8 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class AssignmentExpressionNode : ExpressionNode
     {
-        public AssignmentExpressionNode(Token identifier, Token equalsToken, ExpressionNode expression)
+        public AssignmentExpressionNode(SyntaxTree syntaxTree, Token identifier, Token equalsToken, ExpressionNode expression)
+            : base(syntaxTree)
         {
             Identifier = identifier;
             EqualsToken = equalsToken;

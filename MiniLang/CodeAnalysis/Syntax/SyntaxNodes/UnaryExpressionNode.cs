@@ -4,7 +4,7 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class UnaryExpressionNode : ExpressionNode
     {
-        public UnaryExpressionNode(Token operatorToken, ExpressionNode operand)
+        public UnaryExpressionNode(SyntaxTree syntaxTree, Token operatorToken, ExpressionNode operand) : base(syntaxTree)
         {
             OperatorToken = operatorToken;
             Operand = operand;

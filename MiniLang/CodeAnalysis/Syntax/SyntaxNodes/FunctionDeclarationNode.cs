@@ -4,8 +4,8 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class FunctionDeclarationNode : MemberNode
     {
-        public FunctionDeclarationNode(Token typeKeyword, Token identifier, Token openParenthesis,
-            SeparatedNodeList<ParameterNode> parameters, Token closeParenthesis, StatementNode body)
+        public FunctionDeclarationNode(SyntaxTree syntaxTree, Token typeKeyword, Token identifier, Token openParenthesis,
+            SeparatedNodeList<ParameterNode> parameters, Token closeParenthesis, StatementNode body) : base(syntaxTree)
         {
             TypeKeyword = typeKeyword;
             Identifier = identifier;

@@ -4,8 +4,8 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class DoWhileStatementNode : StatementNode
     {
-        public DoWhileStatementNode(Token doKeyword, StatementNode statement, Token whileKeyword, Token openParenthesis,
-            ExpressionNode condition, Token closeParenthesis, Token semiColon)
+        public DoWhileStatementNode(SyntaxTree syntaxTree, Token doKeyword, StatementNode statement, Token whileKeyword,
+            Token openParenthesis, ExpressionNode condition, Token closeParenthesis, Token semiColon) : base(syntaxTree)
         {
             DoKeyword = doKeyword;
             Statement = statement;
@@ -38,8 +38,8 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
     }
     public sealed class WhileStatementNode : StatementNode
     {
-        public WhileStatementNode(Token whileKeyword, Token openParenthesis, ExpressionNode condition,
-            Token closeParenthesis, StatementNode statement)
+        public WhileStatementNode(SyntaxTree syntaxTree, Token whileKeyword, Token openParenthesis, ExpressionNode condition,
+            Token closeParenthesis, StatementNode statement) : base(syntaxTree)
         {
             WhileKeyword = whileKeyword;
             OpenParenthesis = openParenthesis;

@@ -5,7 +5,8 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class BlockStatementNode : StatementNode
     {
-        public BlockStatementNode(Token openBrace, ImmutableArray<StatementNode> statements, Token closeBrace)
+        public BlockStatementNode(SyntaxTree syntaxTree, Token openBrace, ImmutableArray<StatementNode> statements,
+            Token closeBrace) : base(syntaxTree)
         {
             OpenBrace = openBrace;
             Statements = statements;

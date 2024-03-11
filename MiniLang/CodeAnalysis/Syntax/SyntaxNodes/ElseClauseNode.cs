@@ -4,7 +4,7 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class ElseClauseNode : StatementNode
     {
-        public ElseClauseNode(Token elseKeyword, StatementNode statement)
+        public ElseClauseNode(SyntaxTree syntaxTree, Token elseKeyword, StatementNode statement) : base(syntaxTree)
         {
             ElseKeyword = elseKeyword;
             Statement = statement;

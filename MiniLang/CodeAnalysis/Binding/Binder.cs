@@ -68,16 +68,21 @@ namespace MiniLang.CodeAnalysis.Binding
             return rootScope;
         }
 
-        public static BoundGlobalScope BindGlobalScope(BoundGlobalScope? previousGlobalScope, CompilationUnit compilationUnit)
+        public static BoundGlobalScope BindGlobalScope(BoundGlobalScope? previousGlobalScope,
+            ImmutableArray<SyntaxTree> syntaxTrees)
         {
             BoundScope parentScope = CreateParentScope(previousGlobalScope);
             Binder binder = new Binder(parentScope, null);
 
-            foreach (FunctionDeclarationNode function in compilationUnit.Members.OfType<FunctionDeclarationNode>())
+            IEnumerable<FunctionDeclarationNode> functionDeclarations = syntaxTrees.SelectMany(st => st.Root.Members)
+                .OfType<FunctionDeclarationNode>();
+            foreach (FunctionDeclarationNode function in functionDeclarations)
                 binder.BindFunctionDeclaration(function);
 
+            IEnumerable<GlobalStatementNode> globalStatements = syntaxTrees.SelectMany(st => st.Root.Members)
+                .OfType<GlobalStatementNode>();
             ImmutableArray<BoundStatement>.Builder statements = ImmutableArray.CreateBuilder<BoundStatement>();
-            foreach (GlobalStatementNode globalStatement in compilationUnit.Members.OfType<GlobalStatementNode>())
+            foreach (GlobalStatementNode globalStatement in globalStatements)
             {
                 BoundStatement statement = binder.BindStatement(globalStatement.Statement);
                 statements.Add(statement);
@@ -96,7 +101,8 @@ namespace MiniLang.CodeAnalysis.Binding
         public static BoundProgram BindProgram(BoundGlobalScope globalScope)
         {
             BoundScope parentScope = CreateParentScope(globalScope);
-            ImmutableDictionary<FunctionSymbol, BoundBlockStatement>.Builder functionBodies = ImmutableDictionary.CreateBuilder<FunctionSymbol, BoundBlockStatement>();
+            ImmutableDictionary<FunctionSymbol, BoundBlockStatement>.Builder functionBodies = 
+                ImmutableDictionary.CreateBuilder<FunctionSymbol, BoundBlockStatement>();
             ImmutableArray<Diagnostic>.Builder diagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
             BoundGlobalScope? scope = globalScope;
 
@@ -109,7 +115,7 @@ namespace MiniLang.CodeAnalysis.Binding
                     BoundBlockStatement loweredBody = Lowerer.Lower(body);
 
                     if (function.ReturnType != TypeSymbol.Void && !ControlFlowGraph.AllPathsReturn(loweredBody))
-                        binder.Diagnostics.ReportAllPathsMustReturn(function.Declaration.Identifier.Span);
+                        binder.Diagnostics.ReportAllPathsMustReturn(function.Declaration.Identifier.Location);
 
                     functionBodies.Add(function, loweredBody);
 
@@ -138,7 +144,7 @@ namespace MiniLang.CodeAnalysis.Binding
                 TypeSymbol type = TypeSymbol.Lookup(parameter.TypeKeyword.Text!)!;
 
                 if (!seenParameterNames.Add(name))
-                    diagnostics.ReportParameterAlreadyDeclared(parameter.Identifier.Span, name);
+                    diagnostics.ReportParameterAlreadyDeclared(parameter.Identifier.Location, name);
                 else
                     parameters.Add(new ParameterSymbol(name, type));
             }
@@ -184,18 +190,18 @@ namespace MiniLang.CodeAnalysis.Binding
             BoundExpression? expression = null;
 
             if (function == null)
-                diagnostics.ReportInvalidReturn(node.Keyword.Span);
+                diagnostics.ReportInvalidReturn(node.Keyword.Location);
             else
             {
                 if (function.ReturnType == TypeSymbol.Void)
                 {
                     if (node.Expression != null)
-                        diagnostics.ReportInvalidReturnExpression(node.Expression!.Span, function.Name);
+                        diagnostics.ReportInvalidReturnExpression(node.Expression!.Location, function.Name);
                 }
                 else
                 {
                     if (node.Expression == null)
-                        diagnostics.ReportMissingReturnExpression(node.Keyword.Span, function.ReturnType);
+                        diagnostics.ReportMissingReturnExpression(node.Keyword.Location, function.ReturnType);
                     else
                         expression = BindExpression(node.Expression, function.ReturnType);
                 }
@@ -208,7 +214,7 @@ namespace MiniLang.CodeAnalysis.Binding
         {
             if (loopStack.Count == 0)
             {
-                diagnostics.ReportInvalidBreakOrContinue(node.Keyword.Span, node.Keyword.Text);
+                diagnostics.ReportInvalidBreakOrContinue(node.Keyword.Location, node.Keyword.Text);
                 return new BoundExpressionStatement(new BoundErrorExpression());
             }
             BoundLabel continueLabel = loopStack.Peek().ContinueLabel;
@@ -219,7 +225,7 @@ namespace MiniLang.CodeAnalysis.Binding
         {
             if (loopStack.Count == 0)
             {
-                diagnostics.ReportInvalidBreakOrContinue(node.Keyword.Span, node.Keyword.Text);
+                diagnostics.ReportInvalidBreakOrContinue(node.Keyword.Location, node.Keyword.Text);
                 return new BoundExpressionStatement(new BoundErrorExpression());
             }
             BoundLabel breakLabel = loopStack.Peek().BreakLabel;
@@ -342,7 +348,7 @@ namespace MiniLang.CodeAnalysis.Binding
             BoundExpression result = BindExpressionInternal(node);
             if (!canBeVoid && result.Type == TypeSymbol.Void)
             {
-                diagnostics.ReportNullExpression(node.Span);
+                diagnostics.ReportNullExpression(node.Location);
                 return new BoundErrorExpression();
             }
             return result;
@@ -376,7 +382,7 @@ namespace MiniLang.CodeAnalysis.Binding
                 case NodeType.BinaryExpression:
                     return BindBinaryExpression((BinaryExpressionNode)node);
                 default:
-                    diagnostics.ReportUnexpectedNode(node.Span, node.Type);
+                    diagnostics.ReportUnexpectedNode(node.Location, node.Type);
                     return new BoundErrorExpression();
             }
         }
@@ -394,7 +400,7 @@ namespace MiniLang.CodeAnalysis.Binding
 
             string name = node.Identifier.Text!;
 
-            VariableSymbol? variable = BindVariableReference(name, node.Identifier.Span);
+            VariableSymbol? variable = BindVariableReference(name, node.Identifier.Location);
             if (variable == null)
                 return new BoundErrorExpression();
 
@@ -405,7 +411,7 @@ namespace MiniLang.CodeAnalysis.Binding
         {
             string name = node.Identifier.Text!;
 
-            VariableSymbol? variable = BindVariableReference(name, node.Identifier.Span);
+            VariableSymbol? variable = BindVariableReference(name, node.Identifier.Location);
             if (variable == null)
                 return new BoundErrorExpression();
 
@@ -416,7 +422,7 @@ namespace MiniLang.CodeAnalysis.Binding
 
             if (variable.IsReadOnly)
             {
-                diagnostics.ReportCannotAssign(node.Identifier.Span, name);
+                diagnostics.ReportCannotAssign(node.Identifier.Location, name);
                 return new BoundErrorExpression();
             }
 
@@ -431,7 +437,7 @@ namespace MiniLang.CodeAnalysis.Binding
                 return BindConversion(node.Arguments[0], TypeSymbol.Lookup(name)!, true);
             else
             {
-                FunctionSymbol? function = BindFunctionReference(name, node.Identifier.Span);
+                FunctionSymbol? function = BindFunctionReference(name, node.Identifier.Location);
                 if (function == null)
                     return new BoundErrorExpression();
 
@@ -453,7 +459,8 @@ namespace MiniLang.CodeAnalysis.Binding
                     else
                         span = node.CloseParenthesis.Span;
 
-                    diagnostics.ReportWrongArgumentCount(span, function.Name, node.Arguments.Count);
+                    TextLocation location = new TextLocation(node.Location.Source, span);
+                    diagnostics.ReportWrongArgumentCount(location, function.Name, node.Arguments.Count);
                     return new BoundErrorExpression();
                 }
 
@@ -490,7 +497,7 @@ namespace MiniLang.CodeAnalysis.Binding
 
             if (!conversion.Exists || (!allowExplicit && !conversion.IsImplicit))
             {
-                diagnostics.ReportCannotConvert(node.Span, expression.Type, toType);
+                diagnostics.ReportCannotConvert(node.Location, expression.Type, toType);
                 return new BoundErrorExpression();
             }
 
@@ -511,7 +518,7 @@ namespace MiniLang.CodeAnalysis.Binding
 
             if (boundOperator == null)
             {
-                diagnostics.ReportUndefinedUnaryOperator(node.OperatorToken.Span, node.OperatorToken.Text ??
+                diagnostics.ReportUndefinedUnaryOperator(node.OperatorToken.Location, node.OperatorToken.Text ??
                     node.OperatorToken.Type.ToString(), boundOperand.Type);
                 return new BoundErrorExpression();
             }
@@ -532,7 +539,7 @@ namespace MiniLang.CodeAnalysis.Binding
 
             if (boundOperator == null)
             {
-                diagnostics.ReportUndefinedBinaryOperator(node.OperatorToken.Span, node.OperatorToken.Text ??
+                diagnostics.ReportUndefinedBinaryOperator(node.OperatorToken.Location, node.OperatorToken.Text ??
                     node.OperatorToken.Type.ToString(), boundLeft.Type, boundRight.Type);
                 return new BoundErrorExpression();
             }
@@ -548,21 +555,21 @@ namespace MiniLang.CodeAnalysis.Binding
             FunctionSymbol function = new FunctionSymbol(name, parameters, returnType, declaration);
 
             if (returnType != TypeSymbol.Error && !identifier.IsFake && !scope.TryDeclareFunction(function))
-                diagnostics.ReportSymbolAlreadyDeclared(identifier.Span, name);
+                diagnostics.ReportSymbolAlreadyDeclared(identifier.Location, name);
 
             return function;
         }
-        private FunctionSymbol? BindFunctionReference(string name, TextSpan span)
+        private FunctionSymbol? BindFunctionReference(string name, TextLocation location)
         {
             switch (scope.TryLookupSymbol(name))
             {
                 case FunctionSymbol function:
                     return function;
                 case null:
-                    diagnostics.ReportUndefinedFunction(span, name);
+                    diagnostics.ReportUndefinedFunction(location, name);
                     return null;
                 default:
-                    diagnostics.ReportNotAFunction(span, name);
+                    diagnostics.ReportNotAFunction(location, name);
                     return null;
             }
         }
@@ -574,21 +581,21 @@ namespace MiniLang.CodeAnalysis.Binding
                 : new LocalVariableSymbol(name, isReadOnly, type);
 
             if (type != TypeSymbol.Error && !identifier.IsFake && !scope.TryDeclareVariable(variable))
-                diagnostics.ReportSymbolAlreadyDeclared(identifier.Span, name);
+                diagnostics.ReportSymbolAlreadyDeclared(identifier.Location, name);
 
             return variable;
         }
-        private VariableSymbol? BindVariableReference(string name, TextSpan span)
+        private VariableSymbol? BindVariableReference(string name, TextLocation location)
         {
             switch (scope.TryLookupSymbol(name))
             {
                 case VariableSymbol variable:
                     return variable;
                 case null:
-                    diagnostics.ReportUndefinedVariable(span, name);
+                    diagnostics.ReportUndefinedVariable(location, name);
                     return null;
                 default:
-                    diagnostics.ReportNotAVariable(span, name);
+                    diagnostics.ReportNotAVariable(location, name);
                     return null;
             }
         }

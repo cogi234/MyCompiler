@@ -4,7 +4,8 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class ParenthesizedExpressionNode : ExpressionNode
     {
-        public ParenthesizedExpressionNode(Token openParenthesis, ExpressionNode expression, Token closeParenthesis)
+        public ParenthesizedExpressionNode(SyntaxTree syntaxTree, Token openParenthesis, ExpressionNode expression,
+            Token closeParenthesis) : base(syntaxTree)
         {
             OpenParenthesis = openParenthesis;
             Expression = expression;

@@ -56,8 +56,9 @@ namespace MiniLang.CodeAnalysis.Syntax
     }
     public sealed class Token
     {
-        public Token(TokenType type, TextSpan span, string? text, object? value, bool isFake = false)
+        public Token(SyntaxTree syntaxTree, TokenType type, TextSpan span, string? text, object? value, bool isFake = false)
         {
+            SyntaxTree = syntaxTree;
             Type = type;
             Span = span;
             Text = text;
@@ -65,10 +66,12 @@ namespace MiniLang.CodeAnalysis.Syntax
             IsFake = isFake;
         }
 
+        public SyntaxTree SyntaxTree { get; }
         public TokenType Type { get; }
         public TextSpan Span { get; }
         public string? Text { get; }
         public object? Value { get; }
         public bool IsFake { get; }
+        public TextLocation Location => new TextLocation(SyntaxTree.SourceText, Span);
     }
 }

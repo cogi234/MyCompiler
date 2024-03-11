@@ -4,7 +4,7 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class VariableExpressionNode : ExpressionNode
     {
-        public VariableExpressionNode(Token identifier)
+        public VariableExpressionNode(SyntaxTree syntaxTree, Token identifier) : base(syntaxTree)
         {
             Identifier = identifier;
         }

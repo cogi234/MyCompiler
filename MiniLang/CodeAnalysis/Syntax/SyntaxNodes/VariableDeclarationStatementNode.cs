@@ -4,7 +4,8 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class VariableDeclarationStatementNode : StatementNode
     {
-        public VariableDeclarationStatementNode(Token keyword, Token identifier, Token? equal, ExpressionNode? initializer, Token? semicolon)
+        public VariableDeclarationStatementNode(SyntaxTree syntaxTree, Token keyword, Token identifier, Token? equal,
+            ExpressionNode? initializer, Token? semicolon) : base(syntaxTree)
         {
             Keyword = keyword;
             Identifier = identifier;

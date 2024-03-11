@@ -4,7 +4,7 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class GlobalStatementNode : MemberNode
     {
-        public GlobalStatementNode(StatementNode statement)
+        public GlobalStatementNode(SyntaxTree syntaxTree, StatementNode statement) : base(syntaxTree)
         {
             Statement = statement;
         }

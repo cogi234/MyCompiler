@@ -11,17 +11,17 @@ namespace MiniLang.CodeAnalysis
     {
         private BoundGlobalScope? globalScope;
 
-        private Compilation(Compilation? previous, SyntaxTree syntaxTree)
+        private Compilation(Compilation? previous, params SyntaxTree[] syntaxTrees)
         {
             Previous = previous;
-            SyntaxTree = syntaxTree;
+            SyntaxTrees = syntaxTrees.ToImmutableArray();
         }
-        public Compilation(SyntaxTree syntaxTree) : this(null, syntaxTree)
+        public Compilation(params SyntaxTree[] syntaxTrees) : this(null, syntaxTrees)
         {
         }
 
         public Compilation? Previous { get; }
-        public SyntaxTree SyntaxTree { get; }
+        public ImmutableArray<SyntaxTree> SyntaxTrees { get; }
 
         internal BoundGlobalScope GlobalScope
         {
@@ -29,7 +29,7 @@ namespace MiniLang.CodeAnalysis
             {
                 if (globalScope == null)
                 {
-                    BoundGlobalScope globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTree.Root);
+                    BoundGlobalScope globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTrees);
                     Interlocked.CompareExchange(ref this.globalScope, globalScope, null);
                 }
 
@@ -44,7 +44,9 @@ namespace MiniLang.CodeAnalysis
 
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object?> variables)
         {
-            ImmutableArray<Diagnostic> diagnostics = SyntaxTree.Diagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
+            IEnumerable<Diagnostic> parseDiagnostics = SyntaxTrees.SelectMany(st => st.Diagnostics);
+
+            ImmutableArray<Diagnostic> diagnostics = parseDiagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
 
             if (diagnostics.Any())
                 return new EvaluationResult(diagnostics, null);
@@ -52,7 +54,7 @@ namespace MiniLang.CodeAnalysis
             BoundProgram program = Binder.BindProgram(GlobalScope);
 
             string appPath = Environment.GetCommandLineArgs()[0];
-            string? appDirectory = Path.GetDirectoryName(appPath);
+            string appDirectory = Path.GetDirectoryName(appPath)!;
             string cfgPath = Path.Combine(appDirectory, "cfg.dot");
             BoundBlockStatement cfgStatement = !program.Statement.Statements.Any() && program.Functions.Any()
                 ? program.Functions.Last().Value

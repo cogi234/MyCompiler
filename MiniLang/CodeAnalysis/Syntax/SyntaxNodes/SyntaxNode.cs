@@ -34,8 +34,16 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 
     public abstract class SyntaxNode
     {
+        protected SyntaxNode(SyntaxTree syntaxTree)
+        {
+            SyntaxTree = syntaxTree;
+        }
+
         public abstract NodeType Type { get; }
         public abstract TextSpan Span { get; }
+        public SyntaxTree SyntaxTree { get; }
+        public TextLocation Location => new TextLocation(SyntaxTree.SourceText, Span);
+
         public abstract IEnumerable<SyntaxNode> GetChildren();
         public abstract Token GetLastToken();
 

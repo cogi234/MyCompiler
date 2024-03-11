@@ -4,9 +4,8 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class IfStatementNode : StatementNode
     {
-        public IfStatementNode(
-            Token ifKeyword, Token openParenthesis, ExpressionNode condition, Token closeParenthesis,
-            StatementNode body, ElseClauseNode? elseClause)
+        public IfStatementNode(SyntaxTree syntaxTree, Token ifKeyword, Token openParenthesis, ExpressionNode condition,
+            Token closeParenthesis, StatementNode body, ElseClauseNode? elseClause) : base(syntaxTree)
         {
             IfKeyword = ifKeyword;
             OpenParenthesis = openParenthesis;

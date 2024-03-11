@@ -2,6 +2,7 @@
 using MiniLang.CodeAnalysis.Symbols;
 using MiniLang.CodeAnalysis.Syntax;
 using MiniLang.CodeAnalysis.Text;
+using MiniLang.IO;
 
 namespace mi
 {
@@ -55,7 +56,7 @@ namespace mi
             EvaluationResult result = compilation.Evaluate(variables);
 
             if (result.Diagnostics.Any())
-                PrintDiagnostics(result.Diagnostics.OrderBy(d => d.Span, new TextSpanComparer()), syntaxTree);
+                Console.Out.WriteDiagnostics(result.Diagnostics);
             else
                 previousCompilation = compilation;
         }
@@ -154,33 +155,5 @@ namespace mi
             Console.WriteLine("#reset: reset the context");
         }
 
-        protected void PrintDiagnostics(IEnumerable<Diagnostic> diagnostics, SyntaxTree syntaxTree)
-        {
-            foreach (Diagnostic diag in diagnostics)
-            {
-                int lineIndex = syntaxTree.SourceText.GetLineIndex(diag.Span.Start);
-                TextLine line = syntaxTree.SourceText.Lines[lineIndex];
-                int column = diag.Span.Start - line.Span.Start;
-
-                TextSpan prefixSpan = TextSpan.FromBounds(line.Span.Start, diag.Span.Start);
-                TextSpan suffixSpan = TextSpan.FromBounds(diag.Span.End, line.Span.End);
-
-                string prefix = syntaxTree.SourceText.ToString(prefixSpan);
-                string error = syntaxTree.SourceText.ToString(diag.Span);
-                string suffix = syntaxTree.SourceText.ToString(suffixSpan);
-
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.Write($"({lineIndex + 1}, {column + 1}): ");
-                Console.WriteLine(diag);
-
-                Console.ResetColor();
-                Console.Write("  ");
-                Console.Write(prefix);
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.Write(error);
-                Console.ResetColor();
-                Console.WriteLine(suffix);
-            }
-        }
     }
 }

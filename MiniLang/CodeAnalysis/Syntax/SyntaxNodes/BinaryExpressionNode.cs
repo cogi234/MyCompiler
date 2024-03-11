@@ -4,7 +4,8 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class BinaryExpressionNode : ExpressionNode
     {
-        public BinaryExpressionNode(ExpressionNode left, Token operatorToken, ExpressionNode right)
+        public BinaryExpressionNode(SyntaxTree syntaxTree, ExpressionNode left, Token operatorToken, ExpressionNode right)
+            : base(syntaxTree)
         {
             Left = left;
             OperatorToken = operatorToken;

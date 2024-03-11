@@ -4,7 +4,7 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class ParameterNode : SyntaxNode
     {
-        public ParameterNode(Token typeKeyword, Token identifier)
+        public ParameterNode(SyntaxTree syntaxTree, Token typeKeyword, Token identifier) : base(syntaxTree)
         {
             TypeKeyword = typeKeyword;
             Identifier = identifier;

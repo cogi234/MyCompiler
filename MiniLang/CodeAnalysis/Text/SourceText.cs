@@ -6,16 +6,25 @@ namespace MiniLang.CodeAnalysis.Text
     {
         private readonly string text;
 
-        public SourceText(string text)
+        private SourceText(string text, string fileName)
         {
             this.text = text;
+            FileName = fileName;
             Lines = ParseLines();
+        }
+
+        public string FileName { get; }
+
+        public static SourceText From(string text, string fileName = "")
+        {
+            return new SourceText(text, fileName);
         }
 
         public ImmutableArray<TextLine> Lines { get; }
 
         public char this[int index] => text[index];
         public int Length => text.Length;
+
 
         public int GetLineIndex(int position)
         {

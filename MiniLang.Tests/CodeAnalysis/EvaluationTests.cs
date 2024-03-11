@@ -207,7 +207,7 @@ namespace Mini.Tests.CodeAnalysis
                 Assert.Equal(expectedMessage, actualMessage);
 
                 MiniLang.CodeAnalysis.Text.TextSpan expectedSpan = annotatedText.Spans[i];
-                MiniLang.CodeAnalysis.Text.TextSpan actualSpan = result.Diagnostics[i].Span;
+                MiniLang.CodeAnalysis.Text.TextSpan actualSpan = result.Diagnostics[i].Location.Span;
                 Assert.Equal(expectedSpan, actualSpan);
             }
         }

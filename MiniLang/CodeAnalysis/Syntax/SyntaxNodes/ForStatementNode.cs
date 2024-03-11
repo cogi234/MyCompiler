@@ -5,8 +5,9 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
     // for (var i = 0; i < 10; i = i + 1)
     public sealed class ForStatementNode : StatementNode
     {
-        public ForStatementNode(Token forKeyword, Token openParenthesis, VariableDeclarationStatementNode? declaration,
-            ExpressionNode condition, AssignmentExpressionNode? increment, Token closeParenthesis, StatementNode statement)
+        public ForStatementNode(SyntaxTree syntaxTree, Token forKeyword, Token openParenthesis,
+            VariableDeclarationStatementNode? declaration, ExpressionNode condition, AssignmentExpressionNode? increment,
+            Token closeParenthesis, StatementNode statement) : base(syntaxTree)
         {
             ForKeyword = forKeyword;
             OpenParenthesis = openParenthesis;

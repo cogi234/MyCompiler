@@ -2,5 +2,8 @@
 {
     public abstract class MemberNode : SyntaxNode
     {
+        protected MemberNode(SyntaxTree syntaxTree) : base(syntaxTree)
+        {
+        }
     }
 }

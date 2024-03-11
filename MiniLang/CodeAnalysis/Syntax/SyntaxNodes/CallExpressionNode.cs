@@ -4,7 +4,8 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class CallExpressionNode : ExpressionNode
     {
-        public CallExpressionNode(Token identifier, Token openParenthesis, SeparatedNodeList<ExpressionNode> arguments, Token closeParenthesis)
+        public CallExpressionNode(SyntaxTree syntaxTree, Token identifier, Token openParenthesis,
+            SeparatedNodeList<ExpressionNode> arguments, Token closeParenthesis) : base(syntaxTree)
         {
             Identifier = identifier;
             OpenParenthesis = openParenthesis;

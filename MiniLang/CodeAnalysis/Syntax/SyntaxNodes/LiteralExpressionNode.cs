@@ -4,9 +4,10 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class LiteralExpressionNode : ExpressionNode
     {
-        public LiteralExpressionNode(Token literalToken) : this(literalToken, literalToken.Value!) { }
+        public LiteralExpressionNode(SyntaxTree syntaxTree, Token literalToken)
+            : this(syntaxTree, literalToken, literalToken.Value!) { }
 
-        public LiteralExpressionNode(Token literalToken, object value)
+        public LiteralExpressionNode(SyntaxTree syntaxTree, Token literalToken, object value) : base(syntaxTree)
         {
             LiteralToken = literalToken;
             Value = value;

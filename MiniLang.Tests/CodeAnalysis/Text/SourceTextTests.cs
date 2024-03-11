@@ -8,7 +8,7 @@ namespace Mini.Tests.CodeAnalysis.Text
         [InlineData("-----\n----\n---", 7, 1)]
         public void FindsLineCorrectly(string text, int position, int correctLine)
         {
-            SourceText source = new SourceText(text);
+            SourceText source = SourceText.From(text);
 
             int line = source.GetLineIndex(position);
             Assert.Equal(correctLine, line);
@@ -20,7 +20,7 @@ namespace Mini.Tests.CodeAnalysis.Text
         [InlineData(".\r\n\r\n", 3)]
         public void IncludesLastLine(string text, int expectedLineCount)
         {
-            SourceText sourceText = new SourceText(text);
+            SourceText sourceText = SourceText.From(text);
             Assert.Equal(sourceText.Lines.Length, expectedLineCount);
         }
     }

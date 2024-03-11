@@ -6,7 +6,8 @@ namespace MiniLang.CodeAnalysis.Syntax
 {
     internal sealed class Lexer
     {
-        private readonly SourceText text;
+        private readonly SourceText source;
+        private readonly SyntaxTree syntaxTree;
         private readonly DiagnosticBag diagnostics = new DiagnosticBag();
         public DiagnosticBag Diagnostics => diagnostics;
 
@@ -16,9 +17,10 @@ namespace MiniLang.CodeAnalysis.Syntax
         private object? tokenValue;
         private string? tokenText;
 
-        public Lexer(SourceText text)
+        public Lexer(SyntaxTree syntaxTree)
         {
-            this.text = text;
+            this.syntaxTree = syntaxTree;
+            source = syntaxTree.SourceText;
         }
 
         public Token NextToken()
@@ -31,7 +33,7 @@ namespace MiniLang.CodeAnalysis.Syntax
             switch (Current)
             {
                 case '\0':
-                    return new Token(TokenType.EndOfFile, new TextSpan(start, 0), "\0", null);
+                    return new Token(syntaxTree, TokenType.EndOfFile, new TextSpan(start, 0), "\0", null);
                 case '+':
                     position++;
                     tokenType = TokenType.Plus;
@@ -166,7 +168,9 @@ namespace MiniLang.CodeAnalysis.Syntax
                     }
                     else
                     {
-                        diagnostics.ReportBadCharacter(new TextSpan(start, 1), Current);
+                        TextSpan span = new TextSpan(start, 1);
+                        TextLocation location = new TextLocation(source, span);
+                        diagnostics.ReportBadCharacter(location, Current);
                         position++;
                     }
                     break;
@@ -176,9 +180,9 @@ namespace MiniLang.CodeAnalysis.Syntax
             if (tokenText == null && tokenType != TokenType.EndOfFile)
                 tokenText = SyntaxFacts.GetText(tokenType);
             if (tokenText == null && tokenType != TokenType.EndOfFile)
-                tokenText = text.ToString(start, length);
+                tokenText = source.ToString(start, length);
 
-            return new Token(tokenType, new TextSpan(start, length), tokenText, tokenValue);
+            return new Token(syntaxTree, tokenType, new TextSpan(start, length), tokenText, tokenValue);
         }
 
         private void ReadString()
@@ -196,7 +200,9 @@ namespace MiniLang.CodeAnalysis.Syntax
                     case '\0':
                     case '\r':
                     case '\n':
-                        diagnostics.ReportUnterminatedString(new TextSpan(start, 1));
+                        TextSpan span = new TextSpan(start, 1);
+                        TextLocation location = new TextLocation(source, span);
+                        diagnostics.ReportUnterminatedString(location);
                         done = true;
                         break;
                     case '"':
@@ -229,10 +235,14 @@ namespace MiniLang.CodeAnalysis.Syntax
                 Next();
 
             int length = position - start;
-            tokenText = text.ToString(start, length);
+            tokenText = source.ToString(start, length);
 
             if (!int.TryParse(tokenText, out int number))
-                diagnostics.ReportInvalidNumber(new TextSpan(start, length), tokenText, TypeSymbol.Int);
+            {
+                TextSpan span = new TextSpan(start, length);
+                TextLocation location = new TextLocation(source, span);
+                diagnostics.ReportInvalidNumber(location, tokenText, TypeSymbol.Int);
+            }
 
             tokenType = TokenType.Number;
             tokenValue = number;
@@ -252,7 +262,7 @@ namespace MiniLang.CodeAnalysis.Syntax
                 Next();
 
             int length = position - start;
-            tokenText = text.ToString(start, length);
+            tokenText = source.ToString(start, length);
             tokenType = SyntaxFacts.GetKeywordType(tokenText);
         }
 
@@ -262,9 +272,9 @@ namespace MiniLang.CodeAnalysis.Syntax
         {
             int index = position + offset;
 
-            if (index >= text.Length)
+            if (index >= source.Length)
                 return '\0';
-            return text[index];
+            return source[index];
         }
         private void Next()
         {

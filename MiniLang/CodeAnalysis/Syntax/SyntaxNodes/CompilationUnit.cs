@@ -5,7 +5,7 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
 {
     public sealed class CompilationUnit : SyntaxNode
     {
-        public CompilationUnit(ImmutableArray<MemberNode> members)
+        public CompilationUnit(SyntaxTree syntaxTree, ImmutableArray<MemberNode> members) : base(syntaxTree)
         {
             Members = members;
         }

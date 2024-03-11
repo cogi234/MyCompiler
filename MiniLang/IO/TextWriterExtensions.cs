@@ -1,9 +1,11 @@
-﻿using MiniLang.CodeAnalysis.Syntax;
+﻿using MiniLang.CodeAnalysis;
+using MiniLang.CodeAnalysis.Syntax;
+using MiniLang.CodeAnalysis.Text;
 using System.CodeDom.Compiler;
 
 namespace MiniLang.IO
 {
-    internal static class TextWriterExtensions
+    public static class TextWriterExtensions
     {
         public static bool IsConsoleOut(this TextWriter writer)
         {
@@ -81,6 +83,48 @@ namespace MiniLang.IO
         public static void WriteSpace(this TextWriter writer)
         {
             writer.WritePunctuation(" ");
+        }
+
+        public static void WriteDiagnostics(this TextWriter writer, IEnumerable<Diagnostic> diagnostics)
+        {
+            foreach (Diagnostic diag in diagnostics.OrderBy(d => d.Location.FileName)
+                .ThenBy(d => d.Location.Span.Start)
+                .ThenBy(d => d.Location.Span.Length))
+            {
+                SourceText source = diag.Location.Source;
+                string fileName = diag.Location.FileName;
+                int startLine = diag.Location.StartLine + 1;
+                int startColumn = diag.Location.StartColumn + 1;
+                int endLine = diag.Location.EndLine + 1;
+                int endColumn = diag.Location.EndColumn + 1;
+
+                TextSpan span = diag.Location.Span;
+                int lineIndex = source.GetLineIndex(span.Start);
+                TextLine line = source.Lines[lineIndex];
+
+                TextSpan prefixSpan = TextSpan.FromBounds(line.Span.Start, span.Start);
+                TextSpan suffixSpan = TextSpan.FromBounds(span.End, line.Span.End);
+
+                string prefix = source.ToString(prefixSpan);
+                string error = source.ToString(span);
+                string suffix = source.ToString(suffixSpan);
+
+                writer.WriteLine();
+
+                writer.SetForeground(ConsoleColor.DarkRed);
+                writer.Write($"({startLine}, {startColumn}):");
+                writer.WriteLine(diag);
+
+                writer.ResetColor();
+                writer.Write("  ");
+                writer.Write(prefix);
+                writer.SetForeground(ConsoleColor.DarkRed);
+                writer.Write(error);
+                writer.ResetColor();
+                writer.WriteLine(suffix);
+            }
+
+            writer.WriteLine();
         }
     }
 }
