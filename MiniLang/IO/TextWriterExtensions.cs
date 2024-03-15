@@ -113,7 +113,7 @@ namespace MiniLang.IO
                 writer.WriteLine();
 
                 writer.SetForeground(ConsoleColor.DarkRed);
-                writer.Write($"({startLine}, {startColumn}):");
+                writer.WriteLine($"{fileName}({startLine}, {startColumn}; {endLine}, {endColumn}):");
                 writer.WriteLine(diag);
 
                 writer.ResetColor();
