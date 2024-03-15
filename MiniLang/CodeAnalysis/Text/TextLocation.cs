@@ -15,6 +15,6 @@
         public int StartLine => Source.GetLineIndex(Span.Start);
         public int StartColumn => Span.Start - Source.Lines[StartLine].Span.Start;
         public int EndLine => Source.GetLineIndex(Span.End);
-        public int EndColumn => Span.Start - Source.Lines[EndLine].Span.Start;
+        public int EndColumn => Span.End - Source.Lines[EndLine].Span.Start;
     }
 }
