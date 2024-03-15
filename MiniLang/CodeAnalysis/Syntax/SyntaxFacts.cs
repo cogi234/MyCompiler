@@ -25,6 +25,7 @@ namespace MiniLang.CodeAnalysis.Syntax
             {
                 case TokenType.Star:
                 case TokenType.ForwardSlash:
+                case TokenType.Percent:
                     return 5;
 
                 case TokenType.Plus:
@@ -118,6 +119,8 @@ namespace MiniLang.CodeAnalysis.Syntax
                     return "*";
                 case TokenType.ForwardSlash:
                     return "/";
+                case TokenType.Percent:
+                    return "%";
                 case TokenType.OpenParenthesis:
                     return "(";
                 case TokenType.CloseParenthesis:

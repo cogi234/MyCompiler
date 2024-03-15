@@ -248,6 +248,8 @@ namespace MiniLang.CodeAnalysis
                     return (int)left * (int)right;
                 case BoundBinaryOperationType.Division:
                     return (int)left / (int)right;
+                case BoundBinaryOperationType.Modulo:
+                    return (int)left % (int)right;
                 case BoundBinaryOperationType.BitwiseAnd:
                     if (expression.BinaryOperator.LeftType == TypeSymbol.Int)
                         return (int)left & (int)right;

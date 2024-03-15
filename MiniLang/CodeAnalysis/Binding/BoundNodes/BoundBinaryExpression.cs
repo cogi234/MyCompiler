@@ -8,6 +8,7 @@ namespace MiniLang.CodeAnalysis.Binding.BoundNodes
         Subtraction,
         Multiplication,
         Division,
+        Modulo,
         BitwiseOr,
         BitwiseAnd,
         BitwiseXor,

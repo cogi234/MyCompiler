@@ -31,6 +31,7 @@ namespace MiniLang.CodeAnalysis.Binding.BoundNodes
             new BoundBinaryOperator(BoundBinaryOperationType.Subtraction, TokenType.Minus, TypeSymbol.Int),
             new BoundBinaryOperator(BoundBinaryOperationType.Multiplication, TokenType.Star, TypeSymbol.Int),
             new BoundBinaryOperator(BoundBinaryOperationType.Division, TokenType.ForwardSlash, TypeSymbol.Int),
+            new BoundBinaryOperator(BoundBinaryOperationType.Modulo, TokenType.Percent, TypeSymbol.Int),
             new BoundBinaryOperator(BoundBinaryOperationType.BitwiseAnd, TokenType.Ampersand, TypeSymbol.Int),
             new BoundBinaryOperator(BoundBinaryOperationType.BitwiseOr, TokenType.Pipe, TypeSymbol.Int),
             new BoundBinaryOperator(BoundBinaryOperationType.BitwiseXor, TokenType.Caret, TypeSymbol.Int),

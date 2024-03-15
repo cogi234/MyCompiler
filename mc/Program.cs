@@ -28,7 +28,7 @@ namespace mc
                     continue;
                 }
 
-                SyntaxTree syntaxTree = SyntaxTree.Load(path);
+                SyntaxTree syntaxTree = SyntaxTree.Load( path);
                 syntaxTrees.Add(syntaxTree);
             }
 
@@ -44,7 +44,7 @@ namespace mc
                     Console.WriteLine(result.Value);
             }
             else
-                Console.Error.WriteDiagnostics(result.Diagnostics);
+                Console.Out.WriteDiagnostics(result.Diagnostics);
         }
 
         private static IEnumerable<string> GetFilePaths(IEnumerable<string> paths)
@@ -53,10 +53,11 @@ namespace mc
 
             foreach (string path in paths)
             {
-                if (Directory.Exists(path))
-                    result.UnionWith(Directory.EnumerateFiles(path, "*.ml", SearchOption.AllDirectories));
+                string absolutePath = Path.GetFullPath(path);
+                if (Directory.Exists(absolutePath))
+                    result.UnionWith(Directory.EnumerateFiles(absolutePath, "*.ml", SearchOption.AllDirectories));
                 else
-                    result.Add(path);
+                    result.Add(absolutePath);
             }
 
             return result;

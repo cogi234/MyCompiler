@@ -18,6 +18,7 @@ namespace MiniLang.CodeAnalysis.Syntax
         Minus,
         Star,
         ForwardSlash,
+        Percent,
         OpenParenthesis,
         CloseParenthesis,
         OpenBrace,

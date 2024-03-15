@@ -50,6 +50,10 @@ namespace MiniLang.CodeAnalysis.Syntax
                     position++;
                     tokenType = TokenType.ForwardSlash;
                     break;
+                case '%':
+                    position++;
+                    tokenType = TokenType.Percent;
+                    break;
                 case '(':
                     position++;
                     tokenType = TokenType.OpenParenthesis;

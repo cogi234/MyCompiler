@@ -154,6 +154,5 @@ namespace mi
             Console.WriteLine("#showProgram: toggle bound tree display");
             Console.WriteLine("#reset: reset the context");
         }
-
     }
 }

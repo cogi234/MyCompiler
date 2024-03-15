@@ -91,14 +91,15 @@ namespace MiniLang.IO
                 .ThenBy(d => d.Location.Span.Start)
                 .ThenBy(d => d.Location.Span.Length))
             {
-                SourceText source = diag.Location.Source;
-                string fileName = diag.Location.FileName;
-                int startLine = diag.Location.StartLine + 1;
-                int startColumn = diag.Location.StartColumn + 1;
-                int endLine = diag.Location.EndLine + 1;
-                int endColumn = diag.Location.EndColumn + 1;
+                TextLocation location = diag.Location;
+                SourceText source = location.Source;
+                string fileName = location.FileName;
+                int startLine = location.StartLine + 1;
+                int startColumn = location.StartColumn + 1;
+                int endLine = location.EndLine + 1;
+                int endColumn = location.EndColumn + 1;
 
-                TextSpan span = diag.Location.Span;
+                TextSpan span = location.Span;
                 int lineIndex = source.GetLineIndex(span.Start);
                 TextLine line = source.Lines[lineIndex];
 
