@@ -7,12 +7,12 @@ namespace mc
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             if (args.Length == 0)
             {
                 Console.Error.WriteLine("usage: mc <source-paths>");
-                return;
+                return 1;
             }
 
             IEnumerable<string> paths = GetFilePaths(args);
@@ -23,7 +23,7 @@ namespace mc
             {
                 if (!File.Exists(path))
                 {
-                    Console.WriteLine($"error: file '{path}' doesn't exist");
+                    Console.Error.WriteLine($"error: file '{path}' doesn't exist");
                     hasErrors = true;
                     continue;
                 }
@@ -33,7 +33,7 @@ namespace mc
             }
 
             if (hasErrors)
-                return;
+                return 1;
 
             Compilation compilation = new Compilation(syntaxTrees.ToArray());
             EvaluationResult result = compilation.Evaluate(new Dictionary<VariableSymbol, object?>());
@@ -44,7 +44,12 @@ namespace mc
                     Console.WriteLine(result.Value);
             }
             else
-                Console.Out.WriteDiagnostics(result.Diagnostics);
+            {
+                Console.Error.WriteDiagnostics(result.Diagnostics);
+                return 1;
+            }
+
+            return 0;
         }
 
         private static IEnumerable<string> GetFilePaths(IEnumerable<string> paths)
