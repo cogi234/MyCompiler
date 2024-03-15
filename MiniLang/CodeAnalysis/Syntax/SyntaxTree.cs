@@ -9,6 +9,8 @@ namespace MiniLang.CodeAnalysis.Syntax
         private delegate void ParseHandler(SyntaxTree syntaxTree, out CompilationUnit? root,
             out ImmutableArray<Diagnostic> diagnostics);
 
+        private Dictionary<SyntaxNode, SyntaxNode>? childToParent;
+
         private SyntaxTree(SourceText sourceText, ParseHandler handler)
         {
             SourceText = sourceText;
@@ -17,6 +19,32 @@ namespace MiniLang.CodeAnalysis.Syntax
 
             Diagnostics = diagnostics;
             Root = root!;
+        }
+
+        public ImmutableArray<Diagnostic> Diagnostics { get; }
+        public CompilationUnit Root { get; }
+        public SourceText SourceText { get; }
+        public Dictionary<SyntaxNode, SyntaxNode> ChildToParent
+        {
+            get
+            {
+                if (childToParent == null)
+                {
+                    childToParent = new Dictionary<SyntaxNode, SyntaxNode>();
+                    Stack<SyntaxNode> stack = new Stack<SyntaxNode>();
+                    stack.Push(Root);
+                    while (stack.Count > 0)
+                    {
+                        SyntaxNode currentNode = stack.Pop();
+                        foreach (SyntaxNode child in currentNode.GetChildren())
+                        {
+                            stack.Push(child);
+                            childToParent.Add(child, currentNode);
+                        }
+                    }
+                }
+                return childToParent;
+            }
         }
 
         public static SyntaxTree Load(string fileName)
@@ -86,8 +114,5 @@ namespace MiniLang.CodeAnalysis.Syntax
         }
 
 
-        public ImmutableArray<Diagnostic> Diagnostics { get; }
-        public CompilationUnit Root { get; }
-        public SourceText SourceText { get; }
     }
 }

@@ -43,6 +43,7 @@ namespace MiniLang.CodeAnalysis.Syntax.SyntaxNodes
         public abstract TextSpan Span { get; }
         public SyntaxTree SyntaxTree { get; }
         public TextLocation Location => new TextLocation(SyntaxTree.SourceText, Span);
+        public SyntaxNode Parent => SyntaxTree.ChildToParent[this];
 
         public abstract IEnumerable<SyntaxNode> GetChildren();
         public abstract Token GetLastToken();
