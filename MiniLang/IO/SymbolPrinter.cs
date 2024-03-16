@@ -3,7 +3,7 @@ using MiniLang.CodeAnalysis.Syntax;
 
 namespace MiniLang.IO
 {
-    internal static class SymbolPrinter
+    public static class SymbolPrinter
     {
         public static void WriteTo(this Symbol symbol, TextWriter writer)
         {
@@ -53,7 +53,6 @@ namespace MiniLang.IO
             }
 
             writer.WritePunctuation(TokenType.CloseParenthesis);
-            writer.WriteLine();
         }
 
         private static void WriteParameterTo(ParameterSymbol symbol, TextWriter writer)

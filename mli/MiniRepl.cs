@@ -110,18 +110,6 @@ namespace mi
             }
         }
 
-        /*protected override void EvaluateMetaCommand(string input)
-          {
-              string lowerInput = input.ToLower();
-              switch (lowerInput)
-              {
-                  case "#reset":
-                      previousCompilation = null;
-                      variables = new Dictionary<VariableSymbol, object?>();
-                      Console.WriteLine("Reset the context");
-                      break;
-              }
-          }*/
         [MetaCommand("reset", "Resets the context.")]
         private void EvaluateReset()
         {
@@ -145,6 +133,59 @@ namespace mi
         {
             boundTreeOutput = !boundTreeOutput;
             Console.WriteLine(boundTreeOutput ? "Toggled bound tree on" : "Toggled bound tree off");
+        }
+        [MetaCommand("load", "Loads and evaluates a script file.")]
+        private void EvaluateLoad(string path)
+        {
+            path = Path.GetFullPath(path);
+
+            if (!File.Exists(path))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"error: file does not exist '{path}'");
+                Console.ResetColor();
+                return;
+            }
+
+            string text = File.ReadAllText(path);
+            EvaluateSubmission(text);
+        }
+        [MetaCommand("dump", "Shows bound tree of a given function.")]
+        private void EvaluateDump(string functionName)
+        {
+            if (previousCompilation == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"error: function '{functionName}' does not exist");
+                Console.ResetColor();
+                return;
+            }
+
+            var function = previousCompilation.GetSymbols().OfType<FunctionSymbol>().
+                SingleOrDefault(f => f.Name == functionName);
+            if (function == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"error: function '{functionName}' does not exist");
+                Console.ResetColor();
+                return;
+            }
+
+            previousCompilation.EmitTree(Console.Out, function);
+        }
+        [MetaCommand("symbols", "Lists all symbols.")]
+        private void EvaluateSymbols()
+        {
+            if (previousCompilation == null)
+                return;
+
+            IOrderedEnumerable<Symbol> symbols = previousCompilation.GetSymbols().OrderBy(s => s.SymbolType)
+                .ThenBy(s => s.Name);
+            foreach (Symbol symbol in symbols)
+            {
+                symbol.WriteTo(Console.Out);
+                Console.WriteLine();
+            }
         }
     }
 }

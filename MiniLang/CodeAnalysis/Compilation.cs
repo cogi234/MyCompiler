@@ -89,5 +89,34 @@ namespace MiniLang.CodeAnalysis
                 }
             }
         }
+
+        public void EmitTree(TextWriter writer, FunctionSymbol function)
+        {
+            var program = Binder.BindProgram(GlobalScope);
+            if (!program.Functions.TryGetValue(function, out BoundBlockStatement? body))
+                return;
+
+            function.WriteTo(writer);
+            body.WriteTo(writer);
+        }
+
+        public IEnumerable<Symbol> GetSymbols()
+        {
+            Compilation? submission = this;
+            HashSet<string> seenSymbolNames = new HashSet<string>();
+
+            while (submission != null)
+            {
+                foreach (var function in submission.GlobalScope.Functions)
+                    if (seenSymbolNames.Add(function.Name))
+                        yield return function;
+
+                foreach (var variable in submission.GlobalScope.Variables)
+                    if (seenSymbolNames.Add(variable.Name))
+                        yield return variable;
+
+                submission = submission.Previous;
+            }
+        }
     }
 }
