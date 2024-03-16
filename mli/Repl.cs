@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Reflection;
+using System.Text;
 
 namespace mi
 {
@@ -477,8 +478,54 @@ namespace mi
         }
         private void EvaluateMetaCommand(string input)
         {
-            string commandName = input.Substring(1);
-            var command = metaCommands.SingleOrDefault(mc => mc.Name == commandName);
+            // Parse arguments
+            List<string> arguments = new List<string>();
+            bool inQuotes = false;
+            int position = 1;
+            StringBuilder sb = new StringBuilder();
+            void CommitPendingArgument()
+            {
+                string arg = sb.ToString();
+                if (!string.IsNullOrWhiteSpace(arg))
+                    arguments.Add(arg);
+                sb.Clear();
+            }
+
+            while (position < input.Length)
+            {
+                char current = input[position];
+                char next = position + 1 >= input.Length ? '\0' : input[position + 1];
+
+                if (char.IsWhiteSpace(current))
+                {
+                    if (!inQuotes)
+                        CommitPendingArgument();
+                    else
+                        sb.Append(current);
+                } else if (current == '\"')
+                {
+                    if (!inQuotes)
+                        inQuotes = true;
+                    else if (next == '\"')
+                    {
+                        sb.Append(current);
+                        position++;
+                    } else
+                        inQuotes = false;
+                } else
+                {
+                    sb.Append(current);
+                }
+
+                position++;
+            }
+            CommitPendingArgument();
+
+            string? commandName = arguments.FirstOrDefault();
+            if (arguments.Count > 0)
+                arguments.RemoveAt(0);
+
+            MetaCommand? command = metaCommands.SingleOrDefault(mc => mc.Name == commandName);
             if (command == null)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -487,7 +534,19 @@ namespace mi
                 return;
             }
 
-            command.Method.Invoke(this, null);
+            ParameterInfo[] parameters = command.Method.GetParameters();
+
+            if (arguments.Count != parameters.Length)
+            {
+                string parameterNames = string.Join(" ", parameters.Select(p => $"<{p.Name}>"));
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"error: invalid number of arguments");
+                Console.WriteLine($"usage: #{commandName} {parameterNames}");
+                Console.ResetColor();
+                return;
+            }
+
+            command.Method.Invoke(this, arguments.ToArray());
         }
         [MetaCommand("help", "Describes available meta commands.")]
         protected void EvaluateHelp()
