@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "mc": {
+    "mlc": {
       "commandName": "Project",
       "commandLineArgs": "../../../../samples"
     }

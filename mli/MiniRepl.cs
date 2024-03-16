@@ -110,49 +110,41 @@ namespace mi
             }
         }
 
-        protected override void EvaluateMetaCommand(string input)
+        /*protected override void EvaluateMetaCommand(string input)
+          {
+              string lowerInput = input.ToLower();
+              switch (lowerInput)
+              {
+                  case "#reset":
+                      previousCompilation = null;
+                      variables = new Dictionary<VariableSymbol, object?>();
+                      Console.WriteLine("Reset the context");
+                      break;
+              }
+          }*/
+        [MetaCommand("reset", "Resets the context.")]
+        private void EvaluateReset()
         {
-            string lowerInput = input.ToLower();
-            switch (lowerInput)
-            {
-                case "#clear":
-                    Console.Clear();
-                    break;
-                case "#token":
-                    tokenOutput = !tokenOutput;
-                    Console.WriteLine(tokenOutput ? "Toggled tokens on" : "Toggled tokens off");
-                    break;
-                case "#showtree":
-                    syntaxTreeOutput = !syntaxTreeOutput;
-                    Console.WriteLine(syntaxTreeOutput ? "Toggled syntax tree on" : "Toggled syntax tree off");
-                    break;
-                case "#showprogram":
-                    boundTreeOutput = !boundTreeOutput;
-                    Console.WriteLine(boundTreeOutput ? "Toggled bound tree on" : "Toggled bound tree off");
-                    break;
-                case "#reset":
-                    previousCompilation = null;
-                    variables = new Dictionary<VariableSymbol, object?>();
-                    Console.WriteLine("Reset the context");
-                    break;
-                case "#help":
-                    PrintHelp();
-                    break;
-                default:
-                    base.EvaluateMetaCommand(input);
-                    break;
-            }
+            previousCompilation = null;
+            variables = new Dictionary<VariableSymbol, object?>();
         }
-
-        protected void PrintHelp()
+        [MetaCommand("showTokens", "Displays tokens.")]
+        private void EvaluateShowTokens()
         {
-            Console.WriteLine("#exit: exit the program");
-            Console.WriteLine("#help: view this");
-            Console.WriteLine("#clear: clear the screen");
-            Console.WriteLine("#token: toggle token display");
-            Console.WriteLine("#showTree: toggle syntax tree display");
-            Console.WriteLine("#showProgram: toggle bound tree display");
-            Console.WriteLine("#reset: reset the context");
+            tokenOutput = !tokenOutput;
+            Console.WriteLine(tokenOutput ? "Toggled tokens on" : "Toggled tokens off");
+        }
+        [MetaCommand("showTree", "Displays the syntax tree.")]
+        private void EvaluateShowTree()
+        {
+            syntaxTreeOutput = !syntaxTreeOutput;
+            Console.WriteLine(syntaxTreeOutput ? "Toggled syntax tree on" : "Toggled syntax tree off");
+        }
+        [MetaCommand("showProgram", "Displays the program's bound tree.")]
+        private void EvaluateShowProgram()
+        {
+            boundTreeOutput = !boundTreeOutput;
+            Console.WriteLine(boundTreeOutput ? "Toggled bound tree on" : "Toggled bound tree off");
         }
     }
 }

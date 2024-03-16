@@ -1,14 +1,22 @@
-﻿using System.Collections.ObjectModel;
+﻿using MiniLang.IO;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Reflection;
 
 namespace mi
 {
     internal abstract class Repl
     {
-        private List<string> submissionHistory = new List<string>();
+        private readonly List<MetaCommand> metaCommands = new List<MetaCommand>();
+        private readonly List<string> submissionHistory = new List<string>();
         private int submissionHistoryIndex;
 
         private bool done;
+
+        protected Repl()
+        {
+            InitializeMetaCommands();
+        }
 
         public void Run()
         {
@@ -307,12 +315,7 @@ namespace mi
         {
             Console.Write(line);
         }
-        protected virtual void EvaluateMetaCommand(string input)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Invalid command {input}.");
-            Console.ResetColor();
-        }
+
         protected abstract bool IsCompleteSubmission(string text);
         protected abstract void EvaluateSubmission(string text);
 
@@ -430,6 +433,82 @@ namespace mi
                     }
                 }
             }
+        }
+
+        [AttributeUsage(AttributeTargets.Method)]
+        protected sealed class MetaCommandAttribute : Attribute
+        {
+            public MetaCommandAttribute(string name, string description)
+            {
+                Name = name;
+                Description = description;
+            }
+
+            public string Name { get; }
+            public string Description { get; }
+        }
+        private class MetaCommand
+        {
+            public MetaCommand(string name, string description, MethodInfo methodInfo)
+            {
+                Name = name;
+                Description = description;
+                Method = methodInfo;
+            }
+
+            public string Name { get; }
+            public string Description { get; }
+            public MethodInfo Method { get; }
+        }
+
+        private void InitializeMetaCommands()
+        {
+            MethodInfo[] methods = GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic |
+                BindingFlags.Static | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            foreach (MethodInfo method in methods)
+            {
+                MetaCommandAttribute? attribute = (MetaCommandAttribute?)method.GetCustomAttribute(typeof(MetaCommandAttribute));
+                if (attribute == null)
+                    continue;
+
+                MetaCommand metaCommand = new MetaCommand(attribute.Name, attribute.Description, method);
+                metaCommands.Add(metaCommand);
+            }
+        }
+        private void EvaluateMetaCommand(string input)
+        {
+            string commandName = input.Substring(1);
+            var command = metaCommands.SingleOrDefault(mc => mc.Name == commandName);
+            if (command == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Invalid command {input}.");
+                Console.ResetColor();
+                return;
+            }
+
+            command.Method.Invoke(this, null);
+        }
+        [MetaCommand("help", "Describes available meta commands.")]
+        protected void EvaluateHelp()
+        {
+            int maxNameLength = metaCommands.Max(m => m.Name.Length);
+            foreach (MetaCommand metaCommand in metaCommands.OrderBy(mc => mc.Name))
+            {
+                string paddedName = metaCommand.Name.PadRight(maxNameLength);
+                Console.Out.WritePunctuation("#");
+                Console.Out.WriteIdentifier(paddedName);
+                Console.Out.WriteSpace();
+                Console.Out.WritePunctuation(":");
+                Console.Out.WriteSpace();
+                Console.Out.WritePunctuation(metaCommand.Description);
+                Console.Out.WriteLine();
+            }
+        }
+        [MetaCommand("clear", "Clears the screen.")]
+        protected void EvaluateClear()
+        {
+            Console.Clear();
         }
     }
 }
