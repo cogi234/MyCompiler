@@ -8,12 +8,19 @@ namespace mi
 {
     internal sealed class MiniRepl : Repl
     {
+        private static bool loadingSubmissions;
+
         private Compilation? previousCompilation = null;
         private Dictionary<VariableSymbol, object?> variables = new Dictionary<VariableSymbol, object?>();
 
         private bool tokenOutput = false;
         private bool syntaxTreeOutput = false;
         private bool boundTreeOutput = false;
+
+        public MiniRepl()
+        {
+            LoadSubmissions();
+        }
 
         protected override void EvaluateSubmission(string text)
         {
@@ -56,9 +63,15 @@ namespace mi
             EvaluationResult result = compilation.Evaluate(variables);
 
             if (result.Diagnostics.Any())
+            {
                 Console.Out.WriteDiagnostics(result.Diagnostics);
+            }
             else
+            {
                 previousCompilation = compilation;
+
+                SaveSubmission(text);
+            }
         }
 
         protected override bool IsCompleteSubmission(string text)
@@ -115,6 +128,7 @@ namespace mi
         {
             previousCompilation = null;
             variables = new Dictionary<VariableSymbol, object?>();
+            ClearSubmissions();
         }
         [MetaCommand("showTokens", "Displays tokens.")]
         private void EvaluateShowTokens()
@@ -186,6 +200,56 @@ namespace mi
                 symbol.WriteTo(Console.Out);
                 Console.WriteLine();
             }
+        }
+
+        private static string GetSubmissionsDirectory()
+        {
+            string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string submissionsDirectory = Path.Combine(localAppData, "MiniLang", "Submissions");
+            return submissionsDirectory;
+        }
+
+        private void LoadSubmissions()
+        {
+            string submissionsDirectory = GetSubmissionsDirectory();
+            if (!Directory.Exists(submissionsDirectory))
+                return;
+
+            var files = Directory.GetFiles(submissionsDirectory).OrderBy(f => f).ToArray();
+            if (files.Length == 0)
+                return;
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine($"Loaded {files.Length} submission(s).");
+            Console.ResetColor();
+
+            loadingSubmissions = true;
+
+            foreach (string file in files)
+            {
+                string text = File.ReadAllText(file);
+                EvaluateSubmission(text);
+            }
+
+            loadingSubmissions = false;
+        }
+
+        private static void ClearSubmissions()
+        {
+            Directory.Delete(GetSubmissionsDirectory(), true);
+        }
+
+        private static void SaveSubmission(string text)
+        {
+            if (loadingSubmissions)
+                return;
+
+            string submissionDirectory = GetSubmissionsDirectory();
+            Directory.CreateDirectory(submissionDirectory);
+            int count = Directory.GetFiles(submissionDirectory).Length;
+            string name = $"submission{count:0000}";
+            string fileName = Path.Combine(submissionDirectory, name);
+            File.WriteAllText(fileName, text);
         }
     }
 }
