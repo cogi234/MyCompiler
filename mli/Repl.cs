@@ -11,8 +11,8 @@ namespace mi
         private readonly List<MetaCommand> metaCommands = new List<MetaCommand>();
         private readonly List<string> submissionHistory = new List<string>();
         private int submissionHistoryIndex;
-
         private bool done;
+        protected string? textToEdit = null;
 
         protected Repl()
         {
@@ -23,7 +23,13 @@ namespace mi
         {
             while (true)
             {
-                string? text = EditSubmission();
+                string? text;
+                if (string.IsNullOrEmpty(textToEdit))
+                    text = EditSubmission();
+                else
+                    text = EditSubmission(textToEdit);
+                textToEdit = null;
+
                 if (string.IsNullOrWhiteSpace(text))
                     continue;
                 if (text.ToLower() == "#exit")
@@ -39,11 +45,10 @@ namespace mi
             }
         }
 
-        private string EditSubmission()
+        private string EditSubmission(string presetText = "")
         {
             done = false;
-
-            ObservableCollection<string> document = new ObservableCollection<string>() { "" };
+            ObservableCollection<string> document = new ObservableCollection<string>(presetText.Split(Environment.NewLine));
             SubmissionView view = new SubmissionView(RenderLine, document);
 
             while (!done)

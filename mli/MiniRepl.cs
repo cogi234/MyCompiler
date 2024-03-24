@@ -134,7 +134,7 @@ namespace mi
             boundTreeOutput = !boundTreeOutput;
             Console.WriteLine(boundTreeOutput ? "Toggled bound tree on" : "Toggled bound tree off");
         }
-        [MetaCommand("load", "Loads and evaluates a script file.")]
+        [MetaCommand("load", "Loads a script file.")]
         private void EvaluateLoad(string path)
         {
             path = Path.GetFullPath(path);
@@ -148,7 +148,7 @@ namespace mi
             }
 
             string text = File.ReadAllText(path);
-            EvaluateSubmission(text);
+            textToEdit = text;
         }
         [MetaCommand("dump", "Shows bound tree of a given function.")]
         private void EvaluateDump(string functionName)
