@@ -1,7 +1,6 @@
 ﻿using MiniLang.CodeAnalysis.Syntax.SyntaxNodes;
 using MiniLang.CodeAnalysis.Text;
 using System.Collections.Immutable;
-using System.Reflection.Metadata;
 
 namespace MiniLang.CodeAnalysis.Syntax
 {

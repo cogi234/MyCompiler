@@ -1,7 +1,6 @@
 ﻿using MiniLang.CodeAnalysis;
 using MiniLang.CodeAnalysis.Symbols;
 using MiniLang.CodeAnalysis.Syntax;
-using MiniLang.CodeAnalysis.Text;
 using MiniLang.IO;
 
 namespace mi
@@ -175,7 +174,7 @@ namespace mi
                 return;
             }
 
-            var function = previousCompilation.GetSymbols().OfType<FunctionSymbol>().
+            FunctionSymbol? function = previousCompilation.GetSymbols().OfType<FunctionSymbol>().
                 SingleOrDefault(f => f.Name == functionName);
             if (function == null)
             {
@@ -215,7 +214,7 @@ namespace mi
             if (!Directory.Exists(submissionsDirectory))
                 return;
 
-            var files = Directory.GetFiles(submissionsDirectory).OrderBy(f => f).ToArray();
+            string[] files = Directory.GetFiles(submissionsDirectory).OrderBy(f => f).ToArray();
             if (files.Length == 0)
                 return;
 

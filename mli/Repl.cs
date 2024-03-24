@@ -507,7 +507,8 @@ namespace mi
                         CommitPendingArgument();
                     else
                         sb.Append(current);
-                } else if (current == '\"')
+                }
+                else if (current == '\"')
                 {
                     if (!inQuotes)
                         inQuotes = true;
@@ -515,9 +516,11 @@ namespace mi
                     {
                         sb.Append(current);
                         position++;
-                    } else
+                    }
+                    else
                         inQuotes = false;
-                } else
+                }
+                else
                 {
                     sb.Append(current);
                 }

@@ -12,7 +12,7 @@ namespace MiniLang.IO
             if (writer == Console.Out)
                 return !Console.IsOutputRedirected;
 
-            if (writer == Console.Error) 
+            if (writer == Console.Error)
                 return !Console.IsErrorRedirected && !Console.IsOutputRedirected;
 
             if (writer is IndentedTextWriter iw && iw.InnerWriter.IsConsole())

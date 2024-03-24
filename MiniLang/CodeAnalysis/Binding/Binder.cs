@@ -101,7 +101,7 @@ namespace MiniLang.CodeAnalysis.Binding
         public static BoundProgram BindProgram(BoundGlobalScope globalScope)
         {
             BoundScope parentScope = CreateParentScope(globalScope);
-            ImmutableDictionary<FunctionSymbol, BoundBlockStatement>.Builder functionBodies = 
+            ImmutableDictionary<FunctionSymbol, BoundBlockStatement>.Builder functionBodies =
                 ImmutableDictionary.CreateBuilder<FunctionSymbol, BoundBlockStatement>();
             ImmutableArray<Diagnostic>.Builder diagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
             BoundGlobalScope? scope = globalScope;

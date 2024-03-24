@@ -28,7 +28,7 @@ namespace mc
                     continue;
                 }
 
-                SyntaxTree syntaxTree = SyntaxTree.Load( path);
+                SyntaxTree syntaxTree = SyntaxTree.Load(path);
                 syntaxTrees.Add(syntaxTree);
             }
 

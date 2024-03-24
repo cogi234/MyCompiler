@@ -92,7 +92,7 @@ namespace MiniLang.CodeAnalysis
 
         public void EmitTree(TextWriter writer, FunctionSymbol function)
         {
-            var program = Binder.BindProgram(GlobalScope);
+            BoundProgram program = Binder.BindProgram(GlobalScope);
             if (!program.Functions.TryGetValue(function, out BoundBlockStatement? body))
                 return;
 
@@ -107,11 +107,11 @@ namespace MiniLang.CodeAnalysis
 
             while (submission != null)
             {
-                foreach (var function in submission.GlobalScope.Functions)
+                foreach (FunctionSymbol function in submission.GlobalScope.Functions)
                     if (seenSymbolNames.Add(function.Name))
                         yield return function;
 
-                foreach (var variable in submission.GlobalScope.Variables)
+                foreach (VariableSymbol variable in submission.GlobalScope.Variables)
                     if (seenSymbolNames.Add(variable.Name))
                         yield return variable;
 
