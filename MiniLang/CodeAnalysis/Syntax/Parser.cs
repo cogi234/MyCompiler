@@ -63,7 +63,8 @@ namespace MiniLang.CodeAnalysis.Syntax
 
         private MemberNode ParseMember()
         {
-            if (Current.Type == TokenType.Type && Peek(1).Type == TokenType.Identifier && Peek(2).Type == TokenType.OpenParenthesis)
+            if (Current.Type == TokenType.Type && Peek(1).Type == TokenType.Identifier &&
+                Peek(2).Type == TokenType.OpenParenthesis)
                 return ParseFunctionDeclaration();
             return ParseGlobalStatement();
         }
@@ -77,7 +78,7 @@ namespace MiniLang.CodeAnalysis.Syntax
             SeparatedNodeList<ParameterNode> parameters = ParseParameters();
 
             Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
-            StatementNode body = ParseStatement();
+            StatementNode body = ParseBlockStatement();
 
             return new FunctionDeclarationNode(syntaxTree, typeKeyword, identifier, openParenthesis,
                 parameters, closeParenthesis, body);
@@ -189,14 +190,14 @@ namespace MiniLang.CodeAnalysis.Syntax
             if (Current.Type != TokenType.CloseParenthesis)
             {
                 ExpressionNode expression = ParseAssignmentExpression();
-                if (expression.Type != NodeType.AssignmentExpression)
+                if (expression.Type == NodeType.AssignmentExpression)
+                    increment = (AssignmentExpressionNode)expression;
+                else
                 {
                     TextLocation location = new TextLocation(source, expression.Span);
                     diagnostics.ReportUnexpectedNode(location, expression.Type, NodeType.AssignmentExpression);
                     isValid = false;
                 }
-                else
-                    increment = (AssignmentExpressionNode)expression;
             }
 
             Token closeParenthesis = ExpectToken(TokenType.CloseParenthesis);
@@ -284,6 +285,7 @@ namespace MiniLang.CodeAnalysis.Syntax
             while (Current.Type != TokenType.CloseBrace && Current.Type != TokenType.EndOfFile)
             {
                 Token startToken = Current;
+
                 statements.Add(ParseStatement());
 
                 //If we didn't consume any tokens, we skip this one
@@ -464,7 +466,6 @@ namespace MiniLang.CodeAnalysis.Syntax
             diagnostics.ReportUnexpectedToken(location, Current.Type, expectedType);
             return new Token(syntaxTree, expectedType, new TextSpan(Current.Span.Start, 0), null, null, true);
         }
-
         private Token ExpectTokens(params TokenType[] expectedTypes)
         {
             if (expectedTypes.Contains(Current.Type))

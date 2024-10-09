@@ -52,11 +52,11 @@ namespace mc
             return 0;
         }
 
-        private static IEnumerable<string> GetFilePaths(IEnumerable<string> paths)
+        private static IEnumerable<string> GetFilePaths(IEnumerable<string> args)
         {
             SortedSet<string> result = new SortedSet<string>();
 
-            foreach (string path in paths)
+            foreach (string path in args)
             {
                 string absolutePath = Path.GetFullPath(path);
                 if (Directory.Exists(absolutePath))

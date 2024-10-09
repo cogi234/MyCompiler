@@ -46,7 +46,7 @@ namespace MiniLang.CodeAnalysis.Syntax
                 return childToParent;
             }
         }
-
+        
         public static SyntaxTree Load(string fileName)
         {
             string text = File.ReadAllText(fileName);
@@ -112,7 +112,5 @@ namespace MiniLang.CodeAnalysis.Syntax
             diagnostics = syntaxTree.Diagnostics.ToImmutableArray();
             return tokens.ToImmutableArray();
         }
-
-
     }
 }

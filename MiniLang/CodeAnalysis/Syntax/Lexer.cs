@@ -35,123 +35,123 @@ namespace MiniLang.CodeAnalysis.Syntax
                 case '\0':
                     return new Token(syntaxTree, TokenType.EndOfFile, new TextSpan(start, 0), "\0", null);
                 case '+':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.Plus;
                     break;
                 case '-':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.Minus;
                     break;
                 case '*':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.Star;
                     break;
                 case '/':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.ForwardSlash;
                     break;
                 case '%':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.Percent;
                     break;
                 case '(':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.OpenParenthesis;
                     break;
                 case ')':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.CloseParenthesis;
                     break;
                 case '{':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.OpenBrace;
                     break;
                 case '}':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.CloseBrace;
                     break;
                 case '.':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.Period;
                     break;
                 case ',':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.Comma;
                     break;
                 case ':':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.Colon;
                     break;
                 case ';':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.Semicolon;
                     break;
                 case '!':
-                    position++;
+                    NextCharacter();
                     if (Current != '=')
                         tokenType = TokenType.Bang;
                     else
                     {
                         tokenType = TokenType.BangEqual;
-                        position++;
+                        NextCharacter();
                     }
                     break;
                 case '&':
-                    position++;
+                    NextCharacter();
                     if (Current != '&')
                         tokenType = TokenType.Ampersand;
                     else
                     {
                         tokenType = TokenType.AmpersandAmpersand;
-                        position++;
+                        NextCharacter();
                     }
                     break;
                 case '|':
-                    position++;
+                    NextCharacter();
                     if (Current != '|')
                         tokenType = TokenType.Pipe;
                     else
                     {
                         tokenType = TokenType.PipePipe;
-                        position++;
+                        NextCharacter();
                     }
                     break;
                 case '^':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.Caret;
                     break;
                 case '~':
-                    position++;
+                    NextCharacter();
                     tokenType = TokenType.Tilde;
                     break;
                 case '<':
-                    position++;
+                    NextCharacter();
                     if (Current != '=')
                         tokenType = TokenType.LessThan;
                     else
                     {
                         tokenType = TokenType.LessThanEqual;
-                        position++;
+                        NextCharacter();
                     }
                     break;
                 case '>':
-                    position++;
+                    NextCharacter();
                     if (Current != '=')
                         tokenType = TokenType.GreaterThan;
                     else
                     {
                         tokenType = TokenType.GreaterThanEqual;
-                        position++;
+                        NextCharacter();
                     }
                     break;
                 case '=':
-                    position++;
+                    NextCharacter();
                     if (Current != '=')
                         tokenType = TokenType.Equal;
                     else
                     {
                         tokenType = TokenType.EqualEqual;
-                        position++;
+                        NextCharacter();
                     }
                     break;
                 case '"':
@@ -175,7 +175,7 @@ namespace MiniLang.CodeAnalysis.Syntax
                         TextSpan span = new TextSpan(start, 1);
                         TextLocation location = new TextLocation(source, span);
                         diagnostics.ReportBadCharacter(location, Current);
-                        position++;
+                        NextCharacter();
                     }
                     break;
             }
@@ -192,11 +192,11 @@ namespace MiniLang.CodeAnalysis.Syntax
         private void ReadString()
         {
             //Skip the first quote
-            Next();
+            NextCharacter();
 
             StringBuilder builder = new StringBuilder();
-            bool done = false;
 
+            bool done = false;
             while (!done)
             {
                 switch (Current)
@@ -213,18 +213,18 @@ namespace MiniLang.CodeAnalysis.Syntax
                         if (Peek(1) == '"')
                         {
                             builder.Append(Current);
-                            Next();
-                            Next();
+                            NextCharacter();
+                            NextCharacter();
                         }
                         else
                         {
-                            Next();
+                            NextCharacter();
                             done = true;
                         }
                         break;
                     default:
                         builder.Append(Current);
-                        Next();
+                        NextCharacter();
                         break;
                 }
             }
@@ -236,7 +236,7 @@ namespace MiniLang.CodeAnalysis.Syntax
         private void ReadNumber()
         {
             while (char.IsDigit(Current))
-                Next();
+                NextCharacter();
 
             int length = position - start;
             tokenText = source.ToString(start, length);
@@ -255,15 +255,15 @@ namespace MiniLang.CodeAnalysis.Syntax
         private void ReadWhitespace()
         {
             while (char.IsWhiteSpace(Current))
-                Next();
+                NextCharacter();
 
             tokenType = TokenType.WhiteSpace;
         }
 
         private void ReadIdentifierOrKeyword()
         {
-            while (char.IsLetterOrDigit(Current))
-                Next();
+            while (char.IsLetterOrDigit(Current) || Current == '_')
+                NextCharacter();
 
             int length = position - start;
             tokenText = source.ToString(start, length);
@@ -280,7 +280,7 @@ namespace MiniLang.CodeAnalysis.Syntax
                 return '\0';
             return source[index];
         }
-        private void Next()
+        private void NextCharacter()
         {
             position++;
         }
